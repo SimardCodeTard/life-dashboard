@@ -11,8 +11,8 @@ export default function DashboardPage() {
         <main className="flex w-full justify-between">
 
             <div className="left-section w-1/4">
-                <Card children={<Tasks></Tasks>}></Card>
-                <Card children={<Weather></Weather>}></Card>
+                <Card><Tasks></Tasks></Card>
+                <Card><Weather></Weather></Card>
             </div>
 
 
