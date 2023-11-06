@@ -6,11 +6,8 @@ export default function Weather() {
     let [weatherData, setWeatherData] = useState<any>(null);
 
     const fetchWeatherData = (latitude: number, longitude: number) => {
-        const params = {
-          'Access-Control-Allow-Origin': '*'
-        }
         const url = `http://localhost:3000/api/v1/weather?latitude=${latitude}&longitude=${longitude}`
-        return fetch(url, params);
+        return fetch(url);
     }
 
     const colorizeTemperature = (temperature: number): string => {
