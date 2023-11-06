@@ -45,7 +45,7 @@ export default function Clock() {
         setDateDisplay((DateTime.now().toISODate() as string).replace('-','/'))
         updateClock();
         setInterval(updateClock, 100)
-    }, []);
+    }, [updateClock]);
 
     return (
         <div className={[
