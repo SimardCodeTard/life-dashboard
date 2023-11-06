@@ -30,7 +30,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="right-section w-1/4">
-                    <Card children={<Calendar></Calendar>}></Card>
+                    <Card><Calendar></Calendar></Card>
             </div>
 
         </main>
