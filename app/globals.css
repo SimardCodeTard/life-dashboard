@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground: rgb(255, 255, 255);
+  --background: rgb(0, 0, 0);
+
+  --bg-radient-1: radial-gradient(
+    349.54% 146.8% at 0% 0%,
+    #1e1e1e 0%,
+    #2a262e 42.79%,
+    #362547 86.46%,
+    rgba(44, 8, 81, 0) 100%
+  );
+  --bg-radient-1-alt: radial-gradient(
+    at 0% 0%,
+    #1e1e1e 0%,
+    #1c1c1f 10.7%,
+    #201d20 21.4%,
+    #252227 42.79%,
+    #282730 53.7%,
+    #2a2936 64.62%,
+    #312e42 75.5%,
+    #2a2231 86.46%,
+    rgba(30, 23, 37, 0) 100%
+  );
+  --background-gradient-0: rgb(30, 30, 30);
+  --background-gradient-1: rgb(32, 32, 35);
+  --background-gradient-2: rgb(35, 35, 40);
+  --background-gradient-3: rgb(37, 35, 45);
+  --background-gradient-4: rgb(40, 35, 45);
+  --background-gradient-5: rgb(43, 35, 40);
+  --background-gradient-6: rgb(45, 35, 50);
+  --background-gradient-7: rgb(45, 35, 53);
+  --background-gradient-8: rgb(45, 35, 55);
+
+  --background-gradient: linear-gradient(
+    50deg,
+    var(--background-gradient-0) 15%,
+    var(--background-gradient-1) 30%,
+    var(--background-gradient-2) 45%,
+    var(--background-gradient-3) 50%,
+    var(--background-gradient-4) 60%,
+    var(--background-gradient-5) 68%,
+    var(--background-gradient-6) 75%,
+    var(--background-gradient-7) 80%,
+    var(--background-gradient-8) 100%
+  );
+
+  --card-background: rgba(250, 250, 250, 0.06);
+  --card-foreground: linear-gradient(
+    45deg,
+    rgba(82, 48, 121, 0.05),
+    rgba(0, 0, 0, 0.1)
+  );
+  --separator-rgb: 60, 60, 60;
+  --text-lighter-rgb: 150, 150, 150;
+  --background-navbar-rgb: 50, 50, 50;
+  --background-navbar: rgba(250, 250, 250, 0.02);
+}
+
+@keyframes gradient-motion {
+  0% {
+      background-position: 0% 0%;
+  } 50% {
+    background-position: 100% 100%;
+  }100% {
+    background-position: 0% 0%;
+  }
+}
+
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  min-height: 100vh;
+  color: var(--foreground);
+  /* background: var(--bg-radient-1-alt); */
+  background-image: url('../public/assets/4K-background-gadient-image.png');
+  background-color: var(--background);
+  background-size: 200% 200%;
+  animation: gradient-motion 8s ease-in-out infinite;
+}
+
+.task-item {
+  border-bottom: 1px solid rgb(var(--separator-rgb));
+  border-top: 1px solid rgb(var(--separator-rgb));
+}
+.card {
+  background-color: var(--card-background);
+  /* width: fit-content; */
+  padding: 0.75rem;
+  margin: 0.5rem;
+  border-radius: 0.25rem;
+  transition: all ease 0.3s;
+  transition: box-shadow ease-in 0.4s;
+}
+.card-content {
+  --tw-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.15);
+  --tw-shadow-colored: inset 0 2px 4px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  background: var(--card-foreground);
+}
+.card:hover {
+  box-shadow: none;
+}
+.card > h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.calendar {
+  /* width: 36rem; */
+  height: 100%;
+}
+.navbar {
+  transition: all 0.3s ease;
+  border-bottom: solid 1px rgba(0,0,0,0.4);
+}
+.tab {
+  border-bottom-right-radius: 0.5rem;
+  transition: all ease 0.3s;
+}
+.tab:hover {
+  scale: 1.03;
+}
+/* * {
+  outline:  white solid 1px;
+} */
+
+.bottom-section {
+  position: absolute;
+  bottom: 0;
+}
