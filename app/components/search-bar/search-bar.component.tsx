@@ -40,7 +40,7 @@ export default function SearchBar({}: SearchBarProps) {
                             : <Image src={selectedSearchOption.imageData as StaticImageData} height={20} width={20} alt=''></Image>}
                     </div>
                 ) : null}
-                <input onBlur={onBlur} type='text' 
+                <input autoFocus onBlur={onBlur} type='text' 
                     className={`${styles.search_input} p-2 w-full focus:shadow-inner rounded-sm`}
                     placeholder={`Search on ${selectedSearchOption ? selectedSearchOption.name : 'the web'}`}></input>
                 <button type='submit' className='ml-2 mr-2 bg-transaprent shadow-none text-[rgba(255,255,255,0.5)]'>
