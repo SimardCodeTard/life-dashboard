@@ -1,4 +1,4 @@
-/** @type {import('next').NextConfig} */
+/*https://life-dashboard-wmcp.vercel.app/dashboard** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: false,
     async headers() {
