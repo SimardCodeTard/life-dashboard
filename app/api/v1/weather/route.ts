@@ -11,7 +11,7 @@ export async function GET(req: Request) {
         }
     );
     
-    const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${paramMap.get('latitude')}&lon=${paramMap.get('longitude')}&exclude=minutely,hourly,daily,alerts&appid=${process.env.OPEN_WEATHER_API_KEY}&units=metric`
+    const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${paramMap.get('latitude')}&lon=${paramMap.get('longitude')}&exclude=minutely,hourly,daily,alerts&appid=${process.env.NEXT_PUBLIC_OPEN_WEATHER_API_KEY}&units=metric`
     
     const weatherData = await axios.get(url).then(res => res.data);
 
