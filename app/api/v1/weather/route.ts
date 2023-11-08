@@ -1,5 +1,4 @@
 import axios from "axios";
-import { assert } from "console";
 
 export async function GET(req: Request) {
     const paramMap = new Map<string, string>()
