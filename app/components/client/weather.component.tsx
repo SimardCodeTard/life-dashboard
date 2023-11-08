@@ -6,7 +6,7 @@ export default function Weather() {
     let [weatherData, setWeatherData] = useState<any>(null);
 
     const fetchWeatherData = (latitude: number, longitude: number) => {
-        const url = `https://life-dashboard-nine.vercel.app/api/v1/weather?latitude=${latitude}&longitude=${longitude}`
+        const url = `http://localhost:3000/api/v1/weather?latitude=${latitude}&longitude=${longitude}`
         return fetch(url);
     }
 

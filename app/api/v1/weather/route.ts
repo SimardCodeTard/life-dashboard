@@ -3,6 +3,8 @@ import axios from "axios";
 export async function GET(req: Request) {
     const paramMap = new Map<string, string>()
 
+    console.log(process.env.NEXT_PUBLIC_OPEN_WEATHER_API_KEY)
+
     req.url.slice(req.url.indexOf('?') + 1)
     .split('&').map(
         (param: string) => {
