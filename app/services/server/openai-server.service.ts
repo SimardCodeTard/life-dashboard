@@ -16,7 +16,7 @@ export namespace serverOpenAIService {
         apiKey: apiKey,
     }) : null;
 
-    const model = process.env.OPENAI_API_KEY as string;
+    const model = process.env.OPENAI_GPT_MODEL as string;
 
     function buildStartingMessages(): Array<ChatMessage> {
         const startingMessages: Array<ChatMessage> = [
