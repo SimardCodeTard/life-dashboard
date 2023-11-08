@@ -2,8 +2,6 @@ import axios from "axios";
 import { assert } from "console";
 
 export async function GET(req: Request) {
-    assert(process.env.OPEN_WEATHER_API_KEY !== undefined)
-
     const paramMap = new Map<string, string>()
 
     req.url.slice(req.url.indexOf('?') + 1)
