@@ -3,7 +3,7 @@ import { SearchBarOptionsPropsType, SearchOptionType } from "./search-bar.types"
 import { useEffect } from "react";
 import { SearchOptionPropsType } from './search-bar.types';
 import Image, { StaticImageData } from 'next/image'
-import styles from '../components.module.css'
+import styles from '../../components.module.css'
 
 function SearchOption({ searchOption, setSelectedSearchOption }: SearchOptionPropsType) {
     return (

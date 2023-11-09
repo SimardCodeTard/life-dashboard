@@ -33,11 +33,15 @@ export default function Weather() {
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition((userLocation: GeolocationPosition) => {
-            fetchWeatherData(userLocation.coords.latitude, userLocation.coords.longitude)
-            .then((res) => res.json())
-            .then(setWeatherData);
+            if(userLocation.coords.latitude && userLocation.coords.longitude) {
+                fetchWeatherData(userLocation.coords.latitude, userLocation.coords.longitude)
+                .then((res) => res.json())
+                .then(setWeatherData);    
+            } else {
+                console.error("Error: Invalid geolocation coordinates")
+            }
         }, (err: GeolocationPositionError) => {
-            console.error('Failed to get user location. '+ err.code + ': ' +err.message);
+            console.error('Failed to get user location. '+ err.code + err.message ? ': ' +err.message : '');
         }, {
             enableHighAccuracy: false,
             timeout:5000,
