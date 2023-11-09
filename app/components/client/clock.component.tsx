@@ -42,7 +42,7 @@ export default function Clock() {
     }
 
     useEffect(()=>{
-        setDateDisplay((DateTime.now().toISODate() as string).replace('-','/'))
+        setDateDisplay((DateTime.now().toISODate() as string).replace('-',' / '))
         updateClock();
         setInterval(updateClock, 100)
     }, []);
