@@ -10,7 +10,7 @@ export namespace TasksDataServerService {
 
     const mongoUrl =  process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_MONGO_DB_URL_LOCAL === undefined
         ? process.env.NEXT_PUBLIC_MONGO_DB_URL_LOCAL 
-        : process.env.MONGO_DB_URI;
+        : process.env.MONGODB_URI;
     
     const productionMongoClientOptions = {
         serverApi: {
