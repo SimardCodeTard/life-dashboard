@@ -40,7 +40,7 @@ export namespace TasksDataServerService {
     const getCollection = async (): Promise<Collection> => await getClient().then((connection: MongoClient) => connection.db(dbName).collection(collectionName))
 
     export const findAllTasks = async (): Promise<Task[]> =>{
-        const result = (await getCollection()).find({}).toArray() as unknown as Task[]
+        const result = await (await getCollection()).find({}).toArray() as unknown as Task[]
         closeClient();
         return result;
     };
