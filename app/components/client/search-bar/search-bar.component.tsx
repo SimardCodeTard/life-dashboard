@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState, FormEvent } from 'react';
-import styles from '../components.module.css';
+import styles from '../../components.module.css';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import SearchOptions from './search-options.component';
 import { SearchOptionType } from './search-bar.types';
@@ -10,7 +10,6 @@ type SearchBarProps = {};
 
 export default function SearchBar({}: SearchBarProps) {
     const onSubmit = (event: FormEvent<HTMLFormElement>): void => {
-        console.log('submit')
         event.preventDefault();
         const target = event.target as typeof event.target & {
             0: { value: string };

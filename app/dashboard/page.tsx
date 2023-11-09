@@ -1,9 +1,9 @@
-import Tasks from "../components/dashboard-widgets/tasks/task-list.component";
+import Tasks from "../components/client/tasks/task-list.component";
 import Weather from "../components/client/weather.component";
-import Calendar from "../components/dashboard-widgets/calendar/calendar.component";
+import Calendar from "../components/client/calendar/calendar.component";
 import Clock from "../components/client/clock.component";
 import Card from "../components/dashboard-widgets/generic/card.component";
-import SearchBar from "../components/search-bar/search-bar.component";
+import SearchBar from "../components/client/search-bar/search-bar.component";
 
 export default function DashboardPage() {
 

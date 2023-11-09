@@ -1,5 +1,5 @@
 "use client"
-import { CalendarEventType, CalendarEventTypeDTO, GroupedEventMapKeyType } from "@/app/types/calendar.type";
+import { CalendarEventType, CalendarEventTypeDTO } from "@/app/types/calendar.type";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import CalendarItem from "./calendar-item.component";
@@ -14,7 +14,7 @@ export default function Calendar() {
     const [selectedDate, setSelectedDate] = useState<string>();
 
     const fetchCalendarEvents = () => {
-        const url = "https://life-dashboard-nine.vercel.app/api/v1/calendar/class";
+        const url = "http://localhost:3000/api/v1/calendar/class";
         axios.get(url)
         .then(res => setCalDataMap(CalendarUtils.groupCalEventsByDate(CalendarUtils.mapCalendarEventDTOListToDO(res.data as CalendarEventTypeDTO[]))));
     }
@@ -27,12 +27,6 @@ export default function Calendar() {
     useEffect(()=>{
         setSelectedDate(CalendarUtils.fromDateTimeToGroupedEventMapKey(DateTime.now()))
     }, [calDataMap]);
-
-    useEffect(()=>{ 
-        console.log('selected date:', selectedDate)
-        console.log('events of selected date:', calDataMap.get(selectedDate as string))
-    }, [selectedDate]);
-
 
     const nextDay = () => {
         let currentDate = selectedDate ? CalendarUtils.fromGroupedEventKeyToDateTime(selectedDate) : DateTime.now();
