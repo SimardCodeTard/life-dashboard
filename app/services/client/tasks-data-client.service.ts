@@ -5,7 +5,7 @@ import { ObjectId } from "bson";
 // Namespace for client-side services to interact with the tasks API.
 export namespace TasksDataClientService {
     // Base URL for the tasks API.
-    const apiUrl = 'http://localhost:3000/api/v1/task';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/task';
 
     // Fetches all tasks using a GET request.
     export const fetchAllTasks = (): Promise<Task[]> => {
