@@ -22,10 +22,15 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
             .then((tasks) => tasks && setTasks(tasks)));
     }
 
+    const updateTaskStatus = (status: boolean) => {
+        task = {...task, completed: status};
+        TasksDataClientService.updateTask(task);
+    }
+
     return(
         <div className="flex flex-col task-item p-3">
             <div className=" flex space-x-2 items-center">
-                <TaskCheckbox completed={task.completed}></TaskCheckbox> 
+                <TaskCheckbox updateTaskStatus={updateTaskStatus} completed={task.completed}></TaskCheckbox> 
                 <p>{task.title}</p>
                 <DeleteIcon onClick={deleteButtonClicked} className="cursor-pointer text-[rgba(255,255,255,0.2)] text-base hover:text-[rgba(255,255,255,0.6)]"></DeleteIcon>
             </div>
