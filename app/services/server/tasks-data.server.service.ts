@@ -8,11 +8,11 @@ export namespace TasksDataServerService {
     const dbName = 'life-dashboard';
     const collectionName = 'tasks'
     
-    const url = 'mongodb://localhost:27017';
+    const mongoUrl = 'mongodb://localhost:27017';
 
     const getConnection = async (): Promise<MongoClient> => {
         if(!client) {
-            client = await MongoClient.connect(url);
+            client = await MongoClient.connect(mongoUrl);
         }
         return client;
     }
@@ -35,5 +35,17 @@ export namespace TasksDataServerService {
 
     export const deleteTaskById = async (taskId: string): Promise<void> => {
         (await getCollection()).deleteOne({_id: new ObjectId(taskId)});
+    }
+
+    export const updateTask = async (task: Task): Promise<void> => {
+        (await getCollection()).updateOne(
+            {_id: new ObjectId(task._id)}, 
+            {$set: {
+                title: task.title,
+                deadline: task.deadline,
+                completed: task.completed
+                }
+            }
+        );
     }
 }
