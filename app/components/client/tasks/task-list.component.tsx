@@ -3,7 +3,7 @@
 import { Task } from "@/app/types/task.type";
 import TaskItem from "./task.component";
 import { FormEvent, useEffect, useState } from "react";
-import { TasksDataClientService } from "@/app/services/tasks-data-client.service";
+import { TasksDataClientService } from "@/app/services/client/tasks-data-client.service";
 
 export default function Tasks() {
 

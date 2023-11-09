@@ -1,5 +1,5 @@
 import { Collection, MongoClient, ObjectId } from 'mongodb';
-import { Task } from '../types/task.type';
+import { Task } from '../../types/task.type';
 
 export namespace TasksDataServerService {
 

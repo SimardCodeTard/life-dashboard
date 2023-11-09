@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { Task } from "../types/task.type";
+import { Task } from "../../types/task.type";
 import { ObjectId } from "bson";
 
 export namespace TasksDataClientService {

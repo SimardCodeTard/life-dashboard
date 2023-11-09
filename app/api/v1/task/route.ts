@@ -1,4 +1,4 @@
-import { TasksDataServerService } from "@/app/services/tasks-data.server.service";
+import { TasksDataServerService } from "@/app/services/server/tasks-data.server.service";
 
 export async function GET() {
     const tasks = await TasksDataServerService.findAllTasks();

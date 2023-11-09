@@ -1,4 +1,4 @@
-import { TasksDataServerService } from "@/app/services/tasks-data.server.service";
+import { TasksDataServerService } from "@/app/services/server/tasks-data.server.service";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {

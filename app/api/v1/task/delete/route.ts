@@ -1,4 +1,4 @@
-import { TasksDataServerService } from "@/app/services/tasks-data.server.service";
+import { TasksDataServerService } from "@/app/services/server/tasks-data.server.service";
 import { ObjectId } from "mongodb";
 import { NextRequest } from "next/server";
 
