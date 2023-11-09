@@ -8,7 +8,7 @@ export namespace TasksDataServerService {
     const dbName = 'life-dashboard';
     const collectionName = 'tasks';
 
-    const mongoUrl =  process.env.NODE_ENV === 'development' 
+    const mongoUrl =  process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_MONGO_DB_URL_LOCAL === undefined
         ? process.env.NEXT_PUBLIC_MONGO_DB_URL_LOCAL 
         : process.env.MONGO_DB_URI;
     
