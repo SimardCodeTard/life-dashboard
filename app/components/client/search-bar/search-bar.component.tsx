@@ -5,8 +5,6 @@ import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import SearchOptions from './search-options/search-options.component';
 import { SearchOptionType } from './search-bar.types';
 import Image, { StaticImageData } from 'next/image';
-import { SvgIconTypeMap } from '@mui/material';
-import { OverridableComponent } from '@mui/material/OverridableComponent';
 
 type SearchBarProps = {};
 
