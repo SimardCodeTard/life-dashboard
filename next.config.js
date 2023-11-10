@@ -1,4 +1,6 @@
 /*https://life-dashboard-wmcp.vercel.app/dashboard** @type {import('next').NextConfig} */
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+
 const nextConfig = {
     reactStrictMode: false,
     async headers() {
@@ -13,6 +15,16 @@ const nextConfig = {
           ]
         }
       ]  
+    }, webpack: (config, { isServer, dev }) => {
+      // Only run the plugin if it's not a server build
+      if (!isServer) {
+        config.plugins.push(new ForkTsCheckerWebpackPlugin({
+          typescript: {
+            files: "./app/**/*.{ts,tsx,js,jsx}" // Adjust this to where your files are
+          }
+        }));
+      }
+      return config;
     }
 };
 
