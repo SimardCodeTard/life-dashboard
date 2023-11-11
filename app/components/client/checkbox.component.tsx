@@ -1,5 +1,5 @@
 "use client"
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 export default function TaskCheckbox({completed, updateTaskStatus}: {completed: boolean, updateTaskStatus: (status: boolean) => void}) {
 

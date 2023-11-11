@@ -1,7 +1,9 @@
 import GoogleIcon from '@mui/icons-material/Google';
-import { SearchOptionType } from '../search-bar.types';
+import { SearchOptionType } from '../../search-bar.types';
 import YouTubeIcon from '@mui/icons-material/YouTube';
-const SearchOptionData: SearchOptionType[] =  [
+
+export const searchOptions: SearchOptionType[] = 
+[
     {
         iconType: 'icon',
         name: 'google',
@@ -9,16 +11,14 @@ const SearchOptionData: SearchOptionType[] =  [
         queryParamName: 'search',
         queryWordsSeparator: '+',
         Icon: GoogleIcon
-    },
+    }, 
     {
-        iconType: 'icon',
+        iconType: "icon",
         name: 'youtube',
-        url: 'ttps://www.youtube.com',
-        queryParamName: '',
-        queryWordsSeparator: '+',
+        url: 'https://youtube.com',
         path: 'results',
+        queryParamName: 'search_query',
+        queryWordsSeparator: '+',
         Icon: YouTubeIcon
-    } 
-]
-
-export default SearchOptionData;
+    }
+];
