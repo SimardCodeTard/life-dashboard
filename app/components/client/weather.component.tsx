@@ -6,7 +6,7 @@ export default function Weather() {
     let [weatherData, setWeatherData] = useState<any>(null);
 
     const fetchWeatherData = (latitude: number, longitude: number) => {
-        const url = process.env.NEXT_PUBLIC_API_URL + `weather?latitude=${latitude}&longitude=${longitude}`
+        const url = process.env.NEXT_PUBLIC_API_URL + `/weather?latitude=${latitude}&longitude=${longitude}`
         return fetch(url);
     }
 
