@@ -6,8 +6,9 @@ const SearchOptionData: SearchOptionType[] =  [
         iconType: 'icon',
         name: 'google',
         url: 'https://google.com',
-        queryParamName: 'search',
+        queryParamName: 'q',
         queryWordsSeparator: '+',
+        path: 'search',
         Icon: GoogleIcon
     },
     {
