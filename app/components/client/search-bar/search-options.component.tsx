@@ -1,4 +1,4 @@
-import SearchOptionData from "./data/search-options.data";
+import { SearchOptionData } from "./data/search-options.data";
 import { SearchBarOptionsPropsType, SearchOptionType } from "./search-bar.types";
 import { useEffect } from "react";
 import { SearchOptionPropsType } from './search-bar.types';

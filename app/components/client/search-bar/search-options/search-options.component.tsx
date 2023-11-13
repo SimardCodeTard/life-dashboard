@@ -1,4 +1,4 @@
-import { searchOptions } from "./data/search-options.data";
+import { SearchOptionData } from "../data/search-options.data";
 import { SearchBarOptionsPropsType, SearchOptionType } from "../search-bar.types";
 import { Key, useEffect } from "react";
 import { SearchOptionPropsType } from '../search-bar.types';
@@ -17,13 +17,13 @@ function SearchOption({ searchOption, setSelectedSearchOption }: SearchOptionPro
 export default function SearchOptions({ showOptions, setSelectedSearchOption }: SearchBarOptionsPropsType) {
     
     useEffect(() => {
-        setSelectedSearchOption(searchOptions[0]);
+        setSelectedSearchOption(SearchOptionData[0]);
     }, []);
 
     
     return (
         <div className={`flex shadow-inner space-x-2 transition ${styles.search_options} ${!showOptions ? styles.folded : ''}`}>
-            {searchOptions.map((option: SearchOptionType, key: Key) => (
+            {SearchOptionData.map((option: SearchOptionType, key: Key) => (
                 <SearchOption 
                     setSelectedSearchOption={setSelectedSearchOption} 
                     key={key} 
