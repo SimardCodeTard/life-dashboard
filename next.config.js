@@ -1,8 +1,7 @@
 /*https://life-dashboard-wmcp.vercel.app/dashboard** @type {import('next').NextConfig} */
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const nextConfig = {
-    reactStrictMode: false,
+    reactStrictMode: true,
     async headers() {
       return [
         {
