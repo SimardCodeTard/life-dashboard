@@ -4,7 +4,7 @@ import axios from "axios";
 import { DateTime } from "luxon"
 
 export async function GET():Promise<Response> {
-    const url = "http://p104-caldav.icloud.com/published/2/MjA4NTI5OTA3MDgyMDg1MoMgK95GBqLaYIiE_XUoIEpLBh_u8d0n-DLrN4AwecI9A2F31UtAOuw2b33p3070334w5UL2hgBXp6Q_1hmfTSM";
+    const url = process.env.NEXT_PUBLIC_CALENDAR_URL_UNIV as string;
     let data = await axios.get(url).then(res => res.data) as string;
 
     const events: CalendarEventTypeDTO[] = [];
