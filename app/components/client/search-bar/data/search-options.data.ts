@@ -11,12 +11,11 @@ export const SearchOptionData: SearchOptionType[] =  [
         queryWordsSeparator: '+',
         path: 'search',
         Icon: GoogleIcon
-    },
-    {
+    }, {
         iconType: 'icon',
         name: 'youtube',
         url: 'https://www.youtube.com',
-        queryParamName: '',
+        queryParamName: 'search_query',
         queryWordsSeparator: '+',
         path: 'results',
         Icon: YouTubeIcon
