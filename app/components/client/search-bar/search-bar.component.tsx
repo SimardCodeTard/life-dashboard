@@ -63,7 +63,7 @@ export default function SearchBar({ }: SearchBarProps) {
                 setUserShifting(false);
             }
         }
-    }, [window])
+    }, [])
 
     useEffect(() => {
         // Close search options tab on select
