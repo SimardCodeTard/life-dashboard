@@ -17,10 +17,10 @@ function SearchOption({ searchOption, setSelectedSearchOption }: SearchOptionPro
 export default function SearchOptions({ showOptions, setSelectedSearchOption }: SearchBarOptionsPropsType) {
     
     useEffect(() => {
-        setSelectedSearchOption(SearchOptionData.options.google);
+        setSelectedSearchOption(SearchOptionData[0]);
     }, []);
     
-    const options = Object.values(SearchOptionData.options) as SearchOptionType[];
+    const options = Object.values(SearchOptionData) as SearchOptionType[];
 
     return (
         <div className={`flex shadow-inner space-x-2 transition ${styles.search_options} ${!showOptions ? styles.folded : ''}`}>

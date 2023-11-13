@@ -42,7 +42,7 @@ export default function SearchBar({ }: SearchBarProps) {
 
     if(selectedSearchOption) {
         const {Icon, imageData} = selectedSearchOption as SearchOptionType;
-        if(selectedSearchOption && selectedSearchOption.iconType === 'icon') {
+        if(selectedSearchOption && selectedSearchOption.iconType === 'icon' && Icon) {
             icon = <Icon className='cursor-pointer mx-2 ' onClick={onSelectedSearchOptionClick}/>;
         } else if (selectedSearchOption && selectedSearchOption.iconType === 'image') {
             icon = <Image className='cursor-pointer' onClick={onSelectedSearchOptionClick} src={imageData as StaticImageData} height={20} width={20} alt=''/>;
@@ -63,7 +63,7 @@ export default function SearchBar({ }: SearchBarProps) {
                 setUserShifting(false);
             }
         }
-    }, [window])
+    }, [])
 
     useEffect(() => {
         // Close search options tab on select
