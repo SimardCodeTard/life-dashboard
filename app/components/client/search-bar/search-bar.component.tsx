@@ -12,7 +12,7 @@ export default function SearchBar({ }: SearchBarProps) {
 
     const buildSearchUrl = (query: string): string => {
         const {url, path, queryParamName, queryWordsSeparator} = selectedSearchOption as SearchOptionType;
-        return `${ url }${ path && path.startsWith('/') ? path : `/${ path }` }${queryParamName}=${query.replaceAll(' ', queryWordsSeparator)}` 
+        return `${ url }${ path ? path.startsWith('/') ? path : `/${ path }` : '' }?${ queryParamName }=${ query.replaceAll(' ', queryWordsSeparator) }` 
     }
 
     const onSearchBarSubmit = (event: FormEvent<HTMLFormElement>): void => {
