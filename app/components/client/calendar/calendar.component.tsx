@@ -14,7 +14,7 @@ export default function Calendar() {
     const [selectedDate, setSelectedDate] = useState<string>();
 
     const fetchCalendarEvents = () => {
-        const url = "http://localhost:3000/api/v1/calendar/class";
+        const url =  process.env.NEXT_PUBLIC_API_URL + "calendar/class";
         axios.get(url)
         .then(res => setCalDataMap(CalendarUtils.groupCalEventsByDate(CalendarUtils.mapCalendarEventDTOListToDO(res.data as CalendarEventTypeDTO[]))));
     }
