@@ -15,16 +15,6 @@ const nextConfig = {
           ]
         }
       ]  
-    }, webpack: (config, { isServer, dev }) => {
-      // Only run the plugin if it's not a server build
-      if (!isServer) {
-        config.plugins.push(new ForkTsCheckerWebpackPlugin({
-          typescript: {
-            files: "./app/**/*.{ts,tsx,js,jsx}" // Adjust this to where your files are
-          }
-        }));
-      }
-      return config;
     }
 };
 
