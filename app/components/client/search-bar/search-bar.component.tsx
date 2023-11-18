@@ -32,7 +32,14 @@ export default function SearchBar({ }: SearchBarProps) {
     }
 
     const onBlur = () => setShowOptions(false);
-    const onSelectedSearchOptionClick = () => setShowOptions(!showOptions);
+    const onSelectedSearchOptionClick = () => {
+        console.log('user shifting:', userShifting)
+        if(userShifting && selectedSearchOption) {
+            window.location.href = selectedSearchOption?.url;
+        } else {
+            setShowOptions(!showOptions)
+        }
+    };
 
     const [showOptions, setShowOptions] = useState(false);
     const [selectedSearchOption, setSelectedSearchOption] = useState<SearchOptionType | undefined>();
@@ -52,15 +59,15 @@ export default function SearchBar({ }: SearchBarProps) {
     useEffect(() => {
         // Shift key detection
         window.onkeyup = (e: KeyboardEvent) => {
-            if(e.key == 'KEYCODE_SHIFT_LEFT' || e.key === 'KEYCODE_SHIFT_RIGHT') {
+            if(e.key == 'Shift') {
                 // User started shifting
-                setUserShifting(true);
+                setUserShifting(false);
             }
         }
         window.onkeydown = (e: KeyboardEvent) => {
-            if(e.key == 'KEYCODE_SHIFT_LEFT' || e.key === 'KEYCODE_SHIFT_RIGHT') {
+            if(e.key == 'Shift') {
                 // User stopped shifting
-                setUserShifting(false);
+                setUserShifting(true);
             }
         }
     }, [])
