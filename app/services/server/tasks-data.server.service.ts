@@ -7,7 +7,7 @@ export namespace TasksDataServerService {
     let client: MongoClient | undefined;
 
     // Database configuration constants.
-    const dbName = 'life-dashboard';
+    const dbName = process.env.NEXT_PUBLIC_DB_NAME as string;
     const collectionName = 'tasks';
 
     // MongoDB URL logic to determine if it's running in development or production.
