@@ -1,5 +1,5 @@
 import GoogleIcon from '@mui/icons-material/Google';
-import { SearchOptionType } from '../search-bar.types';
+import { SearchOptionType } from '../../../../types/search-bar.types';
 import YouTubeIcon from '@mui/icons-material/YouTube';
 
 export const SearchOptionData: SearchOptionType[] =  [
