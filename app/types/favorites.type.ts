@@ -10,3 +10,7 @@ export type FavoriteItemType = {
 export type FavoriteItemPropsType = {
     item: FavoriteItemType;
 }
+
+export type AddFavoritePropsType = {
+    updateFavoritesList: () => void;
+}

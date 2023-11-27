@@ -1,4 +1,5 @@
 import { MongodItemType } from "@/app/types/mongod.type";
+import { DateTime } from "luxon";
 import { Collection, Db, DeleteResult, InsertOneResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from "mongodb";
 
 export namespace MongoDataServerService {
@@ -21,11 +22,16 @@ export namespace MongoDataServerService {
         }
     } : undefined;
 
+    let pendingRequests = 0;
+
     // Closes the MongoClient and resets the client.
     const closeClient = async () => {
-        if (client) {
+        console.log(DateTime.now().toISO(),  ": close client")
+        if (client && pendingRequests === 0) {
             await client.close();
             client = undefined;
+        } else if (client) {
+            setTimeout(closeClient, 100);
         }
     };
 
@@ -44,19 +50,25 @@ export namespace MongoDataServerService {
     export const getDb = async (): Promise<Db> => (await getClient()).db(dbName);
 
     export const findAll = async <T extends MongodItemType> (collection: Collection): Promise<T[]> => {
-        const items = await collection.find({}).toArray();
+        pendingRequests ++;
+        const items = await collection.find({}).toArray() as unknown;
+        pendingRequests --;
         closeClient();
-        return items as unknown as T[]; 
+        return items as T[]; 
     }
 
     export const deleteById = async (collection: Collection, id: ObjectId): Promise<DeleteResult> => {
+        pendingRequests ++;
         const result = await collection.deleteOne({_id: new ObjectId(id)});
+        pendingRequests --;
         closeClient();
         return result;
     }
 
     export const insertOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<InsertOneResult> => {
+        pendingRequests ++;
         const result = await collection.insertOne({...item});
+        pendingRequests ++;
         closeClient();
         return result;
     }
