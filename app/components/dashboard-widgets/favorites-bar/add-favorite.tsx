@@ -19,13 +19,15 @@ export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType)
         setModalOpen(false);
     }
 
+
     const handleFormSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const name: string = (e.target as any)[0].value;
-        const url: string = (e.target as any)[1].value;
+        const url: string = FavoritesDataClientService.validateUrl((e.target as any)[1].value);
         const newFavoriteItem: FavoriteItemType = { name, url };
-        await FavoritesDataClientService.saveNewFavoriteItem(newFavoriteItem);
-        updateFavoritesList();
+        if ((await FavoritesDataClientService.saveNewFavoriteItem(newFavoriteItem)).success) {
+            updateFavoritesList();
+        }
         onModalClose();
     }
 
@@ -37,7 +39,7 @@ export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType)
                 aria-describedby="modal-modal-description"
                 >
                 <div className='bg-[--card-background] backdrop-blur-lg flex flex-col justify-center items-center p-3 w-full h-full'>
-                    <CloseIcon className='ml-auto' onClick={onModalClose} ></CloseIcon>
+                    <CloseIcon className='ml-auto cursor-pointer' onClick={onModalClose} ></CloseIcon>
                     <form onSubmit={handleFormSubmit} className='flex flex-col justify-center items-center w-full h-full'>
                         <input className='h-1/5 w-3/4 mb-2 bg-[rgba(255,255,255,0.2)] rounded p-1' type="text" placeholder='name'></input>
                         <input className='h-1/5 w-3/4 bg-[rgba(255,255,255,0.2)] rounded p-1' type="text" placeholder='url'></input>

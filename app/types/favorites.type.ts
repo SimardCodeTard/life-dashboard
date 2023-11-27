@@ -1,5 +1,4 @@
 import { ObjectId } from "mongodb"
-import { StaticImageData } from "next/image";
 
 export type FavoriteItemType = {
     _id?: ObjectId;
@@ -9,8 +8,16 @@ export type FavoriteItemType = {
 
 export type FavoriteItemPropsType = {
     item: FavoriteItemType;
+    onFavoriteItemEdit: (item: FavoriteItemType) => Promise<void>;
 }
 
 export type AddFavoritePropsType = {
     updateFavoritesList: () => void;
+}
+
+export type EditFavoritePropsType = {
+    item: FavoriteItemType;
+    onFavoriteItemEdit: (item: FavoriteItemType) => Promise<void>;
+    modalOpen: boolean;
+    setModalOpen: (modalOpen: boolean) => void
 }

@@ -14,5 +14,5 @@ export namespace FavoritesDataServerService {
 
     export const deleteFavoriteItemById = async (id: ObjectId): Promise<DeleteResult> => MongoDataServerService.deleteById(await getCollection(), id);
 
-    export const updateFavorite = async (favorite: FavoriteItemType): Promise<UpdateResult> => MongoDataServerService.updateOne<FavoriteItemType>(await getCollection(), favorite);
+    export const updateFavorite = async (favorite: FavoriteItemType): Promise<null | UpdateResult> => MongoDataServerService.updateOne<FavoriteItemType>(await getCollection(), favorite);
 }

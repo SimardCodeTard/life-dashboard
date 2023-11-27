@@ -33,7 +33,6 @@ export default function SearchBar({ }: SearchBarProps) {
 
     const onBlur = () => setShowOptions(false);
     const onSelectedSearchOptionClick = () => {
-        console.log('user shifting:', userShifting)
         if(userShifting && selectedSearchOption) {
             window.location.href = selectedSearchOption?.url;
         } else {
