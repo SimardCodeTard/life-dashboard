@@ -18,11 +18,10 @@ export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemD
     }
 
     const onItemAuxClick = (e: MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
         if (e.button === 1) { // Middle click
-            console.log(e);
-            e.preventDefault();
             window.open(item.url, '_blank', 'noreferrer');
-        } else if (e.button === 2) {
+        } else if (e.button === 2) { // Right click
             setEditModalOpened(true);
         }
     }
