@@ -1,3 +1,4 @@
+import { FavoritesDataServerService } from "@/app/services/server/favorites-data.server.service";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -9,6 +10,7 @@ export async function POST(req: NextRequest) {
     const data = Buffer.concat(chunks).toString();
     const newItem = JSON.parse(data); 
 
-    console.log(newItem);
-    return NextResponse.json({sucess: true});
+    const res = newItem ? await FavoritesDataServerService.insertNewFavoriteItem(newItem) : null;
+
+    return res !== null && res.acknowledged ? Response.json({success: true}) : Response.json({success: false});
 }
