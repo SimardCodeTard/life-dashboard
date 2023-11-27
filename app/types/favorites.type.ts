@@ -9,6 +9,7 @@ export type FavoriteItemType = {
 export type FavoriteItemPropsType = {
     item: FavoriteItemType;
     onFavoriteItemEdit: (item: FavoriteItemType) => Promise<void>;
+    onFavoriteItemDelete: (item: FavoriteItemType) => Promise<void>;
 }
 
 export type AddFavoritePropsType = {
@@ -18,6 +19,7 @@ export type AddFavoritePropsType = {
 export type EditFavoritePropsType = {
     item: FavoriteItemType;
     onFavoriteItemEdit: (item: FavoriteItemType) => Promise<void>;
+    onFavoriteItemDelete: (item: FavoriteItemType) => Promise<void>;
     modalOpen: boolean;
     setModalOpen: (modalOpen: boolean) => void
 }

@@ -15,6 +15,11 @@ export default function FavoritesBar() {
         updateFavoritesList();
     }
 
+    const onFavoriteItemDelete = async (item: FavoriteItemType) => {
+        item._id && await FavoritesDataClientService.deleteFavoriteItem(item._id);
+        updateFavoritesList();
+    }
+
     const updateFavoritesList = () => {
         FavoritesDataClientService.findAllFavoriteItems()
         .then(setFavorites);
@@ -26,7 +31,8 @@ export default function FavoritesBar() {
 
     return (
         <div className={'mb-2 p-2 rounded-lg space-x-2 flex flex-row w-fit bg-[--card-background]'}>
-            {favorites.map((item: FavoriteItemType, key: number) => <FavoriteItem key={key} item={item} onFavoriteItemEdit={onFavoriteItemEdit}></FavoriteItem>)}
+            {favorites.map((item: FavoriteItemType, key: number) => <FavoriteItem key={key} item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onFavoriteItemDelete}
+            ></FavoriteItem>)}
             <AddFavorite updateFavoritesList={updateFavoritesList}></AddFavorite>
         </div>
     );

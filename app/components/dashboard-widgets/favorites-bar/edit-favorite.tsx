@@ -4,7 +4,7 @@ import { EditFavoritePropsType, FavoriteItemType } from "@/app/types/favorites.t
 import { Modal } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';  
 
-export default function EditFavorite({item, onFavoriteItemEdit, modalOpen, setModalOpen}: EditFavoritePropsType) {
+export default function EditFavorite({item, onFavoriteItemEdit, onFavoriteItemDelete, modalOpen, setModalOpen}: EditFavoritePropsType) {
     const [name, setName] = useState(item.name);
     const [url, setUrl] = useState(item.url);
 
@@ -17,6 +17,10 @@ export default function EditFavorite({item, onFavoriteItemEdit, modalOpen, setMo
         const newFavoriteItem: FavoriteItemType = { _id: item._id, name, url: FavoritesDataClientService.validateUrl(url) };
         onFavoriteItemEdit(newFavoriteItem);
         onModalClose();
+    }
+
+    const handleDeleteButtonClick = () => {
+        onFavoriteItemDelete(item);
     }
 
     const onNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -38,8 +42,9 @@ export default function EditFavorite({item, onFavoriteItemEdit, modalOpen, setMo
                 <form onSubmit={handleFormSubmit} className='flex flex-col justify-center items-center w-full h-full'>
                     <input className='h-1/5 w-3/4 mb-2 bg-[rgba(255,255,255,0.2)] rounded p-1' onChange={onNameChange} value={name} type="text" placeholder='name'></input>
                     <input className='h-1/5 w-3/4 bg-[rgba(255,255,255,0.2)] rounded p-1' onChange={onUrlChange} value={url} type="text" placeholder='url'></input>
-                    <button className='h-1/4 w-3/4 mt-2 bg-[rgba(255,255,255,0.3)] rounded'>Save</button>
+                    <button className='h-1/4 w-3/4 mt-2 bg-[rgba(255,255,255,0.3)] rounded'>Update</button>
                 </form>
+                <button className='h-1/4 w-3/4 mb-2 bg-[rgba(255,0,0,0.5)] rounded' type='button' onClick={handleDeleteButtonClick}>Delete</button>
             </div>
         </Modal>
     );

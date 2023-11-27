@@ -1,6 +1,7 @@
 import { FavoriteItemType } from "@/app/types/favorites.type";
 import assert from "assert";
 import axios from "axios";
+import { ObjectId } from "mongodb";
 
 export namespace FavoritesDataClientService {
 
@@ -14,4 +15,6 @@ export namespace FavoritesDataClientService {
     export const updateFavoriteItem = (item: FavoriteItemType) => axios.post(url + "/update", item).then(res => res.data);
 
     export const findAllFavoriteItems = () => axios.get(url).then(res => res.data.success ? res.data.favorites : []);
+
+    export const deleteFavoriteItem = (favoriteItemId: ObjectId) => axios.delete(`${url}/delete?taskId=${favoriteItemId.toString()}`)
 }
