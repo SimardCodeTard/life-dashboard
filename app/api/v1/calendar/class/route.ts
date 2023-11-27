@@ -6,7 +6,7 @@ import axios from "axios";
 export async function GET():Promise<Response> {
     const url = process.env.NEXT_PUBLIC_CALENDAR_URL_UNIV as string;
     assert(url !== undefined);
-
+    
     let data;
 
     try {
