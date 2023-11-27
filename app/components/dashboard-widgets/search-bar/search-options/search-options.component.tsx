@@ -1,7 +1,7 @@
 import { SearchOptionData } from "../data/search-options.data";
-import { SearchBarOptionsPropsType, SearchOptionType } from "../search-bar.types";
+import { SearchBarOptionsPropsType, SearchOptionType } from "../../../../types/search-bar.types";
 import { Key, useEffect } from "react";
-import { SearchOptionPropsType } from '../search-bar.types';
+import { SearchOptionPropsType } from '../../../../types/search-bar.types';
 import Image, { StaticImageData } from 'next/image'
 import styles from '../../../components.module.css'
 

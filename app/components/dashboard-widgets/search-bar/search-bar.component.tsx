@@ -3,7 +3,7 @@ import { useEffect, useState, FormEvent, ReactElement } from 'react';
 import styles from '../../components.module.css';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import SearchOptions from './search-options/search-options.component';
-import { SearchOptionType } from './search-bar.types';
+import { SearchOptionType } from '../../../types/search-bar.types';
 import Image, { StaticImageData } from 'next/image';
 
 type SearchBarProps = {};
