@@ -6,7 +6,7 @@ export default function Weather() {
     let [weatherData, setWeatherData] = useState<any>(null);
 
     const fetchWeatherData = (latitude: number, longitude: number) => {
-        const url = process.env.NEXT_PUBLIC_API_URL + `/weather?latitude=${latitude}&longitude=${longitude}`
+        const url = `https://life-dashboard-nine.vercel.app/api/v1/weather?latitude=${latitude}&longitude=${longitude}`
         return fetch(url);
     }
 
@@ -33,15 +33,11 @@ export default function Weather() {
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition((userLocation: GeolocationPosition) => {
-            if(userLocation.coords.latitude && userLocation.coords.longitude) {
-                fetchWeatherData(userLocation.coords.latitude, userLocation.coords.longitude)
-                .then((res) => res.json())
-                .then(setWeatherData);    
-            } else {
-                console.error("Error: Invalid geolocation coordinates")
-            }
+            fetchWeatherData(userLocation.coords.latitude, userLocation.coords.longitude)
+            .then((res) => res.json())
+            .then(setWeatherData);
         }, (err: GeolocationPositionError) => {
-            console.error('Failed to get user location. '+ err.code + err.message ? ': ' +err.message : '');
+            console.error('Failed to get user location. '+ err.code + ': ' +err.message);
         }, {
             enableHighAccuracy: false,
             timeout:5000,

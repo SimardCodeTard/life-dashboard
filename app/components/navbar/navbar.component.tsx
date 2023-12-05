@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import FitbitSharpIcon from '@mui/icons-material/FitbitSharp';
 import CloseSharpIcon from '@mui/icons-material/CloseSharp';
+import { redirect } from 'next/dist/server/api-utils';
 
 const Tab = ({ href, label, isSelected, onClose }: { href: string, label: string, isSelected: boolean, onClose: (href: string) => void}) => {
     return (

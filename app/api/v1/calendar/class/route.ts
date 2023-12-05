@@ -1,21 +1,11 @@
-import { CalendarEventTypeDTO } from "@/app/types/calendar.type";
+import { CalendarEventType, CalendarEventTypeDTO } from "@/app/types/calendar.type";
 import { CalendarUtils } from "@/app/utils/calendar.utils";
-import assert from "assert";
 import axios from "axios";
+import { DateTime } from "luxon"
 
 export async function GET():Promise<Response> {
-    const url = process.env.NEXT_PUBLIC_CALENDAR_URL_UNIV as string;
-    assert(url !== undefined);
-    
-    let data;
-
-    try {
-        // Try to fetch the calendar data
-        data = await axios.get(url).then(res => res.data) as string;
-    } catch(err: any) {
-        console.error(err.message);
-        return Response.json({success: false});
-    }
+    const url = "http://p104-caldav.icloud.com/published/2/MjA4NTI5OTA3MDgyMDg1MoMgK95GBqLaYIiE_XUoIEpLBh_u8d0n-DLrN4AwecI9A2F31UtAOuw2b33p3070334w5UL2hgBXp6Q_1hmfTSM";
+    let data = await axios.get(url).then(res => res.data) as string;
 
     const events: CalendarEventTypeDTO[] = [];
 
@@ -27,24 +17,14 @@ export async function GET():Promise<Response> {
     let location: string;
     let summary: string; 
 
-    const { DTSART, DTEND, SUMMARY, LOCATION } = CalendarUtils.UnivCalendarLineIndexes
-
     data.split('BEGIN:VEVENT').slice(1).map((item: string) => {
+        
+        dtStart = item.substring(item.indexOf('DTSTART:') + 'DTSTART:'.length, item.indexOf('LAST-MODIFIED:')).replace(/\r\n|\r|\n/, '');
+        dtEnd = item.substring(item.indexOf('DTEND:') + 'DTEND:'.length, item.indexOf('DTSTAMP:')).replace(/\r\n|\r|\n/, '');
 
-        let lines = item.split('\n');
-
-        for(let i = 0; i < lines.length; i++) {
-            lines[i] = lines[i].replaceAll(/\r\n|\r|\n/g, '')
-        }
-
-        lines = lines.filter(line => line !== '');
-
-
-        dtStart = lines[DTSART].split(':')[1];
-        dtEnd = lines[DTEND].split(':')[1];
-        location = lines[LOCATION].split(':')[1];
-        summary = lines[SUMMARY].split(':')[1];     
-
+        location = item.substring(item.indexOf('LOCATION:') + 'LOCATION:'.length, item.indexOf('SEQUENCE:'));
+        summary = item.substring(item.indexOf('SUMMARY:') + 'SUMMARY:'.length, item.indexOf('UID:'))
+        
         newEvent = {
             dtEnd, 
             dtStart,
@@ -55,5 +35,5 @@ export async function GET():Promise<Response> {
         events.push(newEvent);
     })
 
-    return Response.json({success: true, events});
+    return Response.json(events);
 }
