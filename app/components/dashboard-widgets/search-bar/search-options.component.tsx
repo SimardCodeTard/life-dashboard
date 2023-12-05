@@ -1,9 +1,5 @@
 import { SearchOptionData } from "./data/search-options.data";
-<<<<<<<< HEAD:app/components/client/search-bar/search-options.component.tsx
-import { SearchBarOptionsPropsType, SearchOptionType } from "./search-bar.types";
-========
 import { SearchBarOptionsPropsType, SearchOptionType } from "../../../types/search-bar.types";
->>>>>>>> 51b7bbc (Feat/favorites bar (#9)):app/components/dashboard-widgets/search-bar/search-options.component.tsx
 import { useEffect } from "react";
 import { SearchOptionPropsType } from '../../../types/search-bar.types';
 import Image, { StaticImageData } from 'next/image'

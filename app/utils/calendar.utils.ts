@@ -20,5 +20,5 @@ export module CalendarUtils {
         SEQUENCE: 9
     }
 
-    export const isSameDay = (a: DateTime, b: DateTime) => a.day === b.day && a.month === b.month && a.month === b.month;
+    export const isSameDay = (a: DateTime, b: DateTime = DateTime.now()) => a.day === b.day && a.month === b.month && a.month === b.month;
 }

@@ -1,26 +1,26 @@
 "use client"
-import { CalendarEventType, CalendarEventTypeDTO } from "@/app/types/calendar.type";
+import { CalendarEventType } from "@/app/types/calendar.type";
 import { useEffect, useState } from "react";
 import { CalendarUtils } from "@/app/utils/calendar.utils";
 import { DateTime } from "luxon";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { CalendarDataClientService } from "@/app/services/client/calendar-data-client.service";
-import CalendarItem from "../../client/calendar/calendar-item.component";
+import CalendarItem from "./calendar-item.component";
 
 export default function Calendar() {
 
     const [calDataMap, setCalDataMap] = useState<Map<string, CalendarEventType[]>>(new Map());
-    const [selectedDate, setSelectedDate] = useState<string>();
+    const [selectedDate, setSelectedDate] = useState<string>(CalendarDataClientService.fromDateTimeToGroupedEventMapKey(DateTime.now()));
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         CalendarDataClientService.fetchCalendarEvents()
-            .then(setCalDataMap);
+            .then((data) => {
+                setCalDataMap(data);
+                setIsLoading(false)
+            });
     }, [])
-
-    useEffect(() => {
-        setSelectedDate(CalendarDataClientService.fromDateTimeToGroupedEventMapKey(DateTime.now()))
-    }, [calDataMap]);
 
     const nextDay = () => {
         let currentDate = selectedDate ? CalendarDataClientService.fromGroupedEventKeyToDateTime(selectedDate) : DateTime.now();
@@ -34,15 +34,19 @@ export default function Calendar() {
         setSelectedDate(CalendarDataClientService.fromDateTimeToGroupedEventMapKey(currentDate));
     }
 
+    const buildFriendlyMessage = () => {
+        const date = CalendarDataClientService.fromGroupedEventKeyToDateTime(selectedDate);
+        if(CalendarUtils.isSameDay(date)) {
+            return 'You\'re all free today :)';         
+        } else {
+            return 'You\'re all free at this date';
+        }
+    }
+
+
     const FriendlyMessage = () => (
         <p className="text-[rgba(255,255,255,0.5)]">
-            {`You are all free ${CalendarUtils.isSameDay(CalendarDataClientService.fromGroupedEventKeyToDateTime(selectedDate
-                ? selectedDate
-                : CalendarDataClientService.fromDateTimeToGroupedEventMapKey(DateTime.now())), DateTime.now())
-                    ? 'today :)'
-                    : 'at this date'
-                }`
-            }
+            {isLoading ? 'Loading calendar events  ...' :  buildFriendlyMessage()}
         </p>
     )
 
@@ -51,7 +55,7 @@ export default function Calendar() {
             {// If calDataMap is set & has an event for the selected date
                 calDataMap && calDataMap.get(selectedDate as string)
                     // Map the events array and display in CalendarItem
-                    ? (calDataMap.get(selectedDate as string) as CalendarEventType[]).map((event: CalendarEventType, key: number) => <CalendarItem event={event} index={key} key={key}></CalendarItem>)
+                    ? (calDataMap.get(selectedDate as string) as CalendarEventType[]).map((event: CalendarEventType, key: number) => <CalendarItem event={event} key={key}></CalendarItem>)
                     // Display a friendly message
                     : <FriendlyMessage></FriendlyMessage>
             }
