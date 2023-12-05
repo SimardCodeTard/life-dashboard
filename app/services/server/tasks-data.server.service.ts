@@ -1,4 +1,4 @@
-import { Collection, InsertOneResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from 'mongodb';
+import { Collection, DeleteResult, InsertOneResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from 'mongodb';
 import { Task } from '../../types/task.type';
 import { MongoDataServerService } from './mongod-data.server.service';
 
@@ -16,9 +16,8 @@ export namespace TasksDataServerService {
     export const saveTask = async (task: Task): Promise<InsertOneResult> => MongoDataServerService.insertOne<Task>(await getCollection(), task);
 
     // Deletes a task by its ID from the collection.
-    export const deleteTaskById = async (id: ObjectId): Promise<unknown> => MongoDataServerService.deleteById(await getCollection(), id);
+    export const deleteTaskById = async (id: ObjectId): Promise<DeleteResult> => MongoDataServerService.deleteById(await getCollection(), id);
 
     // Updates a task by its ID in the collection.
-    export const updatetask = async (task: Task): Promise<UpdateResult> => MongoDataServerService.updateOne<Task>(await getCollection(), task);
-
+    export const updateTask = async (task: Task): Promise<null | UpdateResult> => MongoDataServerService.updateOne<Task>(await getCollection(), task);
 }

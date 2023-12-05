@@ -11,7 +11,7 @@ export async function PUT(req: NextRequest): Promise<Response> {
     const data = Buffer.concat(chunks).toString();
     const taskToUpdate = JSON.parse(data); 
 
-    await TasksDataServerService.updateTask(taskToUpdate)
+    const res = taskToUpdate ? await TasksDataServerService.updateTask(taskToUpdate) : null;
 
-    return Response.json({success: true});
+    return res !== null && res.acknowledged ? Response.json({success: true}) : Response.json({success: false});
 }

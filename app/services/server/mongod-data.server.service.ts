@@ -24,14 +24,32 @@ export namespace MongoDataServerService {
 
     let pendingRequests = 0;
 
+    // Wrapper function to handle pending requests
+    const withPendingRequests = async <T>(operation: () => Promise<T>): Promise<T> => {
+        pendingRequests++;
+        try {
+            return await operation();
+        } catch (error) {
+            console.error(DateTime.now().toISO(), ": Error in operation", error);
+            throw error;
+        } finally {
+            pendingRequests--;
+            closeClient();
+        }
+    };
+
     // Closes the MongoClient and resets the client.
     const closeClient = async () => {
-        console.log(DateTime.now().toISO(),  ": close client")
+        console.log(DateTime.now().toISO(),  ": trying to close client")
         if (client && pendingRequests === 0) {
             await client.close();
             client = undefined;
+            console.log(DateTime.now().toISO(),  ": client closed")
         } else if (client) {
-            setTimeout(closeClient, 100);
+            console.log(DateTime.now().toISO(),  ": did not close client: requests still pending");
+            setTimeout(closeClient, 250);
+        } else {
+            console.log(DateTime.now().toISO(),  ": did not close client: client already closed");
         }
     };
 
@@ -50,35 +68,41 @@ export namespace MongoDataServerService {
     export const getDb = async (): Promise<Db> => (await getClient()).db(dbName);
 
     export const findAll = async <T extends MongodItemType> (collection: Collection): Promise<T[]> => {
-        pendingRequests ++;
-        const items = await collection.find({}).toArray() as unknown;
-        pendingRequests --;
-        closeClient();
-        return items as T[]; 
-    }
+        console.log(DateTime.now().toISO(),  ": finding all in collection", collection.collectionName);
+        return withPendingRequests(async () => {
+            return await collection.find({}).toArray() as T[];
+        });
+    };
 
     export const deleteById = async (collection: Collection, id: ObjectId): Promise<DeleteResult> => {
-        pendingRequests ++;
-        const result = await collection.deleteOne({_id: new ObjectId(id)});
-        pendingRequests --;
-        closeClient();
-        return result;
-    }
+        console.log(DateTime.now().toISO(),  ": deleting item with id", id, "in collection", collection.collectionName);
+        return withPendingRequests(async () => {
+            return await collection.deleteOne({_id: new ObjectId(id)});
+        });
+    };
 
     export const insertOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<InsertOneResult> => {
-        pendingRequests ++;
-        const result = await collection.insertOne({...item});
-        pendingRequests ++;
-        closeClient();
-        return result;
-    }
+        console.log(DateTime.now().toISO(),  ": inserting item", item, "in collection", collection.collectionName);
+        return withPendingRequests(async () => {
+            return await collection.insertOne({...item});
+        });
+    };
 
-    export const updateOne = async <T extends MongodItemType> (collection: Collection, item: T ): Promise<UpdateResult> => {
-        const result = await collection.updateOne(
-            {_id: new ObjectId(item._id)},
-            {$set: {...item}}
-        );
-        closeClient()
-        return result;
-    }
+    export const updateOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<null | UpdateResult> => {
+        console.log(DateTime.now().toISO(), ": updating item", item, "in collection", collection.collectionName);
+    
+        const { _id, ...updateData } = item; // Destructure to separate _id from the rest of the data
+        
+        if(!_id) {
+            return null;
+        }
+
+        return withPendingRequests(async () => {
+            return await collection.updateOne(
+                { _id: new ObjectId(_id) },
+                { $set: updateData }
+            );
+        });
+    };
+    
 }

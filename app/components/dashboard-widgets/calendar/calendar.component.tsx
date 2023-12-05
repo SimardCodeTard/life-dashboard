@@ -1,12 +1,12 @@
 "use client"
 import { CalendarEventType, CalendarEventTypeDTO } from "@/app/types/calendar.type";
 import { useEffect, useState } from "react";
-import CalendarItem from "./calendar-item.component";
 import { CalendarUtils } from "@/app/utils/calendar.utils";
 import { DateTime } from "luxon";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { CalendarDataClientService } from "@/app/services/client/calendar-data-client.service";
+import CalendarItem from "../../client/calendar/calendar-item.component";
 
 export default function Calendar() {
 

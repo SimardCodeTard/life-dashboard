@@ -12,9 +12,7 @@ export type SearchOptionType = {
     queryWordsSeparator: string; // The character(s) used to separate words in the user query
     path?: string; // Optional path to search page
     imageData?: StaticImageData; // NextJS Image data
-    Icon?: OverridableComponent<SvgIconTypeMap<{}, "svg">> & {
-        muiName: string;
-    }; // MaterialUI Icon
+    Icon?: OverridableComponent<SvgIconTypeMap<{}, "svg">> & {muiName: string;}; // MaterialUI Icon
 };
 
 

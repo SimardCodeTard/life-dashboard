@@ -8,9 +8,9 @@ export async function POST(req: NextRequest) {
     }
 
     const data = Buffer.concat(chunks).toString();
-    const newItem = JSON.parse(data); 
+    const item = JSON.parse(data); 
 
-    const res = newItem ? await FavoritesDataServerService.insertNewFavoriteItem(newItem) : null;
+    const res = item ? await FavoritesDataServerService.updateFavorite(item) : null;
 
     return res !== null && res.acknowledged ? Response.json({success: true}) : Response.json({success: false});
 }
