@@ -1,8 +1,6 @@
-import { ObjectId } from "mongodb"
-
 export type Task = {
+    id: number,
     title: string,
     completed: boolean,
     deadline?: Date
-    _id?: ObjectId
 }
