@@ -1,6 +1,6 @@
 import { CalendarEventType } from "@/app/types/calendar.type";
 
-export default function CalendarItem({event, index}: {event: CalendarEventType, index: number} ) {
+export default function CalendarItem({event}: {event: CalendarEventType} ) {
     return(
         <div className="calendar-item border-solid flex items-center w-50 py-2">
             <div>

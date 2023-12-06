@@ -13,7 +13,7 @@ export default function Clock() {
 
     const getSecondsString = (now: DateTime = DateTime.now()): string => `:${ now.second < 10 ? `0${ now.second }`: now.second }`;
     const getHourString = (now: DateTime = DateTime.now()): string => `${ now.hour < 10 ? `0${ now.hour }`: now.hour }:${ now.minute < 10 ? `0${ now.minute }` : now.minute }`;
-    const getDateString = (now: DateTime = DateTime.now()): string => (now.toISODate() as string).replaceAll('-','/');
+    const getDateString = (now: DateTime = DateTime.now()): string => (now.toISODate() as string).replaceAll('-',' / ');
 
     const [dateDisplay, setDateDisplay] = useState('');
     const [hourDisplay, setHourDisplay] = useState('');
@@ -42,7 +42,7 @@ export default function Clock() {
     }
 
     useEffect(()=>{
-        setDateDisplay((DateTime.now().toISODate() as string).replace('-',' / '))
+        setDateDisplay(getDateString())
         updateClock();
         setInterval(updateClock, 100)
     }, []);
