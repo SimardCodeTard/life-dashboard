@@ -1,3 +1,4 @@
+import { UnivCalendarLineIndexesEnum } from "@/app/enums/univ-calendar-indexes.enum";
 import { CalendarEventTypeDTO } from "@/app/types/calendar.type";
 import { CalendarUtils } from "@/app/utils/calendar.utils";
 import assert from "assert";
@@ -27,9 +28,9 @@ export async function GET():Promise<Response> {
     let location: string;
     let summary: string; 
 
-    const { DTSART, DTEND, SUMMARY, LOCATION } = CalendarUtils.UnivCalendarLineIndexes
 
     data.split('BEGIN:VEVENT').slice(1).map((item: string) => {
+
 
         let lines = item.split('\n');
 
@@ -40,10 +41,10 @@ export async function GET():Promise<Response> {
         lines = lines.filter(line => line !== '');
 
 
-        dtStart = lines[DTSART].split(':')[1];
-        dtEnd = lines[DTEND].split(':')[1];
-        location = lines[LOCATION].split(':')[1];
-        summary = lines[SUMMARY].split(':')[1];     
+        dtStart = lines[UnivCalendarLineIndexesEnum.DTSART].split(':')[1];
+        dtEnd = lines[UnivCalendarLineIndexesEnum.DTEND].split(':')[1];
+        location = lines[UnivCalendarLineIndexesEnum.LOCATION].split(':')[1];
+        summary = lines[UnivCalendarLineIndexesEnum.SUMMARY].split(':')[1];     
 
         newEvent = {
             dtEnd, 
