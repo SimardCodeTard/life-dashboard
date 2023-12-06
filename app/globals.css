@@ -58,6 +58,9 @@
   --text-lighter-rgb: 150, 150, 150;
   --background-navbar-rgb: 50, 50, 50;
   --background-navbar: rgba(250, 250, 250, 0.02);
+
+  --modal-background: rgba(25,25,25,0.9);
+  --modal-border: solid 1px rgba(255,255,255,0.2);  
 }
 
 @keyframes gradient-motion {
@@ -132,4 +135,8 @@ body {
 .bottom-section {
   position: absolute;
   bottom: 0;
+}
+
+.MuiBackdrop-root {
+  background-color: transparent !important;
 }

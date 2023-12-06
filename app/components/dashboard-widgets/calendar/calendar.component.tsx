@@ -62,6 +62,9 @@ export default function Calendar() {
         </div>
     );
 
+    const selectedIsToday = (): boolean => {
+        return CalendarUtils.isSameDay(CalendarDataClientService.fromGroupedEventKeyToDateTime(selectedDate));
+    }
 
     return (
         <div className="p-3 space-y-2">
@@ -69,8 +72,13 @@ export default function Calendar() {
                 <span className="cursor-pointer" onClick={previousDay}>
                     <ArrowBackIosIcon></ArrowBackIosIcon>
                 </span>
-                <span>
-                    {selectedDate?.replaceAll('-', ' / ')}
+                <span className="flex flex-col">
+                    <p>{selectedDate?.replaceAll('-', ' / ')}</p>
+                    {selectedIsToday() 
+                        ? <p className="w-full flex text-[rgba(255,255,255,0.4)] justify-center">today</p> 
+                        : <span className="w-full cursor-pointer flex text-[rgba(255,255,255,0.4)] justify-center"
+                            onClick={() => setSelectedDate(CalendarDataClientService.fromDateTimeToGroupedEventMapKey(DateTime.now()))}
+                            >go to today</span>}
                 </span>
                 <span className="cursor-pointer" onClick={nextDay}>
                     <ArrowForwardIosIcon></ArrowForwardIosIcon>

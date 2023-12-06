@@ -1,6 +1,6 @@
 "use client"
 
-import { FavoriteItemPropsType } from '@/app/types/favorites.type';
+import { FavoriteItemPropsType, FavoriteItemType } from '@/app/types/favorites.type';
 import { MouseEvent, useState } from 'react';
 import EditFavorite from './edit-favorite';
 
@@ -25,12 +25,18 @@ export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemD
             setEditModalOpened(true);
         }
     }
+
+    const onItemDelete = async (item: FavoriteItemType) => {
+        setEditModalOpened(false);
+        onFavoriteItemDelete(item);
+    }
+
     return (
         <>
             <div onClick={onItemClick} onContextMenu={onItemContextMenu} onAuxClick={onItemAuxClick} className={'flex flex-col justify-center cursor-pointer w-fit'}>
                 <img width="22" height="22" src={item.url + "/favicon.ico"} alt={item.name.slice(0,2)} />
             </div>
-            <EditFavorite item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onFavoriteItemDelete} modalOpen={editModalOpened} setModalOpen={setEditModalOpened}
+            <EditFavorite item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onItemDelete} modalOpen={editModalOpened} setModalOpen={setEditModalOpened}
             ></EditFavorite>
         </>
     );
