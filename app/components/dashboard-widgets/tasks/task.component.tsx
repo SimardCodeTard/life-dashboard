@@ -48,14 +48,13 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
 
     const onTaskEditFormSubmit = (event: FormEvent) => {
         event.preventDefault();
-        const newTaskName = (event.target as any)[0].value;
-        task = { ...taskState, title: newTaskName };
-        setTaskState(task);
-        TasksDataClientService.updateTask(task);
+        TasksDataClientService.updateTask(taskState);
         setEditModalOpen(false);
     }
 
     const taskTitleInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskState({...taskState, title: e.currentTarget.value});
+
+    const taskDeadlineInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskState({...taskState, deadline: e.currentTarget.value});
 
     return(
         <div className="flex flex-col task-item p-3">
@@ -72,6 +71,7 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
             <ModalComponent modalOpened={editModalOpened} setModalOpened={setEditModalOpen}>
                 <form onSubmit={onTaskEditFormSubmit}>
                     <input autoFocus={true} value={taskState.title} onChange={taskTitleInputChange} className='h-6 w-5/6 mb-2 bg-[rgba(255,255,255,0.2)] rounded p-1' type="text" placeholder='Name'></input>
+                    <input type="date" value={taskState.deadline} onChange={taskDeadlineInputChange} className="p-1 rounded bg-[rgba(255,255,255,0.2)]"></input>
                     <button className='h-6 w-5/6 mt-2 bg-[rgba(255,255,255,0.3)] rounded'>Save</button>
                 </form>
             </ModalComponent>
