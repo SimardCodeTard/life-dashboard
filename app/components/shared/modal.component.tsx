@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { Modal } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';  
 import styles from './shared.module.css';
