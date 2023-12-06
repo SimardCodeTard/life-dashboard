@@ -1,6 +1,6 @@
 import { MongodItemType } from "@/app/types/mongod.type";
 import { DateTime } from "luxon";
-import { Collection, Db, DeleteResult, InsertOneResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from "mongodb";
+import { Collection, Db, DeleteResult, InsertOneResult, ModifyResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from "mongodb";
 import { Logger } from "../logger.service";
 
 export namespace MongoDataServerService {
@@ -28,8 +28,15 @@ export namespace MongoDataServerService {
     // Wrapper function to handle pending requests
     const withPendingRequests = async <T>(operation: () => Promise<T>): Promise<T> => {
         pendingRequests++;
+        let operationResult
         try {
-            return await operation();
+            operationResult = await operation();
+            if((operationResult as any).acknowledged) {
+                Logger.debug('operation success')
+            } else {
+                Logger.debug('operation failed')
+            }
+            return operationResult;
         } catch (error) {
             Logger.error("Error in operation: " + error);
             throw error;
