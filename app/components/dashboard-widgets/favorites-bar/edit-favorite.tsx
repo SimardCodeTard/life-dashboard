@@ -3,6 +3,7 @@ import { FavoritesDataClientService } from "@/app/services/client/favorites-data
 import { EditFavoritePropsType, FavoriteItemType } from "@/app/types/favorites.type";
 import { Modal } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';  
+import styles from './favorites.module.css';
 
 export default function EditFavorite({item, onFavoriteItemEdit, onFavoriteItemDelete, modalOpen, setModalOpen}: EditFavoritePropsType) {
     const [name, setName] = useState(item.name);
@@ -32,7 +33,7 @@ export default function EditFavorite({item, onFavoriteItemEdit, onFavoriteItemDe
     }
 
     return (
-        <Modal className='modal outline-none border-none shadow-lg rounded-2xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-72' 
+        <Modal className={['modal outline-none border-none shadow-lg rounded-2xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-72', styles.modal].join(' ')} 
             onClose={onModalClose} open={modalOpen}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
