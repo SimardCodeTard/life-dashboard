@@ -33,6 +33,7 @@ export namespace MongoDataServerService {
             operationResult = await operation();
             if((operationResult as any).acknowledged) {
                 Logger.debug('operation success')
+                Logger.debug('operation result : ' + JSON.stringify(operationResult))
             } else {
                 Logger.debug('operation failed')
             }
