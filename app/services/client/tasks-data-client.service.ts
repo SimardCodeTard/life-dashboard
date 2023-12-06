@@ -12,7 +12,11 @@ export namespace TasksDataClientService {
     // Fetches all tasks using a GET request.
     export const fetchAllTasks = (): Promise<Task[]> => {
         Logger.debug('Fetching all tasks (in TasksDataClientService)')
-        return axios.get(apiUrl).then(response => response.data as Task[]);
+        return axios.get(apiUrl, {
+            headers: {
+                'cache-control': 'no-cache'
+            }
+        }).then(response => response.data as Task[]);
     }
 
     // Saves a task using a POST request.
