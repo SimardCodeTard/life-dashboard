@@ -1,6 +1,7 @@
 import { MongodItemType } from "@/app/types/mongod.type";
 import { DateTime } from "luxon";
 import { Collection, Db, DeleteResult, InsertOneResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from "mongodb";
+import { Logger } from "../logger.service";
 
 export namespace MongoDataServerService {
     
@@ -30,7 +31,7 @@ export namespace MongoDataServerService {
         try {
             return await operation();
         } catch (error) {
-            console.error(DateTime.now().toISO(), ": Error in operation", error);
+            Logger.error("Error in operation: " + error);
             throw error;
         } finally {
             pendingRequests--;
@@ -40,16 +41,16 @@ export namespace MongoDataServerService {
 
     // Closes the MongoClient and resets the client.
     const closeClient = async () => {
-        console.log(DateTime.now().toISO(),  ": trying to close client")
+        Logger.debug("trying to close client")
         if (client && pendingRequests === 0) {
             await client.close();
             client = undefined;
-            console.log(DateTime.now().toISO(),  ": client closed")
+            Logger.debug("client closed");
         } else if (client) {
-            console.log(DateTime.now().toISO(),  ": did not close client: requests still pending");
+            Logger.debug("did not close client: requests still pending");
             setTimeout(closeClient, 250);
         } else {
-            console.log(DateTime.now().toISO(),  ": did not close client: client already closed");
+            Logger.debug("did not close client: client already closed");
         }
     };
 
@@ -68,29 +69,28 @@ export namespace MongoDataServerService {
     export const getDb = async (): Promise<Db> => (await getClient()).db(dbName);
 
     export const findAll = async <T extends MongodItemType> (collection: Collection): Promise<T[]> => {
-        console.log(DateTime.now().toISO(),  ": finding all in collection", collection.collectionName);
+        Logger.debug("finding all in collection " + collection.collectionName);
         return withPendingRequests(async () => {
             return await collection.find({}).toArray() as T[];
         });
     };
 
     export const deleteById = async (collection: Collection, id: ObjectId): Promise<DeleteResult> => {
-        console.log(DateTime.now().toISO(),  ": deleting item with id", id, "in collection", collection.collectionName);
+        Logger.debug("deleting item with id " + id + " in collection " + collection.collectionName);
         return withPendingRequests(async () => {
             return await collection.deleteOne({_id: new ObjectId(id)});
         });
     };
 
     export const insertOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<InsertOneResult> => {
-        console.log(DateTime.now().toISO(),  ": inserting item", item, "in collection", collection.collectionName);
+        Logger.debug("inserting item " + item + " in collection " + collection.collectionName);
         return withPendingRequests(async () => {
             return await collection.insertOne({...item});
         });
     };
 
     export const updateOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<null | UpdateResult> => {
-        console.log(DateTime.now().toISO(), ": updating item", item, "in collection", collection.collectionName);
-    
+        Logger.debug("updating item " + item + " in collection " + collection.collectionName);
         const { _id, ...updateData } = item; // Destructure to separate _id from the rest of the data
         
         if(!_id) {
