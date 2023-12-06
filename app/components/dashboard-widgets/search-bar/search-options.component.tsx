@@ -18,7 +18,7 @@ export default function SearchOptions({ showOptions, setSelectedSearchOption }: 
     
     useEffect(() => {
         setSelectedSearchOption(SearchOptionData[0]);
-    }, []);
+    }, [setSelectedSearchOption]);
     
     const options = Object.values(SearchOptionData) as SearchOptionType[];
 
