@@ -1,7 +1,7 @@
 import { FavoritesDataServerService } from "@/app/services/server/favorites-data.server.service";
 import { FavoriteItemType } from "@/app/types/favorites.type";
-import { isArray } from "util";
 
+export const dynamic = 'force-dynamic'
 export async function GET() {
     let favorites: FavoriteItemType[];
     try {
