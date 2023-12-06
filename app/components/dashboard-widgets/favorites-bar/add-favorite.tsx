@@ -5,7 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';  
 import { Modal } from '@mui/material';
 import { FormEvent, useState } from 'react';
-
+import styles from './favorites.module.css'
 
 export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType) {
 
@@ -34,7 +34,7 @@ export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType)
     return (
         <>
             <AddIcon onClick={openModal} className='cursor-pointer'></AddIcon>
-            <Modal className='modal outline-none border-none shadow-lg rounded-2xl absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-40 w-72' onClose={onModalClose} open={modalOpen}
+            <Modal className={['outline-none border-none shadow-lg rounded-2xl h-40 w-72', styles.modal].join(' ')} onClose={onModalClose} open={modalOpen}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
                 >
