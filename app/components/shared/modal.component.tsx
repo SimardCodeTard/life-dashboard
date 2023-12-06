@@ -5,12 +5,7 @@ import styles from './shared.module.css';
 import { ModalComponentPropsType } from "@/app/types/modal.types";
 
 
-export default function ModalComponent ({children, externalModalOpenedState, externalSetModalOpenedState}: ModalComponentPropsType) {
-
-    // Allow the parent component to define the opened state
-    const [modalOpened, setModalOpened] = externalModalOpenedState && externalSetModalOpenedState 
-        ? [externalModalOpenedState, externalSetModalOpenedState] 
-        : useState<boolean>(false);
+export default function ModalComponent ({children, modalOpened, setModalOpened}: ModalComponentPropsType) {
 
     const onModalClose = () => {
         setModalOpened(false);

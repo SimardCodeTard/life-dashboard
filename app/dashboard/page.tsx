@@ -2,7 +2,7 @@ import Tasks from "../components/dashboard-widgets/tasks/task-list.component";
 import Weather from "../components/dashboard-widgets/weather.component";
 import Calendar from "../components/dashboard-widgets/calendar/calendar.component";
 import Clock from "../components/dashboard-widgets/clock.component";
-import Card from "../components/dashboard-widgets/shared/card.component";
+import Card from "../components/shared/card.component";
 import SearchBar from "../components/dashboard-widgets/search-bar/search-bar.component";
 import FavoritesBar from "../components/dashboard-widgets/favorites-bar/favorites-bar";
 

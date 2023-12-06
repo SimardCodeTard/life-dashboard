@@ -1,5 +1,5 @@
 import { Task } from "@/app/types/task.type";
-import TaskCheckbox from "../shared/checkbox.component";
+import TaskCheckbox from "../../shared/checkbox.component";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { TasksDataClientService } from "@/app/services/client/tasks-data-client.service";
 
