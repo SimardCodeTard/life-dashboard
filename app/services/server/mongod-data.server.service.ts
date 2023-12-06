@@ -31,12 +31,7 @@ export namespace MongoDataServerService {
         let operationResult
         try {
             operationResult = await operation();
-            if((operationResult as any).acknowledged) {
-                Logger.debug('operation success')
-            } else {
-                Logger.debug('operation failed')
-                Logger.debug('operation result : ' + JSON.stringify(operationResult))
-            }
+            Logger.debug('operation result : ' + JSON.stringify(operationResult))
             return operationResult;
         } catch (error) {
             Logger.error("Error in operation: " + error);
