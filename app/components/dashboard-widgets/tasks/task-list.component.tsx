@@ -11,10 +11,20 @@ export default function Tasks() {
 
     const onNewTaskSubmit = (event: FormEvent) => {
         event.preventDefault();
-        const newTask: Task = {title: (event.target as any)[0].value, completed: false};
+
+        const title = (event.target as any)[0].value;
+        let deadline = (event.target as any)[1].value;
+        
+        if(new Date(deadline).toString() === 'Invalid Date') deadline = undefined;
+
+        const completed = false;
+        const newTask: Task = {title, deadline: deadline, completed};
+
         TasksDataClientService.saveTask(newTask)
         .then((res: any) => res.data.success && TasksDataClientService.fetchAllTasks().then(setTasks));
+       
         (event.target as any)[0].value = "";
+        (event.target as any)[1].value = "";
     }
 
     useEffect(() => {
@@ -27,8 +37,11 @@ export default function Tasks() {
             {tasks.map((task: Task, key: number) => {
                 return <TaskItem setTasks={setTasks} task={task} key={key}></TaskItem>
             })}
-            <form className="mt-2" onSubmit={onNewTaskSubmit}>
-                <input type="text" className="p-1 rounded bg-[rgba(255,255,255,0.2)]" placeholder="New task"></input>
+            <form className="mt-2 flex flex-col" onSubmit={onNewTaskSubmit}>
+                <span className="space-y-1">
+                    <input type="text" className="p-1 rounded bg-[rgba(255,255,255,0.2)]" placeholder="New task"></input>
+                    <input type="date" className="p-1 rounded bg-[rgba(255,255,255,0.2)]"></input>
+                </span>
                 <button type="submit" className="mt-2 p-1 rounded-sm bg-[rgba(0,0,0,0.2)] hover:bg-[rgba(255,255,255,0.2)]">Save</button>
             </form>
         </div>

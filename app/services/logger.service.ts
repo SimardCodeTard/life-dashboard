@@ -12,9 +12,9 @@ export namespace Logger {
     const showWarn = (): boolean => loggingLevel <= LoggingLevelsEnum.WARN;
     const showError = (): boolean => loggingLevel <= LoggingLevelsEnum.ERROR;
 
-    export const debug = (message: string) => showDebug() && console.debug(`${DateTime.now().toISO()} [DEBUG] : ${message}`)
-    export const info = (message: string) => showInfo() && console.info(`${DateTime.now().toISO()} [INFO] : ${message}`)
-    export const warn = (message: string) => showWarn() && console.warn(`${DateTime.now().toISO()} [WARN] : ${message}`)
-    export const error = (message: string) => showError() && console.error(`${DateTime.now().toISO()} [ERROR] : ${message}`)
+    export const debug = (message: any) => showDebug() && console.debug(`${DateTime.now().toISO()} [DEBUG] : ${message}`)
+    export const info = (message: any) => showInfo() && console.info(`${DateTime.now().toISO()} [INFO] : ${message}`)
+    export const warn = (message: any) => showWarn() && console.warn(`${DateTime.now().toISO()} [WARN] : ${message}`)
+    export const error = (message: any) => showError() && console.error(`${DateTime.now().toISO()} [ERROR] : ${message}`)
 
 }
