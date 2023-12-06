@@ -1,11 +1,13 @@
 import axios, { AxiosResponse } from "axios";
 import { Task } from "../../types/task.type";
 import { ObjectId } from "bson";
+import { Logger } from "../logger.service";
 
 // Namespace for client-side services to interact with the tasks API.
 export namespace TasksDataClientService {
     // Base URL for the tasks API.
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/task';
+    Logger.debug(apiUrl);
 
     // Fetches all tasks using a GET request.
     export const fetchAllTasks = (): Promise<Task[]> => {
