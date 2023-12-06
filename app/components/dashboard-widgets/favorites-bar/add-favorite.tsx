@@ -2,10 +2,8 @@
 import { FavoritesDataClientService } from '@/app/services/client/favorites-data.client.service';
 import { AddFavoritePropsType, FavoriteItemType } from '@/app/types/favorites.type';
 import AddIcon from '@mui/icons-material/Add';  
-import CloseIcon from '@mui/icons-material/Close';  
-import { Modal } from '@mui/material';
 import { FormEvent, useState } from 'react';
-import styles from './favorites.module.css'
+import ModalComponent from '../shared/modal.component';
 
 export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType) {
 
@@ -21,6 +19,7 @@ export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType)
 
 
     const handleFormSubmit = async (e: FormEvent) => {
+        onModalClose();
         e.preventDefault();
         const name: string = (e.target as any)[0].value;
         const url: string = FavoritesDataClientService.validateUrl((e.target as any)[1].value);
@@ -28,25 +27,18 @@ export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType)
         if ((await FavoritesDataClientService.saveNewFavoriteItem(newFavoriteItem)).success) {
             updateFavoritesList();
         }
-        onModalClose();
     }
 
     return (
         <>
             <AddIcon onClick={openModal} className='cursor-pointer'></AddIcon>
-            <Modal className={['outline-none border-none shadow-lg rounded-2xl h-40 w-72', styles.modal].join(' ')} onClose={onModalClose} open={modalOpen}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                >
-                <div className='bg-[--card-background] backdrop-blur-lg flex flex-col justify-center items-center p-3 w-full h-full'>
-                    <CloseIcon className='ml-auto cursor-pointer' onClick={onModalClose} ></CloseIcon>
-                    <form onSubmit={handleFormSubmit} className='flex flex-col justify-center items-center w-full h-full'>
-                        <input className='h-1/5 w-3/4 mb-2 bg-[rgba(255,255,255,0.2)] rounded p-1' type="text" placeholder='name'></input>
-                        <input className='h-1/5 w-3/4 bg-[rgba(255,255,255,0.2)] rounded p-1' type="text" placeholder='url'></input>
-                        <button className='h-1/4 w-3/4 mt-2 bg-[rgba(255,255,255,0.3)] rounded'>Save</button>
-                    </form>
-                </div>
-            </Modal>
+            <ModalComponent externalModalOpenedState={modalOpen} externalSetModalOpenedState={setModalOpen}>
+                <form onSubmit={handleFormSubmit} className='flex flex-col justify-center items-center w-full h-full'>
+                    <input autoFocus={true} className='h-1/5 w-3/4 mb-2 bg-[rgba(255,255,255,0.2)] rounded p-1' type="text" placeholder='name'></input>
+                    <input className='h-1/5 w-3/4 bg-[rgba(255,255,255,0.2)] rounded p-1' type="text" placeholder='url'></input>
+                    <button className='h-1/4 w-3/4 mt-2 bg-[rgba(255,255,255,0.3)] rounded'>Save</button>
+                </form>
+            </ModalComponent>
 
         </>
     )

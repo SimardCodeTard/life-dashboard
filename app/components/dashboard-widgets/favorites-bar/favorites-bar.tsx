@@ -17,6 +17,8 @@ export default function FavoritesBar() {
 
     const onFavoriteItemDelete = async (item: FavoriteItemType) => {
         item._id && await FavoritesDataClientService.deleteFavoriteItem(item._id);
+        const id = item._id;
+        setFavorites(favorites.filter(item => item._id !== id));
         updateFavoritesList();
     }
 
