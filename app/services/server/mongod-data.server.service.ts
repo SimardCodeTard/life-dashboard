@@ -83,14 +83,14 @@ export namespace MongoDataServerService {
     };
 
     export const insertOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<InsertOneResult> => {
-        Logger.debug("inserting item " + item + " in collection " + collection.collectionName);
+        Logger.debug("inserting item " + JSON.stringify(item) + " in collection " + collection.collectionName);
         return withPendingRequests(async () => {
             return await collection.insertOne({...item});
         });
     };
 
     export const updateOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<null | UpdateResult> => {
-        Logger.debug("updating item " + item + " in collection " + collection.collectionName);
+        Logger.debug("updating item " + JSON.stringify(item) + " in collection " + collection.collectionName);
         const { _id, ...updateData } = item; // Destructure to separate _id from the rest of the data
         
         if(!_id) {
