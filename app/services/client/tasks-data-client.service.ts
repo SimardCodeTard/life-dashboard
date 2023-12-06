@@ -11,11 +11,13 @@ export namespace TasksDataClientService {
 
     // Fetches all tasks using a GET request.
     export const fetchAllTasks = (): Promise<Task[]> => {
+        Logger.debug('Fetching all tasks (in TasksDataClientService)')
         return axios.get(apiUrl).then(response => response.data as Task[]);
     }
 
     // Saves a task using a POST request.
     export const saveTask = (task: Task): Promise<AxiosResponse> => {
+        Logger.debug('Saving new task (in TasksDataClientService)')
         const url = `${apiUrl}/new`;
         return axios.post(url, task, {
             headers: {
@@ -26,12 +28,14 @@ export namespace TasksDataClientService {
 
     // Deletes a task by ID using a DELETE request.
     export const deleteTaskById = (taskId: ObjectId): Promise<AxiosResponse> => {
+        Logger.debug('Deleting task (in TasksDataClientService)')
         const url = `${apiUrl}/delete?taskId=${taskId.toString()}`;
         return axios.delete(url);
     }
 
     // Updates a task using a PUT request.
     export const updateTask = (task: Task): Promise<AxiosResponse> => {
+        Logger.debug('Updating task (in TasksDataClientService)')
         const url = `${apiUrl}/update`;
         return axios.put(url, task);
     }
