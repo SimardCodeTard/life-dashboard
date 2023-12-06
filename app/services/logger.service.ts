@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { LogLevel } from "../types/logger.types";
 
 export namespace Logger {
     const showDebug = (): boolean => true;
