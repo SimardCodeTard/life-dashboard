@@ -49,12 +49,13 @@ export namespace TasksDataClientService {
     export const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
 
 
-    export const sortTaskByMostUrgent = (tasks: Task[]): Task[] => tasks.sort((taskA: Task, taskB: Task) => {
-        if(!taskA.deadline) return 1;
-        else if (!taskB.deadline) return -1;
-        const deadlineA = formatTaskDate(taskA.deadline);
-        const deadlineB = formatTaskDate(taskB.deadline);
-        console.log(deadlineA, deadlineB)
-        return deadlineA.toMillis() - deadlineB.toMillis();
-    } )
+    export const sortTaskByMostUrgent = (tasks: Task[]): Task[] => 
+        tasks.toSorted((taskA: Task, taskB: Task) => {
+            if(!taskA.deadline) return 1;
+            else if (!taskB.deadline) return -1;
+            const deadlineA = formatTaskDate(taskA.deadline);
+            const deadlineB = formatTaskDate(taskB.deadline);
+            console.log(deadlineA, deadlineB)
+            return deadlineA.toMillis() - deadlineB.toMillis();
+        });
 }
