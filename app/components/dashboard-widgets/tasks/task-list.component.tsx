@@ -4,6 +4,7 @@ import { Task } from "@/app/types/task.type";
 import TaskItem from "./task.component";
 import { FormEvent, useEffect, useState } from "react";
 import { TasksDataClientService } from "@/app/services/client/tasks-data-client.service";
+import styles from '../../components.module.css';
 
 export default function Tasks() {
 
@@ -32,12 +33,12 @@ export default function Tasks() {
     }, [])
 
     return (
-        <div className="p-2 task-list">
-            <h2>Tasks</h2>
+        <div className={["p-2 task-list", styles.taskList].join(' ')}>
+            <h2 className="text-xl mt-2 mb-2">Tasks</h2>
             {tasks.map((task: Task, key: number) => {
                 return <TaskItem setTasks={setTasks} task={task} key={key}></TaskItem>
             })}
-            <form className="mt-2 flex flex-col" onSubmit={onNewTaskSubmit}>
+            <form className="mt-2 rounded-sm shadow-xl flex flex-col" onSubmit={onNewTaskSubmit}>
                 <span className="space-y-1">
                     <input type="text" className="p-1 rounded bg-[rgba(255,255,255,0.2)]" placeholder="New task"></input>
                     <input type="date" className="p-1 rounded bg-[rgba(255,255,255,0.2)]"></input>
