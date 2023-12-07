@@ -40,3 +40,16 @@
 .search_options.folded {
     opacity: 0;
 }
+
+.taskList {
+    max-height: 59vh !important;
+    overflow-y: scroll;
+}
+
+.taskList > form {
+    position: sticky;
+    bottom: 0;
+    backdrop-filter: blur(15px);
+    background-color: rgba(255,255,255,0.1);
+    padding: 1rem;
+}
