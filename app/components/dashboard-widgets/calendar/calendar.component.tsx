@@ -6,7 +6,8 @@ import { DateTime } from "luxon";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { CalendarDataClientService } from "@/app/services/client/calendar-data-client.service";
-import CalendarItem from "./calendar-item.component";
+import CalendarItem from "./calendar-item/calendar-item.component";
+import styles from './calendar.module.css';
 
 export default function Calendar() {
 
@@ -43,7 +44,6 @@ export default function Calendar() {
         }
     }
 
-
     const FriendlyMessage = () => (
         <p className="text-[rgba(255,255,255,0.5)]">
             {isLoading ? 'Loading calendar events  ...' :  buildFriendlyMessage()}
@@ -51,7 +51,7 @@ export default function Calendar() {
     )
 
     const EventsOfTheDay = () => (
-        <div className="divide-[rgba(255,255,255,0.2)] divide-y-2">
+        <div className={["divide-[rgba(255,255,255,0.2)] h-fit divide-y-2", styles.calendar].join(' ')}>
             {// If calDataMap is set & has an event for the selected date
                 calDataMap && calDataMap.get(selectedDate as string)
                     // Map the events array and display in CalendarItem
@@ -67,7 +67,7 @@ export default function Calendar() {
     }
 
     return (
-        <div className="p-3 space-y-2">
+        <div className="p-3 h-fit space-y-2">
             <div className="flex justify-evenly pl-2 pr-2">
                 <span className="cursor-pointer" onClick={previousDay}>
                     <ArrowBackIosIcon></ArrowBackIosIcon>

@@ -128,11 +128,14 @@ body {
   scale: 1.03;
 }
 
-.bottom-section {
-  position: absolute;
-  bottom: 0;
-}
-
 .MuiBackdrop-root {
   background-color: transparent !important;
+}
+
+.right-section {
+  max-height: 100dvh; 
+}
+
+.bottom-section {
+  margin-top: auto;
 }
