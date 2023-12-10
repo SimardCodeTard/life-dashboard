@@ -1,8 +1,11 @@
+import { APIBadRequestError } from "@/app/errors/api.error";
 import { CalendarEventType, CalendarEventTypeDTO } from "@/app/types/calendar.type";
 import { CalendarUtils } from "@/app/utils/calendar.utils";
 import assert from "assert";
 import axios from "axios";
 import { DateTime } from "luxon";
+import { Logger } from "../logger.service";
+import { handleAxiosError } from "@/app/utils/api.utils";
 
 export namespace CalendarDataClientService {
 
@@ -30,7 +33,9 @@ export namespace CalendarDataClientService {
             case (CalendarUtils.CalendarSourcesEnum.ADELB_UNIV_LYON_1):
                 return fetchCalendarEventsSourceUniv();
             default:
-                throw new Error('Invalid source')
+                const internalError = new APIBadRequestError('Invalid calendar source');;
+                Logger.error(internalError);
+                throw internalError;
             }
     }
 
@@ -69,8 +74,8 @@ export namespace CalendarDataClientService {
         const url = process.env.NEXT_PUBLIC_API_URL + "/calendar/class" as string;
         assert(url !== undefined);
 
-        const res = await axios.get(url);
+        const res = await axios.get(url).catch(handleAxiosError);
         
-        return groupCalEventsByDate(mapCalendarEventDTOListToDO(res.data.events as CalendarEventTypeDTO[]));
+        return groupCalEventsByDate(mapCalendarEventDTOListToDO(res?.data as CalendarEventTypeDTO[]));
     }
 }

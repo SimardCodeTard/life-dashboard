@@ -35,7 +35,7 @@ export namespace TasksDataClientService {
     // Deletes a task by ID using a DELETE request.
     export const deleteTaskById = (taskId: ObjectId): Promise<AxiosResponse> => {
         Logger.debug('Deleting task (in TasksDataClientService)')
-        const url = `${apiUrl}/delete?taskId=${taskId.toString()}`;
+        const url = `${apiUrl}/delete?id=${taskId.toString()}`;
         return axios.delete(url);
     }
 

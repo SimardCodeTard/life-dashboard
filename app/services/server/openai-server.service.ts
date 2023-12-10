@@ -32,19 +32,34 @@ export namespace OpenAIServerService {
     }
 
     export const nextMessage = async (message?: ChatMessage) => {
-        message && messages.push(message);
-
-        const chatCompletion: ChatCompletion = blockAPICalls || messages.length === 0 ? {choices:[{message: {role: 'assistant', content: 'testing'}}]} as ChatCompletion 
-        : await openai.chat.completions.create({
-            messages: messages,
-            model: model,
-        }).catch(err => {
+        if (message) {
+            messages.push(message);
+        }
+    
+        if (blockAPICalls) {
+            return [{ role: 'assistant', content: 'API calls are currently blocked.' }];
+        }
+    
+        if (messages.length === 0) {
+            const internalError = new APIInternalServerError('Attempted to call OpenAI with an empty messages array.');
+            Logger.error(internalError);
+            throw internalError;
+        }
+    
+        try {
+            const chatCompletion = await openai.chat.completions.create({
+                messages: messages,
+                model: model,
+            });
+    
+            messages.push(chatCompletion.choices[0].message as ChatMessage);
+    
+            return messages;
+        } catch (err: any) {
             Logger.error(err);
             throw new APIInternalServerError('OpenAI API error: ' + err.message);
-        });
-
-        messages.push(chatCompletion.choices[0].message as ChatMessage);
-
-        return messages;
-    }
+        }
+    };
+    
+    
 }

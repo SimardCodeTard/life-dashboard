@@ -5,12 +5,4 @@ import { NextRequest } from "next/server";
 
 export const dynamic = 'force-dynamic'
 
-export async function POST(req: NextRequest): Promise<Response> {
-    try {
-        const  message = await parseBody<ChatMessage>(req)
-        const res = await OpenAIServerService.nextMessage(message);
-        return Response.json(res);
-    } catch (err) {
-        return handleAPIError(err as Error);
-    }
-}
+export const POST = (req: NextRequest): Promise<Response> => parseBody<ChatMessage>(req).then(OpenAIServerService.nextMessage).then(Response.json).catch(handleAPIError);

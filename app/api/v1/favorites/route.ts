@@ -1,14 +1,5 @@
 import { FavoritesDataServerService } from "@/app/services/server/favorites-data.server.service";
-import { FavoriteItemType } from "@/app/types/favorites.type";
+import { handleAPIError } from "@/app/utils/api.utils";
 
 export const dynamic = 'force-dynamic'
-export async function GET() {
-    let favorites: FavoriteItemType[];
-    try {
-        favorites = await FavoritesDataServerService.findAllFavorites();
-        return Response.json({success: true, favorites});
-    } catch (e: any) {
-        console.error(e);
-        return Response.json({success: false});
-    }
-}
+export const GET = (): Promise<Response> => FavoritesDataServerService.findAllFavorites().then(Response.json).catch(handleAPIError);
