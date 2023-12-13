@@ -18,8 +18,13 @@ export namespace Logger {
     export const error = (error: Error | string) => {
         if(!showError()) return;
         const message = typeof error === 'string' ? error : error.message;
-        const stack = typeof error === 'string' ? new Error().stack : error.stack;
-        console.error(`${DateTime.now().toISO()} [ERROR] : ${message}\r\n Stack trace: ${stack}`);
+        const stack = typeof error === 'string' ? new Error().stack  as string : error.stack as string;
+        console.error(`${DateTime.now().toISO()} [ERROR] : ${message}\r\n Stack trace: ${shortenStackTrace(stack)}`);
     }
     
+    const shortenStackTrace = (stackTrace: string): string => {
+        const lines = stackTrace.split('\n');
+        const shortenedStackTrace = lines.slice(0, 10).join('\n');
+        return shortenedStackTrace;
+    }
 }
