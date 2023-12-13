@@ -1,19 +1,20 @@
 import { ChatMessage } from "@/app/types/chat.type";
 import { DateTime } from "luxon";
 import OpenAI from "openai";
-import { ChatCompletion } from "openai/resources/index.mjs";
 import { Logger } from "../logger.service";
 import { APIInternalServerError } from "@/app/errors/api.error";
 
 export namespace OpenAIServerService {
 
-    const blockAPICalls = false;
+    const blockAPICalls = true; // Will be removed in the future
 
     let messages: Array<ChatMessage> = buildStartingMessages();
 
-    const openai = new OpenAI({
-        apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-    });
+    const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+
+    const openai = apiKey ? new OpenAI({
+        apiKey: apiKey,
+    }) : null;
 
     const model = process.env.NEXT_PUBLIC_OPENAI_GPT_MODEL as string;
 
@@ -32,18 +33,18 @@ export namespace OpenAIServerService {
     }
 
     export const nextMessage = async (message?: ChatMessage) => {
+        if(!openai) throw new APIInternalServerError('Invalid server configuration: OpenAI API key is missing.');
+
         if (message) {
             messages.push(message);
         }
     
         if (blockAPICalls) {
-            return [{ role: 'assistant', content: 'API calls are currently blocked.' }];
+            return [{ role: 'assistant', content: 'OpenAI API calls are currently blocked.' }];
         }
     
         if (messages.length === 0) {
-            const internalError = new APIInternalServerError('Attempted to call OpenAI with an empty messages array.');
-            Logger.error(internalError);
-            throw internalError;
+            throw new APIInternalServerError('Attempted to call OpenAI with an empty messages array.');;
         }
     
         try {
@@ -56,7 +57,6 @@ export namespace OpenAIServerService {
     
             return messages;
         } catch (err: any) {
-            Logger.error(err);
             throw new APIInternalServerError('OpenAI API error: ' + err.message);
         }
     };
