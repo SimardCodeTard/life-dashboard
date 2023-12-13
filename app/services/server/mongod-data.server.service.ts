@@ -1,7 +1,7 @@
 import { MongodItemType } from "@/app/types/mongod.type";
-import { DateTime } from "luxon";
-import { Collection, Db, DeleteResult, InsertOneResult, ModifyResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from "mongodb";
+import { Collection, Db, DeleteResult, InsertOneResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from "mongodb";
 import { Logger } from "../logger.service";
+import { APIInternalServerError } from "@/app/errors/api.error";
 
 export namespace MongoDataServerService {
     
@@ -33,9 +33,8 @@ export namespace MongoDataServerService {
             operationResult = await operation();
             Logger.debug('operation result : ' + JSON.stringify(operationResult))
             return operationResult;
-        } catch (error) {
-            Logger.error("Error in operation: " + error);
-            throw error;
+        } catch (error: any) {
+            throw new APIInternalServerError('Error in operation: ' + error.message);
         } finally {
             pendingRequests--;
             closeClient();

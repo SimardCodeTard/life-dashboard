@@ -1,6 +1,5 @@
 import { TasksDataServerService } from "@/app/services/server/tasks-data.server.service";
+import { handleAPIError } from "@/app/utils/api.utils";
+
 export const dynamic = 'force-dynamic'
-export async function GET() {
-    const tasks = await TasksDataServerService.findAllTasks();
-    return Response.json(tasks); 
-}
+export const GET = () => TasksDataServerService.findAllTasks().then(Response.json).catch(handleAPIError);

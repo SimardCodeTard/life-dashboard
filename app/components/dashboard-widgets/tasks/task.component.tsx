@@ -31,13 +31,10 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
     const deadlineIsPassed = (): boolean => {
         if(!task.deadline) return false;
         const taskDate = formatTaskDate(task.deadline);
-        if(!task.deadline) return false;
-        const taskDate = formatTaskDate(task.deadline);
         const today = DateTime.now();
         return today.toMillis() > taskDate.toMillis();
     }
 
-    const deadlineDate = task.deadline ? formatTaskDate(task.deadline)  : undefined;
     const deadlineDate = task.deadline ? formatTaskDate(task.deadline)  : undefined;
 
     let [day, month, year]: string[] | undefined[] = deadlineDate
@@ -66,8 +63,6 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
     return(
         <div className="flex flex-col task-item p-3">
             <div className=" flex space-x-2 items-center">
-                <TaskCheckbox updateTaskStatus={updateTaskStatus} completed={task.completed}></TaskCheckbox> 
-                <p>{task.title}</p>
                 <TaskCheckbox updateTaskStatus={updateTaskStatus} completed={task.completed}></TaskCheckbox> 
                 <p>{task.title}</p>
                 <span>

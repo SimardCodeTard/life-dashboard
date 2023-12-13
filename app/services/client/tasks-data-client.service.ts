@@ -9,7 +9,6 @@ import { DateTime } from "luxon";
 export namespace TasksDataClientService {
     // Base URL for the tasks API.
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/task';
-    Logger.debug(apiUrl);
 
     // Fetches all tasks using a GET request.
     export const fetchAllTasks = (): Promise<Task[]> => {
@@ -35,7 +34,7 @@ export namespace TasksDataClientService {
     // Deletes a task by ID using a DELETE request.
     export const deleteTaskById = (taskId: ObjectId): Promise<AxiosResponse> => {
         Logger.debug('Deleting task (in TasksDataClientService)')
-        const url = `${apiUrl}/delete?taskId=${taskId.toString()}`;
+        const url = `${apiUrl}/delete?id=${taskId.toString()}`;
         return axios.delete(url);
     }
 
@@ -55,7 +54,6 @@ export namespace TasksDataClientService {
             else if (!taskB.deadline) return -1;
             const deadlineA = formatTaskDate(taskA.deadline);
             const deadlineB = formatTaskDate(taskB.deadline);
-            console.log(deadlineA, deadlineB)
             return deadlineA.toMillis() - deadlineB.toMillis();
         });
 }

@@ -1,17 +1,11 @@
 import { TasksDataServerService } from "@/app/services/server/tasks-data.server.service";
+import { Task } from "@/app/types/task.type";
+import { handleAPIError, parseBody } from "@/app/utils/api.utils";
 import { NextRequest } from "next/server";
 
-export async function POST(req: NextRequest) {
-  const chunks = [];
-  for await (const chunk of req.body as any) {
-    chunks.push(chunk);
-  }
-
-  const data = Buffer.concat(chunks).toString();
-  const newTask = JSON.parse(data); 
-
-  const res = newTask ? await TasksDataServerService.saveTask(newTask) : null;
-
-  return res !== null && res.acknowledged ? Response.json({success: true}) : Response.json({success: false});
-}  
+export const POST = (req: NextRequest): Promise<Response> => 
+  parseBody<Task>(req)
+    .then(TasksDataServerService.saveTask)
+    .then(() => Response.json({success: true}))
+  .catch(handleAPIError);
   

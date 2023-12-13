@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react";
-
+import Loader from "../shared/loader/loader.component";
+import styles from '../components.module.css';
 export default function Weather() {
     let [weatherData, setWeatherData] = useState<any>(null);
 
@@ -50,7 +51,7 @@ export default function Weather() {
     }, []);
 
     return (
-        <div className="p-2">
+        <div className={["relative p-2", styles.weather].join(' ')}>
             <h2>Météo</h2>
             {weatherData 
                 ? <div className="flex items-center">
@@ -65,7 +66,7 @@ export default function Weather() {
                         <p className="text-[rgb(var(--text-lighter-rgb))]">{(weatherData as any).current.weather[0].description}</p>
                     </div>
                 </div> 
-                : <p>Loading ...</p>
+                : <Loader></Loader>
             }
         </div>
     )

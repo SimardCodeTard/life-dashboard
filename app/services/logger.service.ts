@@ -12,9 +12,19 @@ export namespace Logger {
     const showWarn = (): boolean => loggingLevel <= LoggingLevelsEnum.WARN;
     const showError = (): boolean => loggingLevel <= LoggingLevelsEnum.ERROR;
 
-    export const debug = (message: any) => showDebug() && console.debug(`${DateTime.now().toISO()} [DEBUG] : ${message}`)
-    export const info = (message: any) => showInfo() && console.info(`${DateTime.now().toISO()} [INFO] : ${message}`)
-    export const warn = (message: any) => showWarn() && console.warn(`${DateTime.now().toISO()} [WARN] : ${message}`)
-    export const error = (message: any) => showError() && console.error(`${DateTime.now().toISO()} [ERROR] : ${message}`)
-
+    export const debug = async (message: any) => showDebug() && console.debug(`${DateTime.now().toISO()} [DEBUG] : ${message}`)
+    export const info = async (message: any) => showInfo() && console.info(`${DateTime.now().toISO()} [INFO] : ${message}`)
+    export const warn = async (message: any) => showWarn() && console.warn(`${DateTime.now().toISO()} [WARN] : ${message}`)
+    export const error = (error: Error | string) => {
+        if(!showError()) return;
+        const message = typeof error === 'string' ? error : error.message;
+        const stack = typeof error === 'string' ? new Error().stack  as string : error.stack as string;
+        console.error(`${DateTime.now().toISO()} [ERROR] : ${message}\r\n Stack trace: ${shortenStackTrace(stack)}`);
+    }
+    
+    const shortenStackTrace = (stackTrace: string): string => {
+        const lines = stackTrace.split('\n');
+        const shortenedStackTrace = lines.slice(0, 10).join('\n');
+        return shortenedStackTrace;
+    }
 }
