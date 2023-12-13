@@ -1,3 +1,4 @@
 .calendar {
-    overflow-y: auto;
+    overflow-y: scroll;
+    max-height: 50dvh;
 }

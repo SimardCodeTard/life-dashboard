@@ -55,7 +55,7 @@ export default function Calendar() {
     )
 
     const EventsOfTheDay = () => (
-        <div className={["divide-[rgba(255,255,255,0.2)] h-fit divide-y-2", styles.calendar].join(' ')}>
+        <div className={["divide-[rgba(255,255,255,0.2)] h-fit divide-y-2", styles.eventOfTheDay].join(' ')}>
             {// If calDataMap is set & has an event for the selected date
                 calDataMap && calDataMap.get(selectedDate as string)
                     // Map the events array and display in CalendarItem
@@ -71,8 +71,8 @@ export default function Calendar() {
     }
 
     return (
-        <div className="p-3 h-fit space-y-2">
-            <div className="flex justify-evenly pl-2 pr-2">
+        <div className={["p-3 h-fit space-y-2", styles.calendar].join(' ')}>
+            <div className="flex justify-evenly pl-2 pr-2 sticky top-0 backdrop-blur-3xl bg-white/5 p-2 rounded">
                 <span className="cursor-pointer" onClick={previousDay}>
                     <ArrowBackIosIcon></ArrowBackIosIcon>
                 </span>
