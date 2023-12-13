@@ -34,7 +34,6 @@ export namespace MongoDataServerService {
             Logger.debug('operation result : ' + JSON.stringify(operationResult))
             return operationResult;
         } catch (error: any) {
-            Logger.error("Error in operation: " + error);
             throw new APIInternalServerError('Error in operation: ' + error.message);
         } finally {
             pendingRequests--;

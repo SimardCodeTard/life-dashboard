@@ -5,7 +5,7 @@ import { Logger } from "../services/logger.service";
 
 /**
  * Parse the body of a request as JSON.
- * @throws APIBadRequestError if the body is empty or not valid JSON
+ * @throws APIBadRequestError if the body is empty or not valid JSON, Error if an internal error occurs
  * @param req The request to parse the body from
  * @returns The parsed body
  */
@@ -17,13 +17,14 @@ export async function parseBody<T = unknown>(req: Request): Promise<T> {
 
     try {
         const chunks = [];
+        // The body is a readable binary stream
         const reader = req.body.getReader();
 
         // Read the body into chunks
         let readResult;
-        while (!(readResult = await reader.read()).done) {
+        while (!(readResult = await reader.read()).done) { // While there is still data to read
             const value = readResult.value;
-            if (value !== undefined) {
+            if (value !== undefined) { 
                 chunks.push(value);
             }
         }
@@ -33,8 +34,8 @@ export async function parseBody<T = unknown>(req: Request): Promise<T> {
         // Parse the body as JSON
         return JSON.parse(data) as T;
     } catch (error) {
-        // Throw a 400 error if the body is not valid JSON
-        throw new APIBadRequestError('Request body is not valid JSON');
+        if(error instanceof SyntaxError) throw new APIBadRequestError('Request body is not valid JSON'); // Throw a 400 error if the body is not valid JSON
+        else throw error; // Rethrow, the error will be handled upstream by handleAPIError as an unknown internal error
     }
 }
 
@@ -44,14 +45,16 @@ export async function parseBody<T = unknown>(req: Request): Promise<T> {
  * @returns an appropriate Response
  */
 export const handleAPIError = (error: Error): Response => {
+    Logger.error(error);
+
     // If the error was not properly handled, it will not be an APIError
-    // Return a generic 500 error
+    // Return a generic 500 error response
     if(!(error as any).status) return new Response(JSON.stringify({
         success: false,
         error: { status: 500, message: 'Unhandeled internal error: ' + error.message }
     }), { status: 500, headers: { 'Content-Type': 'application/json' } });
 
-    // The error was properly handled
+    // The error was properly handled, return an appropriate error response
     const apiError = error as APIError;
     return new Response(JSON.stringify({
         success: false,
@@ -69,8 +72,7 @@ export const handleAPIError = (error: Error): Response => {
  */
 export const handleAxiosError = (err: AxiosError): void => {
     Logger.error(err);
-    const axiosError = err as AxiosError;
-    throw new APIError(axiosError.response?.statusText ?? 'Unknown Error', axiosError.response?.status ?? 500);
+    throw new APIError(err.response?.statusText ?? 'Unknown Error', err.response?.status ?? 500);
 }
 
 /**

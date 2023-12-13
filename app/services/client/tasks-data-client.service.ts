@@ -9,7 +9,6 @@ import { DateTime } from "luxon";
 export namespace TasksDataClientService {
     // Base URL for the tasks API.
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/task';
-    Logger.debug(apiUrl);
 
     // Fetches all tasks using a GET request.
     export const fetchAllTasks = (): Promise<Task[]> => {
@@ -55,7 +54,6 @@ export namespace TasksDataClientService {
             else if (!taskB.deadline) return -1;
             const deadlineA = formatTaskDate(taskA.deadline);
             const deadlineB = formatTaskDate(taskB.deadline);
-            console.log(deadlineA, deadlineB)
             return deadlineA.toMillis() - deadlineB.toMillis();
         });
 }
