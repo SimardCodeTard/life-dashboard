@@ -13,7 +13,9 @@
     font-size: 3rem;
     color: rgba(210,200,210,0.65);
 }
-
+.weather {
+    min-height: 4rem;
+}
 .search_bar{
     border: solid 1px rgba(255,255,255,0.2);
     background: linear-gradient(95deg, rgba(255,255,255,0.1) 65%, rgba(255,255,255,0.2));
@@ -42,6 +44,7 @@
 }
 
 .taskList {
+    min-height: 4rem;
     max-height: 630px !important;
     max-width: 314px !important;
     overflow-y: scroll;

@@ -8,6 +8,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { CalendarDataClientService } from "@/app/services/client/calendar-data-client.service";
 import CalendarItem from "./calendar-item/calendar-item.component";
 import styles from './calendar.module.css';
+import Loader from "../../shared/loader/loader.component";
 
 export default function Calendar() {
 
@@ -19,9 +20,12 @@ export default function Calendar() {
         CalendarDataClientService.fetchCalendarEvents()
             .then((data) => {
                 setCalDataMap(data);
-                setIsLoading(false)
             });
     }, [])
+
+    useEffect(() => {
+        calDataMap.size > 0 && setIsLoading(false);
+    }, [calDataMap])
 
     const nextDay = () => {
         let currentDate = selectedDate ? CalendarDataClientService.fromGroupedEventKeyToDateTime(selectedDate) : DateTime.now();
@@ -45,9 +49,9 @@ export default function Calendar() {
     }
 
     const FriendlyMessage = () => (
-        <p className="text-[rgba(255,255,255,0.5)]">
-            {isLoading ? 'Loading calendar events  ...' :  buildFriendlyMessage()}
-        </p>
+        <div className="relative overflow-hidden p-2 h-16 w-full flex align-center justify-center text-[rgba(255,255,255,0.5)]">
+            {isLoading ? <Loader></Loader> :  buildFriendlyMessage()}
+        </div>
     )
 
     const EventsOfTheDay = () => (

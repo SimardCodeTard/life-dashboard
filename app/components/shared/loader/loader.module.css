@@ -1,18 +1,17 @@
 .loader {
-    position: absolute; /* ou absolute, selon le contexte */
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Overlay semi-transparent */
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Assurez-vous que cela soit au-dessus des autres éléments */
-    pointer-events: none; /* Empêche les interactions avec les éléments sous-jacents */
+    z-index: 1000;
+    pointer-events: none;
 }
 
-/* Pour permettre les clics sur CircularProgress */
 .loader > * {
     pointer-events: auto;
 }
