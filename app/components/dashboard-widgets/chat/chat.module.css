@@ -3,6 +3,52 @@
     display: flex;
     flex-direction: column;
 }
+.fullScreenChat {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh !important;
+    z-index: 100;
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fullScreenChat > *:not(.closeFullscreenIcon) {
+    width: 80vw;
+    margin: 1rem;
+}
+
+.fullScreenChat > .closeFullscreenIcon {
+    margin-bottom: auto;
+}
+
+.fullScreenChat > .chatMessages {
+    min-height: 0;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: solid 1px rgba(255,255,255,0.1);
+    background-color: rgba(255,255,255,0.1);
+}
+
+.fullScreenChat > form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.fullScreenChat > form > input {
+    width: 75%;
+}
+
+.fullScreenChat > form > button {
+    width: 15%;
+}
+
+
 .chatMessages {
     position: relative;
     min-height: 4rem;
