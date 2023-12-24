@@ -19,21 +19,23 @@ export default function Clock() {
     const [hourDisplay, setHourDisplay] = useState('');
     const [secondsDisplay, setSecondsDisplay] = useState('');
 
+    let now: DateTime;
+        
     const updateClock = () => {
-        const {second, minute, hour, day, month, year} = DateTime.now();
+        now = DateTime.now();
 
-        if(second != lastSecond) {
+        if(now.second != lastSecond) {
             // Update the seconds
-            lastSecond = second;
+            lastSecond = now.second;
             setSecondsDisplay(getSecondsString());
 
-            if(hourDisplay === '' || minute != lastMinute || hour != lastHour) {
+            if(hourDisplay === '' || now.minute != lastMinute || now.hour != lastHour) {
                 // Update the minutes
-                lastMinute = minute;
-                lastHour = hour;
+                lastMinute = now.minute;
+                lastHour = now.hour;
                 setHourDisplay(getHourString());
 
-                if(dateDisplay === '' || lastDate !== null && day !== lastDate.day && month !== lastDate.month && year !== lastDate.year) {
+                if(dateDisplay === '' || lastDate !== null && now.day !== lastDate.day && now.month !== lastDate.month && now.year !== lastDate.year) {
                     // Update the date
                     setDateDisplay(getDateString());
                 }
@@ -44,7 +46,7 @@ export default function Clock() {
     useEffect(()=>{
         setDateDisplay(getDateString())
         updateClock();
-        setInterval(updateClock, 100)
+        setInterval(updateClock, 500)
     }, []);
 
     return (
