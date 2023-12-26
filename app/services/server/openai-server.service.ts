@@ -1,7 +1,6 @@
 import { ChatMessage } from "@/app/types/chat.type";
 import { DateTime } from "luxon";
 import OpenAI from "openai";
-import { Logger } from "../logger.service";
 import { APIInternalServerError } from "@/app/errors/api.error";
 
 export namespace OpenAIServerService {
