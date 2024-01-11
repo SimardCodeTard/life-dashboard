@@ -1,14 +1,16 @@
 import Tasks from "../components/dashboard-widgets/tasks/task-list.component";
-import Weather from "../components/client/weather.component";
+import Weather from "../components/dashboard-widgets/weather.component";
 import Calendar from "../components/dashboard-widgets/calendar/calendar.component";
-import Clock from "../components/client/clock.component";
-import Card from "../components/dashboard-widgets/generic/card.component";
-import SearchBar from "../components/search-bar/search-bar.component";
+import Clock from "../components/dashboard-widgets/clock.component";
+import Card from "../components/shared/card.component";
+import SearchBar from "../components/dashboard-widgets/search-bar/search-bar.component";
+import FavoritesBar from "../components/dashboard-widgets/favorites-bar/favorites-bar";
+import Chat from "../components/dashboard-widgets/chat/chat.component";
 
 export default function DashboardPage() {
 
     return (
-        <main className="flex w-full justify-between">
+        <main className="flex h-screen w-full justify-between">
 
             <div className="left-section w-1/4">
                 <Card><Tasks></Tasks></Card>
@@ -16,7 +18,7 @@ export default function DashboardPage() {
             </div>
 
 
-            <div className="center-col m-4 flex w-full justify-center">
+            <div className="center-col m-4 flex flex-col w-full items-center">
             
                 <div className="top-section w-full flex flex-col items-center justify-items-start space-y-24">
                     <SearchBar></SearchBar>
@@ -25,12 +27,15 @@ export default function DashboardPage() {
 
                 <div className="center-section"></div>
 
-                <div className="bottom-section"></div>
+                <div className="bottom-section">
+                    <FavoritesBar></FavoritesBar>
+                </div>
 
             </div>
 
-            <div className="right-section w-1/4">
+            <div className="right-section flex flex-col self-end w-1/4 h-full">
                     <Card><Calendar></Calendar></Card>
+                    <Card><Chat></Chat></Card>
             </div>
 
         </main>
