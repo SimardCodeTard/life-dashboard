@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { Task } from "../../types/task.type";
+import { Task, TaskDto } from "../../types/task.type";
 import { ObjectId } from "bson";
 import { Logger } from "../logger.service";
 import { TaskAlt } from "@mui/icons-material";
@@ -12,17 +12,17 @@ export namespace TasksDataClientService {
     Logger.debug(apiUrl);
 
     // Fetches all tasks using a GET request.
-    export const fetchAllTasks = (): Promise<Task[]> => {
+    export const fetchAllTasks = (): Promise<TaskDto[]> => {
         Logger.debug('Fetching all tasks (in TasksDataClientService)')
         return axios.get(apiUrl, {
             headers: {
                 'cache-control': 'no-cache'
             }
-        }).then(response => sortTaskByMostUrgent(response.data) as Task[]);
+        }).then(response => sortTaskDtoByMostUrgent(response.data) as TaskDto[]);
     }
 
     // Saves a task using a POST request.
-    export const saveTask = (task: Task): Promise<AxiosResponse> => {
+    export const saveTask = (task: Task): Promise<AxiosResponse<{data:{succes: boolean}}>> => {
         Logger.debug('Saving new task (in TasksDataClientService)')
         const url = `${apiUrl}/new`;
         return axios.post(url, task, {
@@ -33,14 +33,14 @@ export namespace TasksDataClientService {
     }
 
     // Deletes a task by ID using a DELETE request.
-    export const deleteTaskById = (taskId: ObjectId): Promise<AxiosResponse> => {
+    export const deleteTaskById = (taskId: ObjectId): Promise<AxiosResponse<{success: boolean}>> => {
         Logger.debug('Deleting task (in TasksDataClientService)')
         const url = `${apiUrl}/delete?taskId=${taskId.toString()}`;
         return axios.delete(url);
     }
 
     // Updates a task using a PUT request.
-    export const updateTask = (task: Task): Promise<AxiosResponse> => {
+    export const updateTask = (task: Task): Promise<AxiosResponse<{success: boolean}>> => {
         Logger.debug('Updating task (in TasksDataClientService)')
         const url = `${apiUrl}/update`;
         return axios.put(url, task);
@@ -48,14 +48,21 @@ export namespace TasksDataClientService {
 
     export const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
 
+    export const mapTaskToTaskDto = (task: Task): TaskDto => ({...task, deadline: task.deadline?.toISO() ?? undefined});
 
-    export const sortTaskByMostUrgent = (tasks: Task[]): Task[] => 
-        tasks.toSorted((taskA: Task, taskB: Task) => {
+    export const mapTaskToTaskDtoList = (tasks: Task[]): TaskDto[] => tasks.map(mapTaskToTaskDto);
+
+    export const mapTaskDtoToTask = (taskDto: TaskDto): Task => ({...taskDto, deadline: taskDto.deadline ? formatTaskDate(taskDto.deadline) : undefined});
+
+    export const mapTaskDtoToTaskList = (tasksDto: TaskDto[]): Task[] => tasksDto.map(mapTaskDtoToTask);
+
+
+    export const sortTaskDtoByMostUrgent = (tasks: TaskDto[]): TaskDto[] => 
+        tasks.toSorted((taskA: TaskDto, taskB: TaskDto) => {
             if(!taskA.deadline) return 1;
             else if (!taskB.deadline) return -1;
             const deadlineA = formatTaskDate(taskA.deadline);
             const deadlineB = formatTaskDate(taskB.deadline);
-            console.log(deadlineA, deadlineB)
             return deadlineA.toMillis() - deadlineB.toMillis();
         });
 }

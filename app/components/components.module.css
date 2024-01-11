@@ -42,14 +42,16 @@
 }
 
 .taskList {
-    max-height: 59vh !important;
+    max-height: 630px !important;
+    max-width: 314px !important;
     overflow-y: scroll;
 }
 
 .taskList > form {
     position: sticky;
-    bottom: 0;
+    bottom: 0px;
     backdrop-filter: blur(15px);
     background-color: rgba(255,255,255,0.1);
+    border-radius: 0.25rem;
     padding: 1rem;
 }

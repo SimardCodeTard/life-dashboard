@@ -1,5 +1,4 @@
 'use client'
-
 import { Task } from "@/app/types/task.type";
 import TaskItem from "./task.component";
 import { FormEvent, useEffect, useState } from "react";
@@ -22,23 +21,23 @@ export default function Tasks() {
         const newTask: Task = {title, deadline: deadline, completed};
 
         TasksDataClientService.saveTask(newTask)
-        .then((res: any) => res.data.success && TasksDataClientService.fetchAllTasks().then(setTasks));
+        .then((res: any) => res.data.success && TasksDataClientService.fetchAllTasks().then(TasksDataClientService.mapTaskDtoToTaskList).then(setTasks));
        
         (event.target as any)[0].value = "";
         (event.target as any)[1].value = "";
     }
 
     useEffect(() => {
-        TasksDataClientService.fetchAllTasks().then(setTasks).catch(console.error);
+        TasksDataClientService.fetchAllTasks().then(TasksDataClientService.mapTaskDtoToTaskList).then(setTasks).catch(console.error);
     }, [])
 
     return (
         <div className={["p-2 task-list", styles.taskList].join(' ')}>
-            <h2 className="text-xl mt-2 mb-2">Tasks</h2>
+            <h2 className="text-lg mt-2 mb-3">Tasks</h2>
             {tasks.map((task: Task, key: number) => {
                 return <TaskItem setTasks={setTasks} task={task} key={key}></TaskItem>
             })}
-            <form className="mt-2 rounded-sm shadow-xl flex flex-col" onSubmit={onNewTaskSubmit}>
+            <form className="mt-2 flex flex-col shadow-xl" onSubmit={onNewTaskSubmit}>
                 <span className="space-y-1">
                     <input type="text" className="p-1 rounded bg-[rgba(255,255,255,0.2)]" placeholder="New task"></input>
                     <input type="date" className="p-1 rounded bg-[rgba(255,255,255,0.2)]"></input>
