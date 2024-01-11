@@ -79,7 +79,7 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
                 </span>
             </div>
             <p className={'text-sm' + ` ${deadlineIsPassed() ? 'text-red-500/75' : 'text-[rgb(var(--text-lighter-rgb))]'}`} 
-                >{task.deadline && `Deadline: ${day}/${month}/${year}`}</p>
+              >{task.deadline && `Deadline: ${day}/${month}/${year}`}</p>
             
             <ModalComponent modalOpened={editModalOpened} setModalOpened={setEditModalOpen}>
                 <form onSubmit={onTaskEditFormSubmit}>

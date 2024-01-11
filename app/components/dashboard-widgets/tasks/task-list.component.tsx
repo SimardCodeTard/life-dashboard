@@ -5,7 +5,6 @@ import { FormEvent, useEffect, useState } from "react";
 import { TasksDataClientService } from "@/app/services/client/tasks-data-client.service";
 import styles from '../../components.module.css';
 
-
 export default function Tasks() {
 
     const [tasks, setTasks] = useState<Task[]>([]);
