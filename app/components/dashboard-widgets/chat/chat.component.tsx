@@ -7,11 +7,15 @@ import { Logger } from '@/app/services/logger.service';
 import ChatMessage from './chat-message/chat-message.component';
 import { ChatMessage as ChatMessageModel } from '@/app/types/chat.type';
 import Loader from '../../shared/loader/loader.component';
+import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
+import CloseFullscreenRoundedIcon from '@mui/icons-material/CloseFullscreenRounded';
 
 export default function Chat() {
 
     const [messages, setMessages] = useState<ChatMessageModel[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const[isFullscreen, setIsFullscreen] = useState(false);
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
     
     useEffect(() => {
@@ -39,9 +43,20 @@ export default function Chat() {
         }).then(() => setIsLoading(false)).catch(Logger.error);
     }
 
+    const onChatExpandClick = () => {
+        Logger.info('Chat expanded');
+        setIsFullscreen(!isFullscreen);
+    }
+
     return (
-        <div className={[styles.chat].join(' ')}>
-            <div className={['p-2 rounded h-full', styles.chatMessages].join(' ')}>
+        <div className={[styles.chat, isFullscreen ? styles.fullScreenChat : undefined].join(' ')}>
+            
+            
+            <div className={['flex flex-col p-2 rounded h-full', styles.chatMessages].join(' ')}>
+                {isFullscreen 
+                    ? <CloseFullscreenRoundedIcon className={['m-1 ml-auto text-white/50 cursor-pointer hover:text-white/75', styles.closeFullscreenIcon].join(' ')} 
+                        onClick={onChatExpandClick}></CloseFullscreenRoundedIcon>
+                    : <OpenInFullRoundedIcon className='m-1 ml-auto text-white/50 cursor-pointer hover:text-white/75' onClick={onChatExpandClick}></OpenInFullRoundedIcon> }
                 {messages.map((message: ChatMessageModel, key: number) => <ChatMessage key={key} message={message}></ChatMessage>)}
                 {isLoading && <Loader></Loader>}
                 <div ref={messagesEndRef}></div>

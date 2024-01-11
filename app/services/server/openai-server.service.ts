@@ -1,11 +1,12 @@
 import { ChatMessage } from "@/app/types/chat.type";
 import { DateTime } from "luxon";
 import OpenAI from "openai";
+import { Logger } from "../logger.service";
 import { APIInternalServerError } from "@/app/errors/api.error";
 
 export namespace OpenAIServerService {
 
-    const blockAPICalls = process.env.NEXT_PUBLIC_BLOCK_OPEN_AI_API_CALLS || false; // Will be removed in the future
+    const blockAPICalls = process.env?.NEXT_PUBLIC_BLOCK_OPEN_AI_API_CALLS === 'true' ?? false; // Will be removed in the future
 
     let messages: Array<ChatMessage> = buildStartingMessages();
 
