@@ -22,14 +22,14 @@ export default function Tasks() {
         const newTask: Task = {title, deadline: deadline, completed};
 
         TasksDataClientService.saveTask(newTask)
-        .then((res: any) => res.data.success && TasksDataClientService.fetchAllTasks().then(setTasks));
+        .then((res: any) => res.data.success && TasksDataClientService.fetchAllTasks().then(TasksDataClientService.mapTaskDtoToTaskList).then(setTasks));
        
         (event.target as any)[0].value = "";
         (event.target as any)[1].value = "";
     }
 
     useEffect(() => {
-        TasksDataClientService.fetchAllTasks().then(setTasks).catch(console.error);
+        TasksDataClientService.fetchAllTasks().then(TasksDataClientService.mapTaskDtoToTaskList).then(setTasks).catch(console.error);
     }, [])
 
     return (

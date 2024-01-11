@@ -18,7 +18,7 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
         task._id && TasksDataClientService.deleteTaskById(task._id)
             .then((res) => res.data.success && TasksDataClientService.fetchAllTasks()
             .catch(Logger.error)
-            .then((tasks) => tasks && setTasks(tasks)))
+            .then((tasks) => tasks && setTasks(TasksDataClientService.mapTaskDtoToTaskList(tasks))))
     }
 
     const updateTaskStatus = (status: boolean) => {
@@ -30,18 +30,12 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
 
     const deadlineIsPassed = (): boolean => {
         if(!task.deadline) return false;
-        const taskDate = formatTaskDate(task.deadline);
-        if(!task.deadline) return false;
-        const taskDate = formatTaskDate(task.deadline);
         const today = DateTime.now();
-        return today.toMillis() > taskDate.toMillis();
+        return today.toMillis() > task.deadline.toMillis();
     }
 
-    const deadlineDate = task.deadline ? formatTaskDate(task.deadline)  : undefined;
-    const deadlineDate = task.deadline ? formatTaskDate(task.deadline)  : undefined;
-
-    let [day, month, year]: string[] | undefined[] = deadlineDate
-        ? [deadlineDate.day.toString(), deadlineDate.month.toString(), deadlineDate.year.toString()] 
+    let [day, month, year]: string[] | undefined[] = task.deadline
+        ? [task.deadline.day.toString(), task.deadline.month.toString(), task.deadline.year.toString()] 
         : [undefined, undefined, undefined];
         
     if (Number(day) < 10) {
@@ -55,21 +49,29 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
         const newTaskTitle = (event.target as any)[0].value;
         const newTaskDeadline = (event.target as any)[1].value;
         TasksDataClientService.updateTask({...task, title: newTaskTitle, deadline: newTaskDeadline})
-        .then(async () => setTasks(await TasksDataClientService.fetchAllTasks()));
+        .then(async () => setTasks(TasksDataClientService.mapTaskDtoToTaskList( await TasksDataClientService.fetchAllTasks() )));
         setEditModalOpen(false);
     }
 
     const taskTitleInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskTitle(e.currentTarget.value);
 
-    const taskDeadlineInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskDeadline(e.currentTarget.value);
+    const taskDeadlineInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskDeadline(formatTaskDate(e.currentTarget.value));
+
+    const getRemainingTime = (deadline: DateTime): string => {
+        const diff = deadline.diffNow();
+        if(diff.as('days') > 0) {
+            return `${Math.floor(diff.as('days'))} days`;
+        } else {
+            return '';
+        }
+    }
 
     return(
         <div className="flex flex-col task-item p-3">
             <div className=" flex space-x-2 items-center">
                 <TaskCheckbox updateTaskStatus={updateTaskStatus} completed={task.completed}></TaskCheckbox> 
                 <p>{task.title}</p>
-                <TaskCheckbox updateTaskStatus={updateTaskStatus} completed={task.completed}></TaskCheckbox> 
-                <p>{task.title}</p>
+                <div className="text-sm text-[rgba(255,255,255,0.2)]">{task.deadline?.isValid && getRemainingTime(task.deadline)}</div>
                 <span>
                     <EditNote onClick={() => setEditModalOpen(true)} 
                         className="cursor-pointer text-[rgba(255,255,255,0.2)] text-base hover:text-[rgba(255,255,255,0.6)]"></EditNote>
@@ -83,7 +85,7 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
                 <form onSubmit={onTaskEditFormSubmit}>
                     <input autoFocus={true} value={taskTitle} onChange={taskTitleInputChange} className='h-6 w-5/6 mb-2 bg-[rgba(255,255,255,0.2)] rounded p-1' 
                         type="text" placeholder='Name'></input>
-                    <input type="date" value={taskDeadline} onChange={taskDeadlineInputChange} className="p-1 rounded bg-[rgba(255,255,255,0.2)]"></input>
+                    <input type="date" value={taskDeadline?.toISO() ?? ''} onChange={taskDeadlineInputChange} className="p-1 rounded bg-[rgba(255,255,255,0.2)]"></input>
                     <button className='h-6 w-5/6 mt-2 bg-[rgba(255,255,255,0.3)] rounded'>Save</button>
                 </form>
             </ModalComponent>
