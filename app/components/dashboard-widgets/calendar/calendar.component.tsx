@@ -5,7 +5,7 @@ import { CalendarUtils } from "@/app/utils/calendar.utils";
 import { DateTime } from "luxon";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { CalendarDataClientService } from "@/app/services/client/calendar-data-client.service";
+import { clientCalendarDataService } from "@/app/services/client/calendar-data-client.service";
 import CalendarItem from "./calendar-item/calendar-item.component";
 import styles from './calendar.module.css';
 import Loader from "../../shared/loader/loader.component";
@@ -13,11 +13,11 @@ import Loader from "../../shared/loader/loader.component";
 export default function Calendar() {
 
     const [calDataMap, setCalDataMap] = useState<Map<string, CalendarEventType[]>>(new Map());
-    const [selectedDate, setSelectedDate] = useState<string>(CalendarDataClientService.fromDateTimeToGroupedEventMapKey(DateTime.now()));
+    const [selectedDate, setSelectedDate] = useState<string>(clientCalendarDataService.fromDateTimeToGroupedEventMapKey(DateTime.now()));
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        CalendarDataClientService.fetchCalendarEvents()
+        clientCalendarDataService.fetchCalendarEvents()
             .then((data) => {
                 setCalDataMap(data);
             });
@@ -28,19 +28,19 @@ export default function Calendar() {
     }, [calDataMap])
 
     const nextDay = () => {
-        let currentDate = selectedDate ? CalendarDataClientService.fromGroupedEventKeyToDateTime(selectedDate) : DateTime.now();
+        let currentDate = selectedDate ? clientCalendarDataService.fromGroupedEventKeyToDateTime(selectedDate) : DateTime.now();
         currentDate = currentDate.plus({ days: 1 })
-        setSelectedDate(CalendarDataClientService.fromDateTimeToGroupedEventMapKey(currentDate));
+        setSelectedDate(clientCalendarDataService.fromDateTimeToGroupedEventMapKey(currentDate));
     }
 
     const previousDay = () => {
-        let currentDate = selectedDate ? CalendarDataClientService.fromGroupedEventKeyToDateTime(selectedDate) : DateTime.now();
+        let currentDate = selectedDate ? clientCalendarDataService.fromGroupedEventKeyToDateTime(selectedDate) : DateTime.now();
         currentDate = currentDate.minus({ days: 1 })
-        setSelectedDate(CalendarDataClientService.fromDateTimeToGroupedEventMapKey(currentDate));
+        setSelectedDate(clientCalendarDataService.fromDateTimeToGroupedEventMapKey(currentDate));
     }
 
     const buildFriendlyMessage = () => {
-        const date = CalendarDataClientService.fromGroupedEventKeyToDateTime(selectedDate);
+        const date = clientCalendarDataService.fromGroupedEventKeyToDateTime(selectedDate);
         if(CalendarUtils.isSameDay(date)) {
             return 'You\'re all free today :)';         
         } else {
@@ -67,7 +67,7 @@ export default function Calendar() {
     );
 
     const selectedIsToday = (): boolean => {
-        return CalendarUtils.isSameDay(CalendarDataClientService.fromGroupedEventKeyToDateTime(selectedDate));
+        return CalendarUtils.isSameDay(clientCalendarDataService.fromGroupedEventKeyToDateTime(selectedDate));
     }
 
     return (
@@ -81,7 +81,7 @@ export default function Calendar() {
                     {selectedIsToday() 
                         ? <p className="w-full flex text-[rgba(255,255,255,0.4)] justify-center">today</p> 
                         : <span className="w-full cursor-pointer flex text-[rgba(255,255,255,0.4)] justify-center"
-                            onClick={() => setSelectedDate(CalendarDataClientService.fromDateTimeToGroupedEventMapKey(DateTime.now()))}
+                            onClick={() => setSelectedDate(clientCalendarDataService.fromDateTimeToGroupedEventMapKey(DateTime.now()))}
                             >go to today</span>}
                 </span>
                 <span className="cursor-pointer" onClick={nextDay}>

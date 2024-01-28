@@ -2,7 +2,7 @@ import { Task } from "@/app/types/task.type";
 import TaskCheckbox from "../../shared/checkbox.component";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { EditNote } from "@mui/icons-material";
-import { TasksDataClientService } from "@/app/services/client/tasks-data-client.service";
+import { clientTaskDataService } from "@/app/services/client/tasks-data-client.service";
 import { DateTime } from "luxon";
 import ModalComponent from "../../shared/modal.component";
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -15,15 +15,15 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
     const [taskDeadline, setTaskDeadline] = useState(task.deadline);
 
     const deleteButtonClicked = () => {
-        task._id && TasksDataClientService.deleteTaskById(task._id)
-            .then((res) => res.data.success && TasksDataClientService.fetchAllTasks()
+        task._id && clientTaskDataService.deleteTaskById(task._id)
+            .then((res) => res.data.success && clientTaskDataService.fetchAllTasks()
             .catch(Logger.error)
             .then((tasks) => tasks && setTasks(tasks)))
     }
 
     const updateTaskStatus = (status: boolean) => {
         task = {...task, _id: task._id, completed: status};
-        TasksDataClientService.updateTask(task);
+        clientTaskDataService.updateTask(task);
     }
 
     const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
@@ -51,8 +51,8 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
         event.preventDefault();
         const newTaskTitle = (event.target as any)[0].value;
         const newTaskDeadline = (event.target as any)[1].value;
-        TasksDataClientService.updateTask({...task, title: newTaskTitle, deadline: newTaskDeadline})
-        .then(async () => setTasks(await TasksDataClientService.fetchAllTasks()));
+        clientTaskDataService.updateTask({...task, title: newTaskTitle, deadline: newTaskDeadline})
+        .then(async () => setTasks(await clientTaskDataService.fetchAllTasks()));
         setEditModalOpen(false);
     }
 

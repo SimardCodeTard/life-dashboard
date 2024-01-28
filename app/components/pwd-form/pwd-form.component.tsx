@@ -1,6 +1,6 @@
 'use client'
 
-import { LoginClientService } from "@/app/services/client/login.client.service";
+import { clientLoginService } from "@/app/services/client/login.client.service";
 import { FormEvent } from "react"
 
 export default function PWDForm() {
@@ -11,7 +11,7 @@ export default function PWDForm() {
         const password = (e.target as any)[0].value; 
         (e.target as any)[0].value = '';
         console.log(password)
-        LoginClientService.login(password)
+        clientLoginService.login(password)
         .then((res: {token: string} | false) => {
             if (res !== false) {
                 // Save the token in a cookie

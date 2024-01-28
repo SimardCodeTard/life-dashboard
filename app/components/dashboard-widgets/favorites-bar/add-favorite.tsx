@@ -1,5 +1,5 @@
 "use client"
-import { FavoritesDataClientService } from '@/app/services/client/favorites-data.client.service';
+import { clientFavoritesDataService } from '@/app/services/client/favorites-data.client.service';
 import { AddFavoritePropsType, FavoriteItemType } from '@/app/types/favorites.type';
 import AddIcon from '@mui/icons-material/Add';  
 import { FormEvent, useState } from 'react';
@@ -22,9 +22,9 @@ export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType)
         onModalClose();
         e.preventDefault();
         const name: string = (e.target as any)[0].value;
-        const url: string = FavoritesDataClientService.validateUrl((e.target as any)[1].value);
+        const url: string = clientFavoritesDataService.validateUrl((e.target as any)[1].value);
         const newFavoriteItem: FavoriteItemType = { name, url };
-        if ((await FavoritesDataClientService.saveNewFavoriteItem(newFavoriteItem)).success) {
+        if ((await clientFavoritesDataService.saveNewFavoriteItem(newFavoriteItem)).success) {
             updateFavoritesList();
         }
     }

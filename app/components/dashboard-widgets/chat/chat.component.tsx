@@ -2,7 +2,7 @@
 
 import styles from './chat.module.css';
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import { OpenAIClientService } from '@/app/services/client/openai-client.service';
+import { clientOpenAIService } from '@/app/services/client/openai-client.service';
 import { Logger } from '@/app/services/logger.service';
 import ChatMessage from './chat-message/chat-message.component';
 import { ChatMessage as ChatMessageModel } from '@/app/types/chat.type';
@@ -20,7 +20,7 @@ export default function Chat() {
     
     useEffect(() => {
         setIsLoading(true);
-        OpenAIClientService.startNewConversation().then(setMessages).then(() => setIsLoading(false)).catch(Logger.error)
+        clientOpenAIService.startNewConversation().then(setMessages).then(() => setIsLoading(false)).catch(Logger.error)
     }, [])
 
     useEffect(() => {
@@ -38,7 +38,7 @@ export default function Chat() {
         const message = (event.target as any)[0].value;
         (event.target as any)[0].value = "";
 
-        OpenAIClientService.sendMessage(message).then((messages: ChatMessageModel[]) => {
+        clientOpenAIService.sendMessage(message).then((messages: ChatMessageModel[]) => {
             setMessages(messages);
         }).then(() => setIsLoading(false)).catch(Logger.error);
     }

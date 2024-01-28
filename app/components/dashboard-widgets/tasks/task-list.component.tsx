@@ -2,7 +2,7 @@
 import { Task } from "@/app/types/task.type";
 import TaskItem from "./task.component";
 import { FormEvent, useEffect, useState } from "react";
-import { TasksDataClientService } from "@/app/services/client/tasks-data-client.service";
+import { clientTaskDataService } from "@/app/services/client/tasks-data-client.service";
 import styles from '../../components.module.css';
 import Loader from "../../shared/loader/loader.component";
 
@@ -25,8 +25,8 @@ export default function Tasks() {
         const completed = false;
         const newTask: Task = {title, deadline: deadline, completed};
 
-        TasksDataClientService.saveTask(newTask)
-        .then((res: any) => res.data.success && TasksDataClientService.fetchAllTasks().then(setTasks).then(() => setIsLoading(false)).catch(console.error));
+        clientTaskDataService.saveTask(newTask)
+        .then((res: any) => res.data.success && clientTaskDataService.fetchAllTasks().then(setTasks).then(() => setIsLoading(false)).catch(console.error));
        
         (event.target as any)[0].value = "";
         (event.target as any)[1].value = "";
@@ -34,7 +34,7 @@ export default function Tasks() {
 
     useEffect(() => {
         setIsLoading(true);
-        TasksDataClientService.fetchAllTasks().then(setTasks).then(() => setIsLoading(false)).catch(console.error);
+        clientTaskDataService.fetchAllTasks().then(setTasks).then(() => setIsLoading(false)).catch(console.error);
     }, [])
 
     return (
