@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 import { Logger } from "../logger.service";
 import { handleAxiosError } from "@/app/utils/api.utils";
 
-export namespace CalendarDataClientService {
+export namespace clientCalendarDataService {
 
     const formatDateUnivClaudeBernard = (dateStr: string) => DateTime.fromFormat(dateStr, "yyyyMMdd'T'hhmmss'Z'");
 

@@ -3,7 +3,7 @@ import axios from "axios";
 import { ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
 import { Logger } from "../logger.service";
 
-export namespace OpenAIClientService {
+export namespace clientOpenAIService {
     try{
         assert(process.env.NEXT_PUBLIC_API_URL !== undefined);
     } catch (e) {

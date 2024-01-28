@@ -6,7 +6,7 @@ import { TaskAlt } from "@mui/icons-material";
 import { DateTime } from "luxon";
 
 // Namespace for client-side services to interact with the tasks API.
-export namespace TasksDataClientService {
+export namespace clientTaskDataService {
     // Base URL for the tasks API.
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/task';
 

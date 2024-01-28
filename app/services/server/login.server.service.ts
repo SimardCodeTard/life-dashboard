@@ -1,70 +1,55 @@
 import { APIForbiddenError, APIInternalServerError } from "@/app/errors/api.error";
 import { Logger } from "../logger.service";
-import SHA256 from "crypto-js/sha256";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 /**
  * Namespace for server-side services to interact with the login API.
  */
-export namespace LoginServerService {
-    if(process.env.NEXT_PUBLIC_APP_PASSWORD === undefined) throw new APIInternalServerError('Server configuration error: Password is undefined');
+export namespace serverLoginService {
+    if (!process.env.APP_PASSWORD || !process.env.JWT_SECRET) {
+        throw new APIInternalServerError('Server configuration error: Required environment variables are undefined');
+    }
 
-    const APP_PASSWORD = 'prout' 
-    // SHA256(process.env.NEXT_PUBLIC_APP_PASSWORD).toString();
-
-    const tokens: Array<string> = [];
-    const tokenCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const APP_PASSWORD = bcrypt.hashSync(process.env.APP_PASSWORD, 10);
+    const JWT_SECRET = process.env.JWT_SECRET as string;
 
     /**
-     * Generate a random unique token
+     * Generate a JWT token
      */
-    const generateRandomToken = (length: number = 50): string=> {
-        let token = '';
-        for(let i = 0; i < length; i++) {
-            token += tokenCharacters.charAt(Math.floor(Math.random() * tokenCharacters.length));
-        }
-        if(tokens.includes(token)) {
-            Logger.debug('Somehow generated a duplicate token, generating a new one...')
-            return generateRandomToken(length);
-        }
-        return token;
+    const generateJWTToken = (userId: string): string => {
+        return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '24h' });
     }
 
     /**
-     * Check if a token is valid
+     * Check if a JWT token is valid
      * @param token The token to check
      * @returns true if the token is valid, false otherwise
      */
     export const isLoggedIn = (token: string): boolean => {
-        return tokens.includes(token);
-    }
-
-    /**
-     * Save a temporary token to the array
-     * @param token The token to save
-     * @param duration The duration in hours for which the token will be valid, defaults to 24
-     */
-    const saveTemporaryToken = (token: string, duration: number = 24) => {
-        tokens.push(token);
-        setTimeout(() => {
-            tokens.splice(tokens.indexOf(token), 1);
-        }, 1000 * 60 * 60 * duration);
+        try {
+            jwt.verify(token, JWT_SECRET);
+        } catch (e) {
+            Logger.debug('Invalid JWT token: ' + (e as Error).message);
+            return false;
+        }
+        return true;
     }
 
     /**
      * Login with a password
      * @param login the password to login with
-     * @returns A temporary token if the password is correct, false otherwise
+     * @returns A JWT token if the password is correct, an error otherwise
      */
-    export const login = async (login: {password: string}): Promise<{token: string}> => {
+    export const login = async (login: { password: string }): Promise<{ token: string }> => {
         const userPassword = login.password;
 
-        if (userPassword !== APP_PASSWORD) {
+        if (!bcrypt.compareSync(userPassword, APP_PASSWORD)) {
             throw new APIForbiddenError('Invalid password');
         }
 
-        const token = generateRandomToken();
-        saveTemporaryToken(token);
+        const token = generateJWTToken('user_id'); // Replace 'user_id' with actual user identifier
 
-        return {token};
+        return { token };
     };
 }

@@ -8,9 +8,9 @@ import {
 } from "@/app/errors/api.error";
 import { handleAxiosError } from "@/app/utils/api.utils";
 
-export namespace CalendarDataServerService {
+export namespace serverCalendarDataService {
     export const findEventsFromUniv = async (): Promise<CalendarEventTypeDTO[]> => {
-        const url = process.env.NEXT_PUBLIC_CALENDAR_URL_UNIV as string;
+        const url = process.env.CALENDAR_URL_UNIV as string;
         
         try {
             assert(url !== undefined);

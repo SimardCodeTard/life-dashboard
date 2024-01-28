@@ -4,7 +4,7 @@ import assert from "assert";
 import axios from "axios";
 import { ObjectId } from "mongodb";
 
-export namespace FavoritesDataClientService {
+export namespace clientFavoritesDataService {
 
     const url = process.env.NEXT_PUBLIC_API_URL + "/favorites" as string;
     assert(url !== undefined);
