@@ -14,5 +14,7 @@ export namespace clientFavoritesDataService {
 
     export const updateFavoriteItem = (item: FavoriteItemType) => axiosClientService.POST(url + "/update", item).then(res => res.data);
 
+    export const deleteFavoriteItem = (id: ObjectId) => axiosClientService.DELETE(url + `/delete?id=${id.toString()}`).then(res => res.data);
+
     export const findAllFavoriteItems = () => axiosClientService.GET<FavoriteItemType[]>(url).then(res => res.data.length > 0 ? res.data : []);
 }
