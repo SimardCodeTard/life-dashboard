@@ -1,6 +1,5 @@
 import { APIForbiddenError, APIInternalServerError } from "@/app/errors/api.error";
 import { Logger } from "../logger.service";
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 /**
@@ -11,7 +10,7 @@ export namespace serverLoginService {
         throw new APIInternalServerError('Server configuration error: Required environment variables are undefined');
     }
 
-    const APP_PASSWORD = bcrypt.hashSync(process.env.APP_PASSWORD, 10);
+    const APP_PASSWORD = process.env.APP_PASSWORD as string;
     const JWT_SECRET = process.env.JWT_SECRET as string;
 
     /**
@@ -44,7 +43,7 @@ export namespace serverLoginService {
     export const login = async (login: { password: string }): Promise<{ token: string }> => {
         const userPassword = login.password;
 
-        if (!bcrypt.compareSync(userPassword, APP_PASSWORD)) {
+        if (userPassword !== APP_PASSWORD) {
             throw new APIForbiddenError('Invalid password');
         }
 

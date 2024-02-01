@@ -1,31 +1,30 @@
 import { APIResponseStatuses } from "@/app/enums/api-response-statuses.enum";
-import axios from "axios";
-import bcrypt from 'bcrypt';
+import axios, { AxiosResponse } from "axios";
 
 export namespace clientLoginService {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/auth';
 
-    let token: string | null = null;
+    const checkToken = (token?: string | null) => token !== undefined && token !== null;
 
-    export const login = async (password: string): Promise<{token: string} | false> => {
-        if(password === undefined || password === null) return false;
+    const validateToken = (token?: string | null) => checkToken(token) ? axios.post(apiUrl+'/validate', {token}).then(res => res.data.valid  as boolean) : false;
 
-        const tokenIsValid = token !== null && (await axios.post(apiUrl+'/validate', {token})).data.valid as boolean;
-        if(tokenIsValid) return {token} as {token: string};
+    const checkPassword = async (password?: string | null) => password !== undefined && password !== null;
 
-        const encryptedPassword = bcrypt.hashSync(password, 10);
+    export const login = async (password: string, token?: string): Promise<{token: string}> => {  
+        return checkPassword(password)
+            .then((passwordIsOk: boolean) => passwordIsOk ? token : (() => {throw new Error('Invalid password')})())
+            .then(validateToken)
+            .then((tokenValid: boolean) => tokenValid ? {token: token as string} : getToken(password))
+    }
 
-        const res = await axios.post(apiUrl, {password: encryptedPassword}, { 
-            headers: {
-                'Content-Type': 'application/json'
+    const getToken = async (password: string): Promise<{token: string}> => {
+        return await axios.post<{ token: string }>(apiUrl, {password}, { headers: {'Content-Type': 'application/json'} })
+        .then((res: AxiosResponse) => {
+            if(res.status === APIResponseStatuses.FORBIDDEN) {
+                throw new Error('Invalid password');
+            } else {
+                return {token: res.data.token};
             }
         });
-
-        if(res.status === APIResponseStatuses.FORBIDDEN) throw new Error('Invalid password');
-
-        token = (res.data as {token: string})?.token;
-        if(token === null || token === undefined) return false;
-
-        return {token};
     }
 }

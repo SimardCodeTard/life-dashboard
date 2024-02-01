@@ -1,5 +1,4 @@
 import { FavoriteItemType } from "@/app/types/favorites.type";
-import { handleAxiosError } from "@/app/utils/api.utils";
 import assert from "assert";
 import axios from "axios";
 import { ObjectId } from "mongodb";
@@ -15,7 +14,7 @@ export namespace clientFavoritesDataService {
 
     export const updateFavoriteItem = (item: FavoriteItemType) => axios.post(url + "/update", item).then(res => res.data);
 
-    export const findAllFavoriteItems = () => axios.get(url).then(res => res.data.success ? res.data.favorites : []);
+    export const findAllFavoriteItems = () => axios.get(url).then(res => res.data.length > 0 ? res.data : []);
 
     export const deleteFavoriteItem = (favoriteItemId: ObjectId) => axios.delete(`${url}/delete?id=${favoriteItemId.toString()}`)
 }

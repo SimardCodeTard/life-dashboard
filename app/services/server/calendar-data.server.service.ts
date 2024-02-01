@@ -30,7 +30,7 @@ export namespace serverCalendarDataService {
         ];
 
         data.split('BEGIN:VEVENT').slice(1).forEach((item: string) => {
-            let lines = item.split('\n').map(line => line.replaceAll(/\r\n|\r|\n/g, '')).filter(line => line !== '');
+            const lines = item.split('\n').map(line => line.replaceAll(/\r\n|\r|\n/g, '')).filter(line => line !== '');
     
             // Check for the presence of required lines
             const isMissingRequiredFields = requiredFields.some(field => !lines[field]);
