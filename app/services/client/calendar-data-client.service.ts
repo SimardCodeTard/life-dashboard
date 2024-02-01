@@ -74,7 +74,7 @@ export namespace clientCalendarDataService {
         const url = process.env.NEXT_PUBLIC_API_URL + "/calendar/class" as string;
         assert(url !== undefined);
 
-        const res = await axiosClientService.GET(url).catch(handleAxiosError);
+        const res = await axiosClientService.GET<CalendarEventTypeDTO[]>(url).catch(handleAxiosError);
         
         return groupCalEventsByDate(mapCalendarEventDTOListToDO(res?.data as CalendarEventTypeDTO[]));
     }

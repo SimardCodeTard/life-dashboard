@@ -19,27 +19,27 @@ export namespace clientTaskDataService {
     }
 
     // Saves a task using a POST request.
-    export const saveTask = (task: Task): Promise<AxiosResponse> => {
+    export const saveTask = (task: Task): Promise<AxiosResponse<{success: boolean}>> => {
         Logger.debug('Saving new task (in TasksDataClientService)')
         const url = `${apiUrl}/new`;
-        return axiosClientService.POST(url, task, {
+        return axiosClientService.POST<{success: boolean}>(url, task, {
                 'Content-Type': 'application/json'
             }
         );    
     }
 
     // Deletes a task by ID using a DELETE request.
-    export const deleteTaskById = (taskId: ObjectId): Promise<AxiosResponse> => {
+    export const deleteTaskById = (taskId: ObjectId): Promise<AxiosResponse<{success: boolean}>> => {
         Logger.debug('Deleting task (in TasksDataClientService)')
         const url = `${apiUrl}/delete?id=${taskId.toString()}`;
-        return axiosClientService.DELETE(url);
+        return axiosClientService.DELETE<{success: boolean}>(url);
     }
 
     // Updates a task using a PUT request.
-    export const updateTask = (task: Task): Promise<AxiosResponse> => {
+    export const updateTask = (task: Task): Promise<AxiosResponse<{success: boolean}>> => {
         Logger.debug('Updating task (in TasksDataClientService)')
         const url = `${apiUrl}/update`;
-        return axiosClientService.PUT(url, task);
+        return axiosClientService.PUT<{success: boolean}>(url, task);
     }
 
     export const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');

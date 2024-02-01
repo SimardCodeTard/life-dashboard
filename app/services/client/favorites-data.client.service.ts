@@ -10,11 +10,11 @@ export namespace clientFavoritesDataService {
 
     export const validateUrl = (url: string):string => (url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`);
 
-    export const saveNewFavoriteItem = (item: FavoriteItemType) => axiosClientService.POST(url + "/new", item).then(res => res.data);
+    export const saveNewFavoriteItem = (item: FavoriteItemType) => axiosClientService.POST<{success: boolean}>(url + "/new", item).then(res => res.data);
 
-    export const updateFavoriteItem = (item: FavoriteItemType) => axiosClientService.POST(url + "/update", item).then(res => res.data);
+    export const updateFavoriteItem = (item: FavoriteItemType) => axiosClientService.POST<{success: boolean}>(url + "/update", item).then(res => res.data);
 
-    export const deleteFavoriteItem = (id: ObjectId) => axiosClientService.DELETE(url + `/delete?id=${id.toString()}`).then(res => res.data);
+    export const deleteFavoriteItem = (id: ObjectId) => axiosClientService.DELETE<{success: boolean}>(url + `/delete?id=${id.toString()}`).then(res => res.data);
 
     export const findAllFavoriteItems = () => axiosClientService.GET<FavoriteItemType[]>(url).then(res => res.data.length > 0 ? res.data : []);
 }
