@@ -1,6 +1,6 @@
 import { APIForbiddenError, APIInternalServerError } from "@/app/errors/api.error";
 import { Logger } from "../logger.service";
-import jwt from 'jsonwebtoken';
+import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 
 /**
  * Namespace for server-side services to interact with the login API.
@@ -16,8 +16,16 @@ export namespace serverLoginService {
     /**
      * Generate a JWT token
      */
-    const generateJWTToken = (userId: string): string => {
-        return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '24h' });
+    const generateJWTToken = (userId: string): Promise<string> => {
+        const iat = Math.floor(Date.now() / 1000);
+        const exp = iat + 60 * 60 * 24; // one day
+
+        return new SignJWT({ userId })
+        .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+        .setExpirationTime(exp)
+        .setIssuedAt(iat)
+        .setNotBefore(iat)
+        .sign(new TextEncoder().encode(JWT_SECRET));
     }
 
     /**
@@ -25,11 +33,12 @@ export namespace serverLoginService {
      * @param token The token to check
      * @returns true if the token is valid, false otherwise
      */
-    export const isLoggedIn = (token: string): boolean => {
+    export const isLoggedIn = (token?: string): boolean => {
         try {
-            jwt.verify(token, JWT_SECRET);
+            if(!token) throw new Error('No token provided')
+            jwtVerify(token, new TextEncoder().encode(JWT_SECRET));
         } catch (e) {
-            Logger.debug('Invalid JWT token: ' + (e as Error).message);
+            Logger.debug('Invalid JWT token: ' + (e as Error).message + ', token: ' + token?.toString() + ', type: ' + typeof token);
             return false;
         }
         return true;
@@ -47,7 +56,7 @@ export namespace serverLoginService {
             throw new APIForbiddenError('Invalid password');
         }
 
-        const token = generateJWTToken('user_id'); // Replace 'user_id' with actual user identifier
+        const token = await generateJWTToken('user_id'); // Replace 'user_id' with actual user identifier
 
         return { token };
     };

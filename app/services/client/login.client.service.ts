@@ -2,6 +2,8 @@ import { APIResponseStatuses } from "@/app/enums/api-response-statuses.enum";
 import axios, { AxiosResponse } from "axios";
 
 export namespace clientLoginService {
+    export let authToken: string;
+
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/auth';
 
     const checkToken = (token?: string | null) => token !== undefined && token !== null;

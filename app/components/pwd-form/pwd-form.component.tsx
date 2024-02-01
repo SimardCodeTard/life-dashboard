@@ -2,6 +2,8 @@
 
 import { clientLoginService } from "@/app/services/client/login.client.service";
 import { FormEvent } from "react"
+import Cookies from 'js-cookie';
+import { Logger } from "@/app/services/logger.service";
 
 export default function PWDForm() {
 
@@ -14,11 +16,13 @@ export default function PWDForm() {
         clientLoginService.login(password)
         .then((res: {token: string} | false) => {
             if (res !== false) {
+                Logger.debug('Login successful');
                 // Save the token in a cookie
-                document.cookie = `token=${res.token}`;
+                Cookies.set('token', res.token, { expires: 1 });
                 // Redirect to the dashboard
                 window.location.href = '/dashboard';
             } else {
+                Logger.debug('Login failed');
                 throw new Error('')
             }
         })
