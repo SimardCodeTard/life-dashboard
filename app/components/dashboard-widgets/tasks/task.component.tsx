@@ -16,9 +16,9 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
 
     const deleteButtonClicked = () => {
         task._id && clientTaskDataService.deleteTaskById(task._id)
-            .then((res) => res.data.success && clientTaskDataService.fetchAllTasks()
+            .then((res) =>{ return res.data.success ? clientTaskDataService.fetchAllTasks() : undefined})
             .catch(Logger.error)
-            .then((tasks) => tasks && setTasks(tasks)))
+            .then((tasks) => tasks && setTasks(tasks));
     }
 
     const updateTaskStatus = (status: boolean) => {
