@@ -12,7 +12,7 @@ export namespace serverMongoDataService {
     const dbName = process.env.DB_NAME as string;
 
     // MongoDB URL logic to determine if it's running in development or production.
-    const mongoUrl = process.env.MONGO_DB_URL_LOCAL || process.env.MONGODB_URI;
+    const mongoUrl = process.env.MONGO_DB_URL_LOCAL || process.env.MONGO_DB_URI;
 
     // Options for MongoClient in production environment.
     const productionMongoClientOptions = process.env.NODE_ENV === 'production' ? {
