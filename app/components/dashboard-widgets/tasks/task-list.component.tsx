@@ -24,8 +24,8 @@ export default function Tasks() {
         const completed = false;
         const newTask: Task = {title, deadline: deadline, completed};
 
-        TasksDataClientService.saveTask(newTask)
-        .then((res: any) => res.data.success && TasksDataClientService.fetchAllTasks().then(TasksDataClientService.mapTaskDtoToTaskList).then(setTasks)).then(() => setIsLoading(false)).catch(console.error));
+        clientTaskDataService.saveTask(newTask)
+        .then((res: any) => res.data.success && clientTaskDataService.fetchAllTasks().then(clientTaskDataService.mapTaskDtoToTaskList).then(setTasks)).then(() => setIsLoading(false)).catch(console.error);
        
         (event.target as any)[0].value = "";
         (event.target as any)[1].value = "";
@@ -33,7 +33,7 @@ export default function Tasks() {
 
     useEffect(() => {
         setIsLoading(true);
-        TasksDataClientService.fetchAllTasks().then(TasksDataClientService.mapTaskDtoToTaskList).then(setTasks).then(() => setIsLoading(false)).catch(console.error);
+        clientTaskDataService.fetchAllTasks().then(clientTaskDataService.mapTaskDtoToTaskList).then(setTasks).then(() => setIsLoading(false)).catch(console.error);
     }, [])
 
     return (

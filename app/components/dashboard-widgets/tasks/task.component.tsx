@@ -18,7 +18,7 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
         task._id && clientTaskDataService.deleteTaskById(task._id)
             .then((res) =>{ return res.data.success ? clientTaskDataService.fetchAllTasks() : undefined})
             .catch(Logger.error)
-            .then((tasks) => tasks && setTasks(clientTaskDataService.mapTaskDtoToTaskList(tasks))))
+            .then((tasks) => tasks && setTasks(clientTaskDataService.mapTaskDtoToTaskList(tasks)));
     }
 
     const updateTaskStatus = (status: boolean) => {
@@ -30,7 +30,7 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
 
     const deadlineIsPassed = (): boolean => {
         if(!task.deadline) return false;
-        return today.toMillis() > task.deadline.toMillis();
+        return DateTime.now().toMillis() > task.deadline.toMillis();
     }
 
     let [day, month, year]: string[] | undefined[] = task.deadline
@@ -47,8 +47,8 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
         event.preventDefault();
         const newTaskTitle = (event.target as any)[0].value;
         const newTaskDeadline = (event.target as any)[1].value;
-        TasksDataClientService.updateTask({...task, title: newTaskTitle, deadline: newTaskDeadline})
-        .then(async () => setTasks(TasksDataClientService.mapTaskDtoToTaskList( await TasksDataClientService.fetchAllTasks() )));
+        clientTaskDataService.updateTask({...task, title: newTaskTitle, deadline: newTaskDeadline})
+        .then(async () => setTasks(clientTaskDataService.mapTaskDtoToTaskList( await clientTaskDataService.fetchAllTasks() )));
     }
 
     const taskTitleInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskTitle(e.currentTarget.value);
