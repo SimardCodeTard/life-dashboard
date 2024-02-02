@@ -1,5 +1,5 @@
 import { AxiosResponse } from 'axios';
-import { Task } from "../../types/task.type";
+import { Task, TaskDto } from "../../types/task.type";
 import { ObjectId } from "bson";
 import { Logger } from "../logger.service";
 import { DateTime } from "luxon";
@@ -11,7 +11,7 @@ export namespace clientTaskDataService {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/task';
 
     // Fetches all tasks using a GET request.
-    export const fetchAllTasks = (): Promise<Task[]> => {
+    export const fetchAllTasks = (): Promise<TaskDto[]> => {
         Logger.debug('Fetching all tasks (in TasksDataClientService)')
         return axiosClientService.GET<Task[]>(apiUrl, {
             'cache-control': 'no-cache'
@@ -44,9 +44,17 @@ export namespace clientTaskDataService {
 
     export const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
 
+    export const mapTaskToTaskDto = (task: Task): TaskDto => ({...task, deadline: task.deadline?.toISO() ?? undefined});
 
-    export const sortTaskByMostUrgent = (tasks: Task[]): Task[] => 
-        tasks.toSorted((taskA: Task, taskB: Task) => {
+    export const mapTaskToTaskDtoList = (tasks: Task[]): TaskDto[] => tasks.map(mapTaskToTaskDto);
+
+    export const mapTaskDtoToTask = (taskDto: TaskDto): Task => ({...taskDto, deadline: taskDto.deadline ? formatTaskDate(taskDto.deadline) : undefined});
+
+    export const mapTaskDtoToTaskList = (tasksDto: TaskDto[]): Task[] => tasksDto.map(mapTaskDtoToTask);
+
+
+    export const sortTaskDtoByMostUrgent = (tasks: TaskDto[]): TaskDto[] => 
+        tasks.toSorted((taskA: TaskDto, taskB: TaskDto) => {
             if(!taskA.deadline) return 1;
             else if (!taskB.deadline) return -1;
             const deadlineA = formatTaskDate(taskA.deadline);
