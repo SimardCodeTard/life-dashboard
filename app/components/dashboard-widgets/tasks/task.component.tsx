@@ -8,23 +8,11 @@ import ModalComponent from "../../shared/modal.component";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { Logger } from "@/app/services/logger.service";
 
-export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (tasks: Task[]) => void}) {
+export default function TaskItem ({task, setTasks, deleteTask, updateTask}: {task: Task, setTasks: (tasks: Task[]) => void, deleteTask: (task: Task) => void, updateTask: (task: Task, status: boolean) => void}) {
 
     const [editModalOpened, setEditModalOpen] = useState(false);
     const [taskTitle, setTaskTitle] = useState(task.title);
     const [taskDeadline, setTaskDeadline] = useState(task.deadline);
-
-    const deleteButtonClicked = () => {
-        task._id && clientTaskDataService.deleteTaskById(task._id)
-            .then((res) =>{ return res.data.success ? clientTaskDataService.fetchAllTasks() : undefined})
-            .catch(Logger.error)
-            .then((tasks) => tasks && setTasks(clientTaskDataService.mapTaskDtoToTaskList(tasks)));
-    }
-
-    const updateTaskStatus = (status: boolean) => {
-        task = {...task, _id: task._id, completed: status};
-        clientTaskDataService.updateTask(task);
-    }
 
     const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
 
@@ -47,8 +35,8 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
         event.preventDefault();
         const newTaskTitle = (event.target as any)[0].value;
         const newTaskDeadline = (event.target as any)[1].value;
-        clientTaskDataService.updateTask({...task, title: newTaskTitle, deadline: newTaskDeadline})
-        .then(async () => setTasks(clientTaskDataService.mapTaskDtoToTaskList( await clientTaskDataService.fetchAllTasks() )));
+        updateTask({...task, title: newTaskTitle, deadline: newTaskDeadline}, task.completed)
+        setEditModalOpen(false);
     }
 
     const taskTitleInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskTitle(e.currentTarget.value);
@@ -67,13 +55,13 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
     return(
         <div className="flex flex-col task-item p-3">
             <div className=" flex space-x-2 items-center">
-                <TaskCheckbox updateTaskStatus={updateTaskStatus} completed={task.completed}></TaskCheckbox> 
+                <TaskCheckbox updateTaskStatus={(status) => updateTask(task, status)} completed={task.completed}></TaskCheckbox> 
                 <p>{task.title}</p>
                 <div className="text-sm text-[rgba(255,255,255,0.2)]">{task.deadline?.isValid && getRemainingTime(task.deadline)}</div>
                 <span>
                     <EditNote onClick={() => setEditModalOpen(true)} 
                         className="cursor-pointer text-[rgba(255,255,255,0.2)] text-base hover:text-[rgba(255,255,255,0.6)]"></EditNote>
-                    <DeleteIcon onClick={deleteButtonClicked} className="cursor-pointer text-[rgba(255,255,255,0.2)] text-base hover:text-[rgba(255,255,255,0.6)]"></DeleteIcon>
+                    <DeleteIcon onClick={() => deleteTask(task)} className="cursor-pointer text-[rgba(255,255,255,0.2)] text-base hover:text-[rgba(255,255,255,0.6)]"></DeleteIcon>
                 </span>
             </div>
             <p className={'text-sm' + ` ${deadlineIsPassed() ? 'text-red-500/75' : 'text-[rgb(var(--text-lighter-rgb))]'}`} 
