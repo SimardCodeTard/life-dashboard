@@ -4,26 +4,26 @@ import { FavoriteItemType } from '@/app/types/favorites.type';
 import FavoriteItem from './favorite-item';
 import AddFavorite from './add-favorite';
 import { useEffect, useState } from 'react';
-import { FavoritesDataClientService } from '@/app/services/client/favorites-data.client.service';
+import { clientFavoritesDataService } from '@/app/services/client/favorites-data.client.service';
 
 export default function FavoritesBar() {
 
     const [favorites, setFavorites] = useState<FavoriteItemType[]>([]);
 
     const onFavoriteItemEdit = async (item: FavoriteItemType) => {
-        await FavoritesDataClientService.updateFavoriteItem(item);
+        await clientFavoritesDataService.updateFavoriteItem(item);
         updateFavoritesList();
     }
 
     const onFavoriteItemDelete = async (item: FavoriteItemType) => {
-        item._id && await FavoritesDataClientService.deleteFavoriteItem(item._id);
+        item._id && await clientFavoritesDataService.deleteFavoriteItem(item._id);
         const id = item._id;
         setFavorites(favorites.filter(item => item._id !== id));
         updateFavoritesList();
     }
 
     const updateFavoritesList = () => {
-        FavoritesDataClientService.findAllFavoriteItems()
+        clientFavoritesDataService.findAllFavoriteItems()
         .then(setFavorites);
     }
 

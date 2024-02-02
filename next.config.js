@@ -14,7 +14,12 @@ const nextConfig = {
           ]
         }
       ]  
-    }
+    },
+    reactStrictMode: false,
+    webpack: (config) => {
+      config.externals = [...config.externals, 'bcryptjs'];
+      return config;
+    } 
 };
 
 module.exports = nextConfig
