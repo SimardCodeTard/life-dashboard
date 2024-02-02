@@ -1,5 +1,5 @@
 import React, { ChangeEvent, FormEvent, useState } from 'react';
-import { FavoritesDataClientService } from "@/app/services/client/favorites-data.client.service";
+import { clientFavoritesDataService } from "@/app/services/client/favorites-data.client.service";
 import { EditFavoritePropsType, FavoriteItemType } from "@/app/types/favorites.type";
 import ModalComponent from '../../shared/modal.component';
 
@@ -10,7 +10,7 @@ export default function EditFavorite({item, onFavoriteItemEdit, onFavoriteItemDe
     const handleFormSubmit = async (e: FormEvent) => {
         setModalOpen(false);
         e.preventDefault();
-        const newFavoriteItem: FavoriteItemType = { _id: item._id, name, url: FavoritesDataClientService.validateUrl(url) };
+        const newFavoriteItem: FavoriteItemType = { _id: item._id, name, url: clientFavoritesDataService.validateUrl(url) };
         onFavoriteItemEdit(newFavoriteItem);
     }
 

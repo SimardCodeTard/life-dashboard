@@ -2,7 +2,7 @@ import { Task } from "@/app/types/task.type";
 import TaskCheckbox from "../../shared/checkbox.component";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { EditNote } from "@mui/icons-material";
-import { TasksDataClientService } from "@/app/services/client/tasks-data-client.service";
+import { clientTaskDataService } from "@/app/services/client/tasks-data-client.service";
 import { DateTime } from "luxon";
 import ModalComponent from "../../shared/modal.component";
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -15,23 +15,22 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
     const [taskDeadline, setTaskDeadline] = useState(task.deadline);
 
     const deleteButtonClicked = () => {
-        task._id && TasksDataClientService.deleteTaskById(task._id)
-            .then((res) => res.data.success && TasksDataClientService.fetchAllTasks()
+        task._id && clientTaskDataService.deleteTaskById(task._id)
+            .then((res) =>{ return res.data.success ? clientTaskDataService.fetchAllTasks() : undefined})
             .catch(Logger.error)
-            .then((tasks) => tasks && setTasks(TasksDataClientService.mapTaskDtoToTaskList(tasks))))
+            .then((tasks) => tasks && setTasks(clientTaskDataService.mapTaskDtoToTaskList(tasks)));
     }
 
     const updateTaskStatus = (status: boolean) => {
         task = {...task, _id: task._id, completed: status};
-        TasksDataClientService.updateTask(task);
+        clientTaskDataService.updateTask(task);
     }
 
     const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
 
     const deadlineIsPassed = (): boolean => {
         if(!task.deadline) return false;
-        const today = DateTime.now();
-        return today.toMillis() > task.deadline.toMillis();
+        return DateTime.now().toMillis() > task.deadline.toMillis();
     }
 
     let [day, month, year]: string[] | undefined[] = task.deadline
@@ -48,9 +47,8 @@ export default function TaskItem ({task, setTasks}: {task: Task, setTasks: (task
         event.preventDefault();
         const newTaskTitle = (event.target as any)[0].value;
         const newTaskDeadline = (event.target as any)[1].value;
-        TasksDataClientService.updateTask({...task, title: newTaskTitle, deadline: newTaskDeadline})
-        .then(async () => setTasks(TasksDataClientService.mapTaskDtoToTaskList( await TasksDataClientService.fetchAllTasks() )));
-        setEditModalOpen(false);
+        clientTaskDataService.updateTask({...task, title: newTaskTitle, deadline: newTaskDeadline})
+        .then(async () => setTasks(clientTaskDataService.mapTaskDtoToTaskList( await clientTaskDataService.fetchAllTasks() )));
     }
 
     const taskTitleInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskTitle(e.currentTarget.value);

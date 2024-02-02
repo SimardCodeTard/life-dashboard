@@ -1,18 +1,18 @@
 import { MongodItemType } from "@/app/types/mongod.type";
-import { DateTime } from "luxon";
-import { Collection, Db, DeleteResult, InsertOneResult, ModifyResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from "mongodb";
+import { Collection, Db, DeleteResult, InsertOneResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from "mongodb";
 import { Logger } from "../logger.service";
+import { APIInternalServerError } from "@/app/errors/api.error";
 
-export namespace MongoDataServerService {
+export namespace serverMongoDataService {
     
     // Shared MongoClient instance.
     let client: MongoClient | undefined;
 
     // Database configuration constants.
-    const dbName = process.env.NEXT_PUBLIC_DB_NAME as string;
+    const dbName = process.env.DB_NAME as string;
 
     // MongoDB URL logic to determine if it's running in development or production.
-    const mongoUrl = process.env.NEXT_PUBLIC_MONGO_DB_URL_LOCAL ?? process.env.NEXT_PUBLIC_MONGODB_URI;
+    const mongoUrl = process.env.MONGO_DB_URL_LOCAL ?? process.env.NEXT_PUBLIC_MONGODB_URI;
 
     // Options for MongoClient in production environment.
     const productionMongoClientOptions = process.env.NODE_ENV === 'production' ? {
@@ -33,9 +33,8 @@ export namespace MongoDataServerService {
             operationResult = await operation();
             Logger.debug('operation result : ' + JSON.stringify(operationResult))
             return operationResult;
-        } catch (error) {
-            Logger.error("Error in operation: " + error);
-            throw error;
+        } catch (error: any) {
+            throw new APIInternalServerError('Error in operation: ' + error.message);
         } finally {
             pendingRequests--;
             closeClient();
