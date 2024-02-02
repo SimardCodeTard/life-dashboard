@@ -12,7 +12,6 @@ export default function PWDForm() {
         e.preventDefault();
         const password = (e.target as any)[0].value; 
         (e.target as any)[0].value = '';
-        console.log(password)
         clientLoginService.login(password)
         .then((res: {token: string} | false) => {
             if (res !== false) {
@@ -26,7 +25,7 @@ export default function PWDForm() {
                 throw new Error('')
             }
         })
-        .catch(() => console.log('failed to login'));
+        .catch(() => Logger.error('Failed to login'));
     }
 
     return (
