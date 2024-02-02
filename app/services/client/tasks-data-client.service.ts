@@ -13,9 +13,9 @@ export namespace clientTaskDataService {
     // Fetches all tasks using a GET request.
     export const fetchAllTasks = (): Promise<TaskDto[]> => {
         Logger.debug('Fetching all tasks (in TasksDataClientService)')
-        return axiosClientService.GET<Task[]>(apiUrl, {
+        return axiosClientService.GET<TaskDto[]>(apiUrl, {
             'cache-control': 'no-cache'
-        }).then(response => sortTaskByMostUrgent(response.data) as Task[]);
+        }).then(response => sortTaskDtoByMostUrgent(response.data));
     }
 
     // Saves a task using a POST request.
