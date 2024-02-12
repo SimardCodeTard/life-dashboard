@@ -58,7 +58,7 @@ export default function Tasks() {
         <div className={["relative p-2 task-list", styles.taskList].join(' ')}>
             <h2 className="text-lg mt-2 mb-3">Tasks</h2>
             {tasks.map((task: Task, key: number) => {
-                return <TaskItem setTasks={setTasks} deleteTask={deleteTask} updateTask={updateTask} task={task} key={key}></TaskItem>
+                return <TaskItem deleteTask={deleteTask} updateTask={updateTask} task={task} key={key}></TaskItem>
             })}
             
             {isLoading && <Loader></Loader>}

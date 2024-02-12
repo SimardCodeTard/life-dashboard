@@ -2,19 +2,18 @@ import { Task } from "@/app/types/task.type";
 import TaskCheckbox from "../../shared/checkbox.component";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { EditNote } from "@mui/icons-material";
-import { clientTaskDataService } from "@/app/services/client/tasks-data-client.service";
 import { DateTime } from "luxon";
 import ModalComponent from "../../shared/modal.component";
 import { ChangeEvent, FormEvent, useState } from "react";
-import { Logger } from "@/app/services/logger.service";
 
-export default function TaskItem ({task, setTasks, deleteTask, updateTask}: {task: Task, setTasks: (tasks: Task[]) => void, deleteTask: (task: Task) => void, updateTask: (task: Task, status: boolean) => void}) {
+export default function TaskItem ({task, deleteTask, updateTask}: {task: Task, deleteTask: (task: Task) => void, updateTask: (task: Task, status: boolean) => void}) {
+
+    const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
+    const formatTaskDateToInput = (date: DateTime) => date.toFormat('yyyy\'-\'MM\'-\'dd');
 
     const [editModalOpened, setEditModalOpen] = useState(false);
     const [taskTitle, setTaskTitle] = useState(task.title);
-    const [taskDeadline, setTaskDeadline] = useState(task.deadline);
-
-    const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
+    const [taskDeadline, setTaskDeadline] = useState(task.deadline?.isValid ? formatTaskDateToInput(task.deadline as DateTime) : '');
 
     const deadlineIsPassed = (): boolean => {
         if(!task.deadline) return false;
@@ -41,8 +40,8 @@ export default function TaskItem ({task, setTasks, deleteTask, updateTask}: {tas
 
     const taskTitleInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskTitle(e.currentTarget.value);
 
-    const taskDeadlineInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskDeadline(formatTaskDate(e.currentTarget.value));
-
+    const taskDeadlineInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskDeadline(e.currentTarget.value);
+    
     const getRemainingTime = (deadline: DateTime): string => {
         const diff = deadline.diffNow();
         if(diff.as('days') > 0) {
@@ -71,7 +70,7 @@ export default function TaskItem ({task, setTasks, deleteTask, updateTask}: {tas
                 <form onSubmit={onTaskEditFormSubmit}>
                     <input autoFocus={true} value={taskTitle} onChange={taskTitleInputChange} className='h-6 w-5/6 mb-2 bg-[rgba(255,255,255,0.2)] rounded p-1' 
                         type="text" placeholder='Name'></input>
-                    <input type="date" value={taskDeadline?.toISO() ?? ''} onChange={taskDeadlineInputChange} className="p-1 rounded bg-[rgba(255,255,255,0.2)]"></input>
+                    <input type="date" value={taskDeadline} onChange={taskDeadlineInputChange} className="p-1 rounded bg-[rgba(255,255,255,0.2)]"></input>
                     <button className='h-6 w-5/6 mt-2 bg-[rgba(255,255,255,0.3)] rounded'>Save</button>
                 </form>
             </ModalComponent>
