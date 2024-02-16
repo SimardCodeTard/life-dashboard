@@ -107,3 +107,6 @@ body {
 .bottom-section {
   margin-top: auto;
 }
+.left-section-card {
+  width: 365px !important;
+}

@@ -6,6 +6,7 @@ import { clientTaskDataService } from "@/app/services/client/tasks-data-client.s
 import styles from '../../components.module.css';
 import Loader from "../../shared/loader/loader.component";
 import { Logger } from "@/app/services/logger.service";
+import NewTaskForm from "./new-task-form.component";
 
 export default function Tasks() {
 
@@ -55,20 +56,14 @@ export default function Tasks() {
     }, [])
 
     return (
-        <div className={["relative p-2 task-list", styles.taskList].join(' ')}>
+        <div className={["relative p-2 task-list ", styles.taskList].join(' ')}>
             <h2 className="text-lg mt-2 mb-3">Tasks</h2>
             {tasks.map((task: Task, key: number) => {
                 return <TaskItem deleteTask={deleteTask} updateTask={updateTask} task={task} key={key}></TaskItem>
             })}
             
             {isLoading && <Loader></Loader>}
-            <form className="mt-2 flex flex-col shadow-xl" onSubmit={onNewTaskSubmit}>
-                <span className="space-y-1">
-                    <input type="text" className="p-1 rounded bg-[rgba(255,255,255,0.2)]" placeholder="New task"></input>
-                    <input type="date" className="p-1 rounded bg-[rgba(255,255,255,0.2)]"></input>
-                </span>
-                <button type="submit" className="mt-2 p-1 rounded-sm bg-[rgba(0,0,0,0.2)] hover:bg-[rgba(255,255,255,0.2)]">Save</button>
-            </form>
+            <NewTaskForm onNewTaskSubmit={onNewTaskSubmit}></NewTaskForm>
         </div>
     );
 }
