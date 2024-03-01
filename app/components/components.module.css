@@ -46,7 +46,6 @@
 .taskList {
     min-height: 4rem;
     max-height: 630px !important;
-    max-width: 314px !important;
     overflow-y: scroll;
 }
 

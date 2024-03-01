@@ -8,21 +8,19 @@ export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemD
 
     const [editModalOpened, setEditModalOpened] = useState(false);
 
-    const onItemClick = (e: MouseEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        window.location.href = item.url;
-    }
-
     const onItemContextMenu = (e: MouseEvent<HTMLDivElement>) => {
         e.preventDefault();
     }
 
-    const onItemAuxClick = (e: MouseEvent<HTMLDivElement>) => {
+    const onItemClick = (e: MouseEvent<HTMLDivElement>) => {
         e.preventDefault();
-        if (e.button === 1) { // Middle click
+        console.log(e.button, e.ctrlKey);
+        if (e.button === 1 || e.ctrlKey) { // Middle click or Ctrl + click
             window.open(item.url, '_blank', 'noreferrer');
         } else if (e.button === 2) { // Right click
             setEditModalOpened(true);
+        } else {
+            window.location.href = item.url;
         }
     }
 
@@ -33,7 +31,7 @@ export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemD
 
     return (
         <>
-            <div onClick={onItemClick} onContextMenu={onItemContextMenu} onAuxClick={onItemAuxClick} className={'flex flex-col justify-center cursor-pointer w-fit'}>
+            <div onClick={onItemClick} onContextMenu={onItemContextMenu} className={'flex flex-col justify-center cursor-pointer w-fit'}>
                 <img width="22" height="22" src={item.url + "/favicon.ico"} alt={item.name.slice(0,2)} />
             </div>
             <EditFavorite item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onItemDelete} modalOpen={editModalOpened} setModalOpen={setEditModalOpened}
