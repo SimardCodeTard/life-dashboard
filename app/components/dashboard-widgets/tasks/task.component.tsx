@@ -59,8 +59,8 @@ export default function TaskItem ({task, deleteTask, updateTask}: {task: Task, d
                 <div className="text-sm text-[rgba(32,25,25,0.2)]">{task.deadline?.isValid && getRemainingTime(task.deadline)}</div>
                 <span className="ml-auto flex flex-col w-fit items-center justify-center">
                     <EditNote onClick={() => setEditModalOpen(true)} 
-                        className="cursor-pointer text-[rgba(255,255,255,0.2)] text-md hover:text-[rgba(255,255,255,0.6)]"></EditNote>
-                    <DeleteIcon onClick={() => deleteTask(task)} className="cursor-pointer text-[rgba(255,255,255,0.2)] text-md hover:text-[rgba(255,255,255,0.6)]"></DeleteIcon>
+                        className="cursor-pointer text-[rgba(255,255,255,0.2)] scale-95 hover:text-[rgba(255,255,255,0.6)]"></EditNote>
+                    <DeleteIcon onClick={() => deleteTask(task)} className="cursor-pointer text-[rgba(255,255,255,0.2)] scale-95 hover:text-[rgba(255,255,255,0.6)]"></DeleteIcon>
                 </span>
             </div>
             <p className={'text-sm' + ` ${deadlineIsPassed() ? 'text-red-500/75' : 'text-[rgb(var(--text-lighter-rgb))]'}`} 
