@@ -43,6 +43,7 @@ export namespace clientLoginService {
             if(res.token) {
                 authToken = res.token as string;
                 Cookies.set('token', res.token, { expires: 1 });
+                window.location.href = '/dashboard';
                 Logger.debug('Automatic login success');
             } else {
                 Logger.debug('Automatic login failed');
