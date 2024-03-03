@@ -107,6 +107,14 @@ body {
 .bottom-section {
   margin-top: auto;
 }
+
+button:disabled {
+  cursor: not-allowed;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  border: solid 1px rgba(255, 255, 255, 0.3);
+}
+
 .left-section-card {
   width: 365px !important;
 }
