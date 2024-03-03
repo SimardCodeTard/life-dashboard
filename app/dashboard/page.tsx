@@ -13,8 +13,8 @@ export default function DashboardPage() {
         <main className="flex h-screen w-full justify-between">
 
             <div className="left-section w-1/4">
-                <Card><Tasks></Tasks></Card>
-                <Card><Weather></Weather></Card>
+                <Card className="left-section-card"><Tasks></Tasks></Card>
+                <Card className="left-section-card"><Weather></Weather></Card>
             </div>
 
 

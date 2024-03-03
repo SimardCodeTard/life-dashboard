@@ -53,7 +53,7 @@ export default function Weather() {
     return (
         <div className={["relative p-2", styles.weather].join(' ')}>
             <h2>Météo</h2>
-            {weatherData 
+            {weatherData?.current
                 ? <div className="flex items-center">
                     <div>
                         <img src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}></img>

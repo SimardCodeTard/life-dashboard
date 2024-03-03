@@ -1,14 +1,19 @@
+'use client'
 import { APIResponseStatuses } from "@/app/enums/api-response-statuses.enum";
 import axios, { AxiosResponse } from "axios";
+import { Logger } from "../logger.service";
+import Cookies from 'js-cookie';
+import { useState } from "react";
 
 export namespace clientLoginService {
+
     export let authToken: string;
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/auth';
 
     const checkToken = (token?: string | null) => token !== undefined && token !== null;
 
-    const validateToken = (token?: string | null) => checkToken(token) ? axios.post(apiUrl+'/validate', {token}).then(res => res.data.valid  as boolean) : false;
+    const validateToken = async (token?: string | null) => checkToken(token) ? axios.post(apiUrl+'/validate', {token}).then(res => res.data.valid  as boolean) : false;
 
     const checkPassword = async (password?: string | null) => password !== undefined && password !== null;
 
@@ -28,5 +33,24 @@ export namespace clientLoginService {
                 return {token: res.data.token};
             }
         });
+    }
+
+    export const automaticallyAuthenticate = async () => {
+        const savedPassword = localStorage.getItem('pwd') || '';
+        const token = Cookies.get('token');
+        login(savedPassword, token)
+        .then((res: {token: string}) => {
+            if(res.token) {
+                authToken = res.token as string;
+                Cookies.set('token', res.token, { expires: 1 });
+                window.location.href = '/dashboard';
+                Logger.debug('Automatic login success');
+            } else {
+                Logger.debug('Automatic login failed');
+            }
+        })
+        .catch(() => {
+            Logger.debug('Automatic login failed');
+        })
     }
 }
