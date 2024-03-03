@@ -6,7 +6,6 @@ import { clientTaskDataService } from "@/app/services/client/tasks-data-client.s
 import styles from '../../components.module.css';
 import Loader from "../../shared/loader/loader.component";
 import { Logger } from "@/app/services/logger.service";
-import NewTaskForm from "./new-task-form.component";
 
 export default function Tasks() {
 

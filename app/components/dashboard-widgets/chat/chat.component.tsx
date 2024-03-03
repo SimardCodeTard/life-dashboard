@@ -44,7 +44,6 @@ export default function Chat() {
     }
 
     const onChatExpandClick = () => {
-        Logger.info('Chat expanded');
         setIsFullscreen(!isFullscreen);
     }
 

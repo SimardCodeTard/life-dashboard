@@ -49,7 +49,7 @@ export const handleAPIError = (error: Error): Response => {
 
     // If the error was not properly handled, it will not be an APIError
     // Return a generic 500 error response
-    if(!(error as any).status) return new Response(JSON.stringify({
+    if(!(error instanceof APIError)) return new Response(JSON.stringify({
         success: false,
         error: { status: 500, message: 'Unhandeled internal error: ' + error.message }
     }), { status: 500, headers: { 'Content-Type': 'application/json' } });
