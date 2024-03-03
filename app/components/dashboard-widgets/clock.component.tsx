@@ -47,7 +47,7 @@ export default function Clock() {
         setDateDisplay(getDateString())
         updateClock();
         setInterval(updateClock, 500)
-    }, []);
+    }, [updateClock]);
 
     return (
         <div className={[
