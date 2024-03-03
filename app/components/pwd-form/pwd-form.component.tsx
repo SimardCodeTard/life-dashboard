@@ -40,6 +40,10 @@ export default function PWDForm() {
         }
     }
 
+    useEffect(() => {
+        clientLoginService.automaticallyAuthenticate();
+    })
+
     return (
         <>
             <form onSubmit={onSubmit} className="flex flex-col space-y-4 bg-[var(--card-background)] p-3 rounded-md shadow-md">

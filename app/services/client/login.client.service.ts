@@ -35,7 +35,7 @@ export namespace clientLoginService {
         });
     }
 
-    const automaticallyAuthenticate = async () => {
+    export const automaticallyAuthenticate = async () => {
         const savedPassword = localStorage.getItem('pwd') || '';
         const token = Cookies.get('token');
         login(savedPassword, token)
@@ -53,6 +53,4 @@ export namespace clientLoginService {
             Logger.debug('Automatic login failed');
         })
     }
-
-    automaticallyAuthenticate();
 }
