@@ -1,5 +1,5 @@
 import { Task, TaskDto } from "@/app/types/task.type";
-import TaskCheckbox from "./task-checkbox.component";
+import TaskCheckbox from "../../shared/checkbox.component";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { EditNote } from "@mui/icons-material";
 import { DateTime } from "luxon";
