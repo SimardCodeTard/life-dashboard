@@ -1,12 +1,14 @@
-import { Task } from "@/app/types/task.type";
+import { Task, TaskDto } from "@/app/types/task.type";
 import TaskCheckbox from "../../shared/checkbox.component";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { EditNote } from "@mui/icons-material";
 import { DateTime } from "luxon";
 import ModalComponent from "../../shared/modal.component";
 import { ChangeEvent, FormEvent, useState } from "react";
+import { Logger } from "@/app/services/logger.service";
+import { clientTaskDataService } from "@/app/services/client/tasks-data-client.service";
 
-export default function TaskItem ({task, deleteTask, updateTask}: {task: Task, deleteTask: (task: Task) => void, updateTask: (task: Task, status: boolean) => void}) {
+export default function TaskItem ({task, deleteTask, updateTask}: {task: Task, deleteTask: (task: TaskDto) => void, updateTask: (task: TaskDto, status: boolean) => void}) {
 
     const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
     const formatTaskDateToInput = (date: DateTime) => date.toFormat('yyyy\'-\'MM\'-\'dd');
@@ -32,8 +34,8 @@ export default function TaskItem ({task, deleteTask, updateTask}: {task: Task, d
 
     const onTaskEditFormSubmit = (event: FormEvent) => {
         event.preventDefault();
-        const newTaskTitle = (event.target as any)[0].value;
-        const newTaskDeadline = (event.target as any)[1].value;
+        const newTaskTitle: string = (event.target as any)[0].value;
+        const newTaskDeadline: string = (event.target as any)[1].value;
         updateTask({...task, title: newTaskTitle, deadline: newTaskDeadline}, task.completed)
         setEditModalOpen(false);
     }
@@ -53,14 +55,14 @@ export default function TaskItem ({task, deleteTask, updateTask}: {task: Task, d
 
     return(
         <div className="flex flex-col task-item p-3">
-            <div className="flex items-start">
-                <TaskCheckbox updateTaskStatus={(status) => updateTask(task, status)} completed={task.completed}></TaskCheckbox> 
+            <div className="flex justify-center items-start">
+                <TaskCheckbox updateTaskStatus={(status) => updateTask(clientTaskDataService.mapTaskToTaskDto(task), status)} completed={task.completed}></TaskCheckbox> 
                 <p className="mr-2">{task.title}</p>
                 <div className="text-sm text-[rgba(32,25,25,0.2)]">{task.deadline?.isValid && getRemainingTime(task.deadline)}</div>
                 <span className="ml-auto flex flex-col w-fit items-center justify-center">
                     <EditNote onClick={() => setEditModalOpen(true)} 
                         className="cursor-pointer text-[rgba(255,255,255,0.2)] scale-95 hover:text-[rgba(255,255,255,0.6)]"></EditNote>
-                    <DeleteIcon onClick={() => deleteTask(task)} className="cursor-pointer text-[rgba(255,255,255,0.2)] scale-95 hover:text-[rgba(255,255,255,0.6)]"></DeleteIcon>
+                    <DeleteIcon onClick={() => deleteTask(clientTaskDataService.mapTaskToTaskDto(task))} className="cursor-pointer text-[rgba(255,255,255,0.2)] scale-95 hover:text-[rgba(255,255,255,0.6)]"></DeleteIcon>
                 </span>
             </div>
             <p className={'text-sm' + ` ${deadlineIsPassed() ? 'text-red-500/75' : 'text-[rgb(var(--text-lighter-rgb))]'}`} 
