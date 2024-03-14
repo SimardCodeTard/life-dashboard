@@ -19,7 +19,7 @@ export namespace clientTaskDataService {
     }
 
     // Saves a task using a POST request.
-    export const saveTask = (task: Task): Promise<AxiosResponse<{success: boolean}>> => {
+    export const saveTask = (task: TaskDto): Promise<AxiosResponse<{success: boolean}>> => {
         Logger.debug('Saving new task (in TasksDataClientService)')
         const url = `${apiUrl}/new`;
         return axiosClientService.POST<{success: boolean}>(url, task, {
@@ -36,22 +36,22 @@ export namespace clientTaskDataService {
     }
 
     // Updates a task using a PUT request.
-    export const updateTask = (task: Task): Promise<AxiosResponse<{success: boolean}>> => {
+    export const updateTask = (task: TaskDto): Promise<AxiosResponse<{success: boolean}>> => {
         Logger.debug('Updating task (in TasksDataClientService)')
         const url = `${apiUrl}/update`;
         return axiosClientService.PUT<{success: boolean}>(url, task);
     }
 
     export const formatTaskDate = (date: string) => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
+    const formatTaskDateToInput = (date: DateTime) => date.toFormat('yyyy\'-\'MM\'-\'dd');
 
-    export const mapTaskToTaskDto = (task: Task): TaskDto => ({...task, deadline: task.deadline?.toISO() ?? undefined});
+    export const mapTaskToTaskDto = (task: Task): TaskDto => ({...task, deadline: task.deadline ? formatTaskDateToInput(task.deadline) : undefined});
 
     export const mapTaskToTaskDtoList = (tasks: Task[]): TaskDto[] => tasks.map(mapTaskToTaskDto);
 
     export const mapTaskDtoToTask = (taskDto: TaskDto): Task => ({...taskDto, deadline: taskDto.deadline ? formatTaskDate(taskDto.deadline) : undefined});
 
     export const mapTaskDtoToTaskList = (tasksDto: TaskDto[]): Task[] => tasksDto.map(mapTaskDtoToTask);
-
 
     export const sortTaskDtoByMostUrgent = (tasks: TaskDto[]): TaskDto[] => 
         tasks.toSorted((taskA: TaskDto, taskB: TaskDto) => {
