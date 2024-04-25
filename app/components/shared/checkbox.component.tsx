@@ -11,7 +11,7 @@ export default function TaskCheckbox({completed, updateTaskStatus}: {completed: 
     }
 
     return (
-        <input className="task-checkbox mr-2" 
+        <input className="task-checkbox mr-2 mt-1" 
             onChange={(_e: ChangeEvent<HTMLInputElement>) => onStatusChange()}
              checked={isCompleted} type="checkbox">
         </input>

@@ -1,5 +1,5 @@
 'use client'
-import { Task } from "@/app/types/task.type";
+import { Task, TaskDto } from "@/app/types/task.type";
 import TaskItem from "./task.component";
 import { FormEvent, useEffect, useState } from "react";
 import { clientTaskDataService } from "@/app/services/client/tasks-data-client.service";
@@ -24,7 +24,7 @@ export default function Tasks() {
         if(new Date(deadline).toString() === 'Invalid Date') deadline = undefined;
 
         const completed = false;
-        const newTask: Task = {title, deadline: deadline, completed};
+        const newTask: TaskDto = {title, deadline: deadline, completed};
 
         clientTaskDataService.saveTask(newTask)
         .then((res: any) => res.data.success && clientTaskDataService.fetchAllTasks().then(clientTaskDataService.mapTaskDtoToTaskList).then(setTasks)).then(() => setIsLoading(false)).catch(console.error);
@@ -33,17 +33,17 @@ export default function Tasks() {
         (event.target as any)[1].value = "";
     }
 
-    const updateTask = (task: Task, status: boolean) => {
+    const updateTask = (taskDto: TaskDto, completed?: boolean) => {
         setIsLoading(true)
-        task = {...task, _id: task._id, completed: status};
-        clientTaskDataService.updateTask(task)
+        taskDto = {...taskDto, _id: taskDto._id, completed: completed || taskDto.completed};
+        clientTaskDataService.updateTask(taskDto)
         .then(async () => setTasks(clientTaskDataService.mapTaskDtoToTaskList( await clientTaskDataService.fetchAllTasks() )))
         .then(() => setIsLoading(false));
     }
 
-    const deleteTask = (task: Task) => {
+    const deleteTask = (taskDto: TaskDto) => {
         setIsLoading(true);
-        task._id && clientTaskDataService.deleteTaskById(task._id)
+        taskDto._id && clientTaskDataService.deleteTaskById(taskDto._id)
             .then((res) =>{ return res.data.success ? clientTaskDataService.fetchAllTasks() : undefined})
             .catch(Logger.error)
             .then((tasks) => tasks && setTasks(clientTaskDataService.mapTaskDtoToTaskList(tasks)))

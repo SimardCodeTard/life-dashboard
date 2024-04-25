@@ -8,10 +8,10 @@ export default function NewTaskForm({onNewTaskSubmit}: NewTaskFormProps) {
     const [taskFormDeployed, setTaskFormDeployed] = useState(false);
 
     const DeployFormButton = () => (
-        <span className="rounded w-full flex items-center justify-center bg-[rgba(255,255,255,0.2)] cursor-pointer">{
+        <span onClick={() => setTaskFormDeployed(!taskFormDeployed)} className="rounded w-full flex items-center justify-center bg-[rgba(255,255,255,0.2)] cursor-pointer">{
             taskFormDeployed 
-            ? <CloseIcon onClick={() => setTaskFormDeployed(false)} />
-            : <AddIcon onClick={() => setTaskFormDeployed(true)} />
+            ? <CloseIcon/>
+            : <AddIcon/>
         }</span>
     )
 
