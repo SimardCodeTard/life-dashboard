@@ -1,0 +1,1 @@
+export type TabPropsType = { href: string, label: string, isHome?: boolean};

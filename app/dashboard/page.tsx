@@ -10,7 +10,7 @@ import Chat from "../components/dashboard-widgets/chat/chat.component";
 export default function DashboardPage() {
 
     return (
-        <main className="flex h-screen w-full justify-between">
+        <main className="flex h-full w-full justify-between grow">
 
             <div className="left-section w-1/4">
                 <Card className="left-section-card"><Tasks></Tasks></Card>
@@ -33,7 +33,7 @@ export default function DashboardPage() {
 
             </div>
 
-            <div className="right-section flex flex-col self-end w-1/4 h-full">
+            <div className="right-section flex flex-col w-1/4 h-full">
                     <Card><Calendar></Calendar></Card>
                     <Card><Chat></Chat></Card>
             </div>
