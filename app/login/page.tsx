@@ -1,9 +1,7 @@
 'use client'
 
-import { useState } from "react";
 import PWDForm from "../components/pwd-form/pwd-form.component";
 import Card from "../components/shared/card.component";
-import { clientLoginService } from "../services/client/login.client.service";
 
 export default function LoginPage() {
     return <div className="flex flex-col pt-24 items-center h-screen">
