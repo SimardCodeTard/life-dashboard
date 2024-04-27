@@ -3,7 +3,6 @@ import { APIResponseStatuses } from "@/app/enums/api-response-statuses.enum";
 import axios, { AxiosResponse } from "axios";
 import { Logger } from "../logger.service";
 import Cookies from 'js-cookie';
-import { useState } from "react";
 
 export namespace clientLoginService {
 
@@ -11,46 +10,95 @@ export namespace clientLoginService {
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/auth';
 
-    const checkToken = (token?: string | null) => token !== undefined && token !== null;
+    const checkToken = (token?: string | null) => token !== undefined && token !== null; 
 
-    const validateToken = async (token?: string | null) => checkToken(token) ? axios.post(apiUrl+'/validate', {token}).then(res => res.data.valid  as boolean) : false;
+    const validateTokens = async (token: string | null | undefined, refreshToken: string | null | undefined) => {
 
-    const checkPassword = async (password?: string | null) => password !== undefined && password !== null;
+        if(!checkToken(token) && !checkToken(refreshToken)) {
+            return false;
+        }
 
-    export const login = async (password: string, token?: string): Promise<{token: string}> => {  
-        return checkPassword(password)
-            .then((passwordIsOk: boolean) => passwordIsOk ? token : (() => {throw new Error('Invalid password')})())
-            .then(validateToken)
-            .then((tokenValid: boolean) => tokenValid ? {token: token as string} : getToken(password))
+        const validateRes = await axios.post(apiUrl + '/validate', { token, refreshToken });
+
+        if(validateRes.data === true ){
+             // If the token was valid
+            return true;
+        } else if(typeof validateRes.data.token === 'string') {
+            // If the token was invalid but the refresh token was
+            saveToken(validateRes.data.token);
+            return true;
+        }
+
+        // If none of the tokens were valid
+        return false;
     }
 
-    const getToken = async (password: string): Promise<{token: string}> => {
-        return await axios.post<{ token: string }>(apiUrl, {password}, { headers: {'Content-Type': 'application/json'} })
+    const checkPassword = async (password?: string | null) => password !== '' && password !== undefined && password !== null;
+
+    export const login = async (password: string, token: string |undefined, refreshToken: string | undefined): Promise<{token: string, refreshToken: string}> => {  
+        if(await validateTokens(token, refreshToken)) {
+            Logger.debug('Validated tokens')
+            if(!token) token = Cookies.get('token');
+            return {
+                token: token as string,
+                refreshToken: refreshToken as string
+            };
+        } else {
+            if(!checkPassword(password)) {
+                throw new Error('Invalid password');
+            }
+            return getTokens(password);
+        }
+    }
+
+    const getTokens = async (password: string): Promise<{token: string, refreshToken: string}> => {
+        return await axios.post<{ 
+            token: string,
+            refreshToken: string 
+        }>(apiUrl, {password}, { headers: {'Content-Type': 'application/json'} })
         .then((res: AxiosResponse) => {
             if(res.status === APIResponseStatuses.FORBIDDEN) {
                 throw new Error('Invalid password');
             } else {
-                return {token: res.data.token};
+                return {
+                    token: res.data.token,
+                    refreshToken: res.data.refreshToken
+                };
             }
         });
     }
 
-    export const automaticallyAuthenticate = async () => {
-        const savedPassword = localStorage.getItem('pwd') || '';
+    export const autoAuth = async () => {
         const token = Cookies.get('token');
-        login(savedPassword, token)
-        .then((res: {token: string}) => {
-            if(res.token) {
-                authToken = res.token as string;
-                Cookies.set('token', res.token, { expires: 1 });
-                window.location.href = '/dashboard';
+        const refreshToken = Cookies.get('refresh-token')
+        return login('', token, refreshToken)
+        .then((res: {
+                token: string
+                refreshToken: string
+            }) => {
+            Logger.debug(JSON.stringify(res))
+            if(res.token && res.refreshToken) {
+                saveToken(res.token as string);
+                saveRefreshToken(res.refreshToken);
                 Logger.debug('Automatic login success');
+                return true;
             } else {
                 Logger.debug('Automatic login failed');
+                return false;
             }
         })
-        .catch(() => {
-            Logger.debug('Automatic login failed');
+        .catch((e) => {
+            Logger.debug('Automatic login failed, an error occured');
+            Logger.error(e)
+            return false;
         })
+    }
+
+    const saveToken = (token: string, expires: number = 1) => {
+        Cookies.set('token', token, { expires, secure: true }) // TODO: HTTP ONLY
+    }
+
+    const saveRefreshToken = (refreshToken: string, expires: number = 90) => {
+        Cookies.set('token', refreshToken, { expires, secure: true }) // TODO: HTTP ONLY
     }
 }

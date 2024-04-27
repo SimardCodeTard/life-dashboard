@@ -11,9 +11,9 @@ export default function LoginPage() {
     const [isAutomaticallyLoggingIn, setIsAutomaticallyLoggingIn] = useState(true);
 
     useEffect(() => {
-        clientLoginService.automaticallyAuthenticate()
+        clientLoginService.autoAuth()
         .finally(() => setIsAutomaticallyLoggingIn(false))
-    })
+    }, [clientLoginService]);
 
     return <>{
         isAutomaticallyLoggingIn  
