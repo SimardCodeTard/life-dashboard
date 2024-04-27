@@ -1,7 +1,7 @@
 'use client'
 
 import { clientLoginService } from "@/app/services/client/login.client.service";
-import { FormEvent, useEffect, useState } from "react"
+import { FormEvent, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { Logger } from "@/app/services/logger.service";
 
@@ -12,33 +12,39 @@ export default function PWDForm() {
 
 
     const onSubmit = (e: FormEvent) => {
-        const savedPasswordEncrypted = localStorage.getItem('pwd');
-        const savedPassword = savedPasswordEncrypted ? new TextDecoder().decode(new Uint8Array(Buffer.from(savedPasswordEncrypted, 'hex'))) : '';
-        if(savedPassword === '') {
-            e.preventDefault();
-            const password = (e.target as any)[0].value; 
-            (e.target as any)[0].value = '';
-            setIsLoggingIn(true);
-            clientLoginService.login(password)
-            .then((res) => {
-                Logger.debug('Login successful');
-                // Save the token in a cookie
-                Cookies.set('token', res.token, { expires: 1 });
+        e.preventDefault();
+        const password = (e.target as any)[0].value; 
+        (e.target as any)[0].value = '';
+        setIsLoggingIn(true);
+        clientLoginService.login(password, undefined, undefined)
+        .then((res) => {
+            Logger.debug('Login successful');
 
-                // Save the password in the local storage
-                localStorage.setItem('pwd', password);
+            // Save the token in a cookie
+            Cookies.set('token', res.token, { expires: 1 });
 
-                setIsLoggingIn(false);
+            // Save the refresh token in a cookie
+            Cookies.set('refresh-token', res.refreshToken);
 
-                // Redirect to the dashboard
-                window.location.href = '/dashboard';
-            }).catch(() => {
-                setIsLoggingIn(false);
-                setPasswordInvalid(true);
-                Logger.debug('Login failed');
-            })
-        }
+            setIsLoggingIn(false);
+
+            // Redirect to the dashboard
+            window.location.href = '/dashboard';
+        }).catch(() => {
+            setIsLoggingIn(false);
+            setPasswordInvalid(true);
+            Logger.debug('Login failed');
+        })
     }
+
+    useEffect(() => {
+        clientLoginService.autoAuth()
+        .then(res => {
+            res === true 
+            ? window.location.replace('/dashboard')
+            : null
+        })
+    }, [clientLoginService, window])
 
     return (
         <>
