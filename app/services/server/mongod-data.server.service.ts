@@ -91,12 +91,12 @@ export namespace serverMongoDataService {
         });
     };
 
-    export const updateOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<null | UpdateResult> => {
+    export const updateOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<UpdateResult> => {
         Logger.debug("updating item " + JSON.stringify(item) + " in collection " + collection.collectionName);
         const { _id, ...updateData } = item; // Destructure to separate _id from the rest of the data
         
         if(!_id) {
-            return null;
+            throw new Error('Trying to update with a null id');
         }
 
         return withPendingRequests(async () => {
