@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 
-export type Account = {
+export type Count = {
     _id: ObjectId;
     name: string;
     months: Month[];
@@ -9,16 +9,14 @@ export type Account = {
 export type Month = {
     pay: number;
     otherIncome: number;
-    aids: number;
     previousMonthPay: number;
     number: number;
     label: string;
-    remainingBudget: number;
-    totalExpenseAmount: number;
     budgets: Budget[];
 }
 
 export type Budget = {
+    label: string;
     isFixed: boolean;
     expenses: Expense[];
     amount: number;

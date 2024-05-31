@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import FitbitSharpIcon from '@mui/icons-material/FitbitSharp';
-import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 
 import './components.css';
 
@@ -24,7 +23,8 @@ const Tab = ({ href, label, isSelected, onClose }: { href: string, label: string
 };
 
 export default function NavBar() {
-  const [tabs, setTabs] = useState([{ href: '/stats', label: 'Stats' }]);
+  const [tabs, setTabs] = useState(
+    [{ href: '/counts', label: 'Comptes' }]);
   const [currentPageHref, setCurrentPageHref] = useState('/dashboard');
 
   const removeTab = (href: string) => {
@@ -50,7 +50,6 @@ export default function NavBar() {
           href={tab.href}
           label={tab.label}
           isSelected={tab.href === currentPageHref}
-          onClose={removeTab}
         />
       ))}
     </div>
