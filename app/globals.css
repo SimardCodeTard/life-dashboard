@@ -45,12 +45,15 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   min-height: 100%;
-  min-height: 100dvh; /* I LOVE DVH I WILL GIVE MY LIFE FOR DVH AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH */
   color: var(--foreground);
   background-image: url('../public/assets/4K-background-gadient-image.png');
   background-color: var(--background);
   background-size: 200% 200%;
   animation: gradient-motion 8s ease-in-out infinite;
+}
+
+main {
+  min-height: 100%;
 }
 
 .task-item {
@@ -117,4 +120,28 @@ button:disabled {
 
 .left-section-card {
   width: 365px !important;
+}
+
+input {
+  background-color: rgb(255,255,255,0.2);
+  color: white;
+  padding: 0.2rem;
+  border-radius: 0.2rem;
+  margin: 0.2rem;
+  transition: all .2s ease;
+}
+
+input:focus-visible {
+  transition: all .2s ease;
+  outline: solid 1px rgba(255,255,255,0.6);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
 }

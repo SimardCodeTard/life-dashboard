@@ -3,9 +3,8 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import FitbitSharpIcon from '@mui/icons-material/FitbitSharp';
-import CloseSharpIcon from '@mui/icons-material/CloseSharp';
 
-const Tab = ({ href, label, isSelected, onClose }: { href: string, label: string, isSelected: boolean, onClose: (href: string) => void}) => {
+const Tab = ({ href, label, isSelected }: { href: string, label: string, isSelected: boolean}) => {
     return (
     <Link href={href}
         className={`
@@ -18,13 +17,13 @@ const Tab = ({ href, label, isSelected, onClose }: { href: string, label: string
             window.location.replace(href)
         }}>
         {label}
-        <CloseSharpIcon onClick={() => onClose(href)} className='ml-2 text-[rgba(255,255,255,0.5)]'></CloseSharpIcon>   
     </Link>
     );
 };
 
 export default function NavBar() {
-  const [tabs, setTabs] = useState([{ href: '/stats', label: 'Stats' }]);
+  const [tabs, setTabs] = useState(
+    [{ href: '/counts', label: 'Comptes' }]);
   const [currentPageHref, setCurrentPageHref] = useState('/dashboard');
 
   const removeTab = (href: string) => {
@@ -49,7 +48,6 @@ export default function NavBar() {
           href={tab.href}
           label={tab.label}
           isSelected={tab.href === currentPageHref}
-          onClose={removeTab}
         />
       ))}
     </div>
