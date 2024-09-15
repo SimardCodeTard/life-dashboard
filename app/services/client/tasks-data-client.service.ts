@@ -20,7 +20,7 @@ export namespace clientTaskDataService {
 
     // Saves a task using a POST request.
     export const saveTask = (task: TaskDto): Promise<AxiosResponse<{success: boolean}>> => {
-        Logger.debug('Saving new task (in TasksDataClientService)')
+        Logger.debug('Saving new task (in TasksDataClientService): ' + JSON.stringify(task))
         const url = `${apiUrl}/new`;
         return axiosClientService.POST<{success: boolean}>(url, task, {
                 'Content-Type': 'application/json'
@@ -30,14 +30,14 @@ export namespace clientTaskDataService {
 
     // Deletes a task by ID using a DELETE request.
     export const deleteTaskById = (taskId: ObjectId): Promise<AxiosResponse<{success: boolean}>> => {
-        Logger.debug('Deleting task (in TasksDataClientService)')
+        Logger.debug('Deleting task (in TasksDataClientService) with id: '  + taskId)
         const url = `${apiUrl}/delete?id=${taskId.toString()}`;
         return axiosClientService.DELETE<{success: boolean}>(url);
     }
 
     // Updates a task using a PUT request.
     export const updateTask = (task: TaskDto): Promise<AxiosResponse<{success: boolean}>> => {
-        Logger.debug('Updating task (in TasksDataClientService)')
+        Logger.debug('Updating task (in TasksDataClientService) : '  + JSON.stringify(task))
         const url = `${apiUrl}/update`;
         return axiosClientService.PUT<{success: boolean}>(url, task);
     }

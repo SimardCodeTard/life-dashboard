@@ -35,7 +35,7 @@ export default function Tasks() {
 
     const updateTask = (taskDto: TaskDto, completed?: boolean) => {
         setIsLoading(true)
-        taskDto = {...taskDto, _id: taskDto._id, completed: completed || taskDto.completed};
+        taskDto = {...taskDto, _id: taskDto._id, completed: completed !== undefined ? completed : taskDto.completed};
         clientTaskDataService.updateTask(taskDto)
         .then(async () => setTasks(clientTaskDataService.mapTaskDtoToTaskList( await clientTaskDataService.fetchAllTasks() )))
         .then(() => setIsLoading(false));
