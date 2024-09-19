@@ -2,14 +2,14 @@ import { APIBadRequestError } from "@/app/errors/api.error";
 import { CalendarEventType, CalendarEventTypeDTO } from "@/app/types/calendar.type";
 import { CalendarUtils } from "@/app/utils/calendar.utils";
 import assert from "assert";
-import { DateTime } from "luxon";
 import { Logger } from "../logger.service";
 import { handleAxiosError } from "@/app/utils/api.utils";
 import { axiosClientService } from "./axios.client.service";
+import moment, { Moment } from "moment";
   
 export namespace clientCalendarDataService {
 
-    const formatDateUnivClaudeBernard = (dateStr: string) => DateTime.fromFormat(dateStr, "yyyyMMdd'T'hhmmss'Z'");
+    const formatDateUnivClaudeBernard = (dateStr: string): Moment => moment.parseZone(dateStr);
 
     export const formatDate = (dateStr: string, dateSource: CalendarUtils.CalendarSourcesEnum = CalendarUtils.CalendarSourcesEnum.ADELB_UNIV_LYON_1) => {
        switch(dateSource) {
@@ -21,8 +21,8 @@ export namespace clientCalendarDataService {
     export const mapCalendarEventDTOtoDO = (calendarEventDto: CalendarEventTypeDTO): CalendarEventType => {
         return {
             ...calendarEventDto,
-            dtStart: formatDate(calendarEventDto.dtStart).plus({hours: 1}),
-            dtEnd: formatDate(calendarEventDto.dtEnd).plus({hours: 1}),
+            dtStart: formatDate(calendarEventDto.dtStart),
+            dtEnd: formatDate(calendarEventDto.dtEnd),
         }
     }
 
@@ -39,22 +39,23 @@ export namespace clientCalendarDataService {
             }
     }
 
-    export const fromDateTimeToGroupedEventMapKey = (date: DateTime): string => [date.day, date.month, date.year].join('-');
+    export const fromMomentToGroupedEventMapKey = (date: Moment): string => date.format('DD-MM-YYYY');
 
-    export const fromGroupedEventKeyToDateTime = (groupedEventKey: string) => {
+    export const fromGroupedEventKeyToMoment = (groupedEventKey: string): Moment => {
         const groupedEventKeyArray = groupedEventKey.split('-');
-        return DateTime.fromObject({day: Number(groupedEventKeyArray[0]), month: Number(groupedEventKeyArray[1]), year: Number(groupedEventKeyArray[2])})
+        return moment().year(parseInt(groupedEventKeyArray[2])).month(parseInt(groupedEventKeyArray[1]) - 1).date(parseInt(groupedEventKeyArray[0]));
     }
 
     const sortEvents = (events: CalendarEventType[]): CalendarEventType[] => events.sort((a:CalendarEventType, b: CalendarEventType) => {
-        return (a.dtStart.hour * 60 + a.dtStart.minute ) - (b.dtStart.hour * 60 + b.dtStart.minute);
+        return (a.dtStart.hour() * 60 + a.dtStart.minute() ) - (b.dtStart.hour() * 60 + b.dtStart.minute());
     });
 
     const groupCalEventsByDate = (events: CalendarEventType[]): Map<string, CalendarEventType[]> => {
         const groupedEvents = new Map<string, CalendarEventType[]>();
 
         for(let event of events) {
-            const key = fromDateTimeToGroupedEventMapKey(event.dtStart);
+            Logger.debug('Event: ' + JSON.stringify(event));
+            const key = fromMomentToGroupedEventMapKey(event.dtStart);
             const eventsToGroupWith = groupedEvents.get(key);
             if(eventsToGroupWith) {
                 groupedEvents.set(key, [...eventsToGroupWith, event]);
@@ -76,6 +77,8 @@ export namespace clientCalendarDataService {
 
         const res = await axiosClientService.GET<CalendarEventTypeDTO[]>(url).catch(handleAxiosError);
         
+        Logger.debug(`Fetched calendar events from ${url} with ${res?.data.length} events: ${JSON.stringify(res?.data)}`);
+
         return groupCalEventsByDate(mapCalendarEventDTOListToDO(res?.data as CalendarEventTypeDTO[]));
     }
 } 
