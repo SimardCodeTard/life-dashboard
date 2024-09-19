@@ -1,8 +1,15 @@
-import { DateTime } from "luxon"
+import { Moment } from "moment"
+import { ObjectId } from "mongodb"
+
+export type CalendarSourceType = {
+    _id?: ObjectId,
+    name: string,
+    url: string,
+}
 
 export type CalendarEventType = {
-    dtEnd: DateTime, 
-    dtStart: DateTime,
+    dtEnd: Moment, 
+    dtStart: Moment,
     location: string,
     summary: string,
 }

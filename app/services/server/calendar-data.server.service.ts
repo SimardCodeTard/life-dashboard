@@ -1,51 +1,47 @@
 import { UnivCalendarLineIndexesEnum } from "@/app/enums/univ-calendar-indexes.enum";
-import { CalendarEventTypeDTO } from "@/app/types/calendar.type";
+import { CalendarEventTypeDTO, CalendarSourceType } from "@/app/types/calendar.type";
 import assert from "assert";
 import axios from "axios";
-import { 
-    APIInternalServerError, 
-    APIUnprocessableEntityError, 
+import {
+    APIInternalServerError,
+    APIUnprocessableEntityError,
 } from "@/app/errors/api.error";
 import { handleAxiosError } from "@/app/utils/api.utils";
+import ICAL from 'ical.js';
+import { Collection, DeleteResult, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
+import { serverMongoDataService } from "./mongod-data.server.service";
+
 
 export namespace serverCalendarDataService {
-    export const findEventsFromUniv = async (): Promise<CalendarEventTypeDTO[]> => {
-        const url = process.env.CALENDAR_URL_UNIV as string;
-        
-        try {
-            assert(url !== undefined);
-        } catch (err) {
-            throw new APIInternalServerError('Server configuration error: Calendar URL is undefined');
-        }
+    const collectionName = "calendar";
 
-        const data = await axios.get(url).then(res => res.data).catch(handleAxiosError) as string;
 
-        const events: CalendarEventTypeDTO[] = [];
+    export const fetchIcalData = async (url: string): Promise<string> => axios.get(url).then(res => res.data).catch(handleAxiosError);
 
-        const requiredFields = [
-            UnivCalendarLineIndexesEnum.DTSTART,
-            UnivCalendarLineIndexesEnum.DTEND,
-            UnivCalendarLineIndexesEnum.LOCATION,
-            UnivCalendarLineIndexesEnum.SUMMARY
-        ];
+    export const parseEventsFromIcal = (icsData: string): Promise<CalendarEventTypeDTO[]> => Promise.resolve(
+        new ICAL.Component(ICAL.parse(icsData)).getAllSubcomponents('vevent').map((event: any) => ({ 
+            dtEnd: event.getFirstPropertyValue('dtend').toJSDate().toISOString(),
+            dtStart: event.getFirstPropertyValue('dtstart').toJSDate().toISOString(),
+            location: event.getFirstPropertyValue('location'),
+            summary: event.getFirstPropertyValue('summary') 
+        })
+    ) as CalendarEventTypeDTO[]);
 
-        data.split('BEGIN:VEVENT').slice(1).forEach((item: string) => {
-            const lines = item.split('\n').map(line => line.replaceAll(/\r\n|\r|\n/g, '')).filter(line => line !== '');
+    export const saveNewCalendarSource = async (source: CalendarSourceType): Promise<InsertOneResult> => serverMongoDataService.insertOne<CalendarSourceType>(await getCollection(), source);
+
+
+    // MongoDB operations
     
-            // Check for the presence of required lines
-            const isMissingRequiredFields = requiredFields.some(field => !lines[field]);
-            if (isMissingRequiredFields) {
-                throw new APIUnprocessableEntityError('Missing required data in calendar event');
-            }
-    
-            const dtStart = lines[UnivCalendarLineIndexesEnum.DTSTART].split(':')[1];
-            const dtEnd = lines[UnivCalendarLineIndexesEnum.DTEND].split(':')[1];
-            const location = lines[UnivCalendarLineIndexesEnum.LOCATION].split(':')[1];
-            const summary = lines[UnivCalendarLineIndexesEnum.SUMMARY].split(':')[1];
-    
-            events.push({ dtEnd, dtStart, location, summary });
-        });
+    const getCollection = async (): Promise<Collection> => (await serverMongoDataService.getDb()).collection(collectionName);
 
-        return events;
-    }
+    export const findAllCalendarSources = async (): Promise<CalendarSourceType[]> => serverMongoDataService.findAll<CalendarSourceType>(await getCollection());
+
+    export const findCalendarSourceById = async (id: ObjectId): Promise<CalendarSourceType | null> => serverMongoDataService.findById<CalendarSourceType>(await getCollection(), id);
+
+    export const insertNewCalendarSource = async (source: CalendarSourceType): Promise<InsertOneResult> => serverMongoDataService.insertOne<CalendarSourceType>(await getCollection(), source);
+    
+    export const deleteCalendarSourceById = async (id: ObjectId): Promise<DeleteResult> => serverMongoDataService.deleteById(await getCollection(), id);
+
+    export const updateCalendarSource = async (favorite: CalendarSourceType): Promise<null | UpdateResult> => serverMongoDataService.updateOne<CalendarSourceType>(await getCollection(), favorite);
+
 }

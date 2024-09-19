@@ -2,23 +2,25 @@
 import { CalendarEventType } from "@/app/types/calendar.type";
 import { useEffect, useState } from "react";
 import { CalendarUtils } from "@/app/utils/calendar.utils";
-import { DateTime } from "luxon";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { clientCalendarDataService } from "@/app/services/client/calendar-data-client.service";
 import CalendarItem from "./calendar-item/calendar-item.component";
 import styles from './calendar.module.css';
 import Loader from "../../shared/loader/loader.component";
+import { Logger } from "@/app/services/logger.service";
+import moment, { Moment } from "moment";
 
 export default function Calendar() {
 
     const [calDataMap, setCalDataMap] = useState<Map<string, CalendarEventType[]>>(new Map());
-    const [selectedDate, setSelectedDate] = useState<string>(clientCalendarDataService.fromDateTimeToGroupedEventMapKey(DateTime.now()));
+    const [selectedDate, setSelectedDate] = useState<string>(clientCalendarDataService.fromMomentToGroupedEventMapKey(moment()));
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
         clientCalendarDataService.fetchCalendarEvents()
             .then((data) => {
+                Logger.debug('Calendar data fetched ' + JSON.stringify(data));
                 setCalDataMap(data);
             });
     }, [])
@@ -28,19 +30,19 @@ export default function Calendar() {
     }, [calDataMap])
 
     const nextDay = () => {
-        let currentDate = selectedDate ? clientCalendarDataService.fromGroupedEventKeyToDateTime(selectedDate) : DateTime.now();
-        currentDate = currentDate.plus({ days: 1 })
-        setSelectedDate(clientCalendarDataService.fromDateTimeToGroupedEventMapKey(currentDate));
+        let currentDate: Moment = selectedDate ? clientCalendarDataService.fromGroupedEventKeyToMoment(selectedDate) : moment();
+        currentDate = currentDate.add({ days: 1 })
+        setSelectedDate(clientCalendarDataService.fromMomentToGroupedEventMapKey(currentDate));
     }
 
     const previousDay = () => {
-        let currentDate = selectedDate ? clientCalendarDataService.fromGroupedEventKeyToDateTime(selectedDate) : DateTime.now();
-        currentDate = currentDate.minus({ days: 1 })
-        setSelectedDate(clientCalendarDataService.fromDateTimeToGroupedEventMapKey(currentDate));
+        let currentDate: Moment = selectedDate ? clientCalendarDataService.fromGroupedEventKeyToMoment(selectedDate) : moment();
+        currentDate = currentDate.subtract({ days: 1 })
+        setSelectedDate(clientCalendarDataService.fromMomentToGroupedEventMapKey(currentDate));
     }
 
     const buildFriendlyMessage = () => {
-        const date = clientCalendarDataService.fromGroupedEventKeyToDateTime(selectedDate);
+        const date = clientCalendarDataService.fromGroupedEventKeyToMoment(selectedDate);
         if(CalendarUtils.isSameDay(date)) {
             return 'You\'re all free today :)';         
         } else {
@@ -67,7 +69,7 @@ export default function Calendar() {
     );
 
     const selectedIsToday = (): boolean => {
-        return CalendarUtils.isSameDay(clientCalendarDataService.fromGroupedEventKeyToDateTime(selectedDate));
+        return CalendarUtils.isSameDay(clientCalendarDataService.fromGroupedEventKeyToMoment(selectedDate));
     }
 
     return (
@@ -81,7 +83,7 @@ export default function Calendar() {
                     {selectedIsToday() 
                         ? <p className="w-full flex text-[rgba(255,255,255,0.4)] justify-center">today</p> 
                         : <span className="w-full cursor-pointer flex text-[rgba(255,255,255,0.4)] justify-center"
-                            onClick={() => setSelectedDate(clientCalendarDataService.fromDateTimeToGroupedEventMapKey(DateTime.now()))}
+                            onClick={() => setSelectedDate(clientCalendarDataService.fromMomentToGroupedEventMapKey(moment()))}
                             >go to today</span>}
                 </span>
                 <span className="cursor-pointer" onClick={nextDay}>
