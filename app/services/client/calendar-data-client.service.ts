@@ -1,13 +1,13 @@
-import { APIBadRequestError } from "@/app/errors/api.error";
-import { CalendarEventType, CalendarEventTypeDTO } from "@/app/types/calendar.type";
+import { CalendarEventType, CalendarEventTypeDTO, CalendarSourceType } from "@/app/types/calendar.type";
 import { CalendarUtils } from "@/app/utils/calendar.utils";
-import assert from "assert";
 import { Logger } from "../logger.service";
-import { handleAxiosError } from "@/app/utils/api.utils";
-import { axiosClientService } from "./axios.client.service";
 import moment, { Moment } from "moment";
-  
+import { ObjectId } from "mongodb";
+import { axiosClientService } from "./axios.client.service";
+
 export namespace clientCalendarDataService {
+
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     const formatDateUnivClaudeBernard = (dateStr: string): Moment => moment.parseZone(dateStr);
 
@@ -27,17 +27,6 @@ export namespace clientCalendarDataService {
     }
 
     export const mapCalendarEventDTOListToDO = (calendarEventDTOList: CalendarEventTypeDTO[]): CalendarEventType[] => calendarEventDTOList.map(mapCalendarEventDTOtoDO);
-
-    export const fetchCalendarEvents = async (source: CalendarUtils.CalendarSourcesEnum = CalendarUtils.CalendarSourcesEnum.ADELB_UNIV_LYON_1) => {
-        switch(source) {
-            case (CalendarUtils.CalendarSourcesEnum.ADELB_UNIV_LYON_1):
-                return fetchCalendarEventsSourceUniv();
-            default:
-                const internalError = new APIBadRequestError('Invalid calendar source');;
-                Logger.error(internalError);
-                throw internalError;
-            }
-    }
 
     export const fromMomentToGroupedEventMapKey = (date: Moment): string => date.format('DD-MM-YYYY');
 
@@ -71,15 +60,10 @@ export namespace clientCalendarDataService {
         return groupedEvents;
     }
 
-    const fetchCalendarEventsSourceUniv = async (): Promise<Map<string, CalendarEventType[]>> => {
-        const url = process.env.NEXT_PUBLIC_API_URL + "/calendar/class" as string;
-        assert(url !== undefined);
+    export const fetchCalendarSources = async (): Promise<CalendarSourceType[]> => 
+        axiosClientService.GET<CalendarSourceType[]>(API_URL + '/calendar/source').then(res => res.data);
 
-        const res = await axiosClientService.GET<CalendarEventTypeDTO[]>(url).catch(handleAxiosError);
-        
-        Logger.debug(`Fetched calendar events from ${url} with ${res?.data.length} events: ${JSON.stringify(res?.data)}`);
-
-        return groupCalEventsByDate(mapCalendarEventDTOListToDO(res?.data as CalendarEventTypeDTO[]));
-    }
+    export const fetchCalendarEventsBySourceId = (sourceId: ObjectId): Promise<Map<string, CalendarEventType[]>> => 
+        axiosClientService.GET<CalendarEventType[]>(API_URL + '/calendar/source/' + sourceId.id.toString()).then(res => res.data).then(groupCalEventsByDate);
 } 
 
