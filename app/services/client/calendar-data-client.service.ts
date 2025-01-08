@@ -65,5 +65,8 @@ export namespace clientCalendarDataService {
 
     export const fetchCalendarEventsBySourceId = (sourceId: ObjectId): Promise<Map<string, CalendarEventType[]>> => 
         axiosClientService.GET<CalendarEventType[]>(API_URL + '/calendar/source/' + sourceId.id.toString()).then(res => res.data).then(groupCalEventsByDate);
+
+    export const postCalendarSource = async (calendarEvent: any): Promise<CalendarSourceType>  => 
+        axiosClientService.POST<CalendarSourceType>(API_URL + 'calendar/source/new', calendarEvent).then(res => res.data);
 } 
 
