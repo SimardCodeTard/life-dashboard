@@ -15,6 +15,9 @@ import { serverMongoDataService } from "./mongod-data.server.service";
 export namespace serverCalendarDataService {
     const collectionName = "calendar";
 
+    export const patchCalendarSourceURL = (url: string): string => {
+        return url.replace('webcal://', 'https://')
+    }
 
     export const fetchIcalData = async (url: string): Promise<string> => axios.get(url).then(res => res.data).catch(handleAxiosError);
 
@@ -27,11 +30,9 @@ export namespace serverCalendarDataService {
         })
     ) as CalendarEventTypeDTO[]);
 
-    export const saveNewCalendarSource = async (source: CalendarSourceType): Promise<InsertOneResult> => serverMongoDataService.insertOne<CalendarSourceType>(await getCollection(), source);
-
-
+    export const saveNewCalendarSource = async (source: CalendarSourceType): Promise<CalendarSourceType> => serverMongoDataService.insertOne<CalendarSourceType>(await getCollection(), source).then(insertOneResult => findCalendarSourceById(insertOneResult.insertedId) as Promise<CalendarSourceType>);
     // MongoDB operations
-    
+
     const getCollection = async (): Promise<Collection> => (await serverMongoDataService.getDb()).collection(collectionName);
 
     export const findAllCalendarSources = async (): Promise<CalendarSourceType[]> => serverMongoDataService.findAll<CalendarSourceType>(await getCollection());
