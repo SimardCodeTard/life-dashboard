@@ -1,11 +1,5 @@
-import { UnivCalendarLineIndexesEnum } from "@/app/enums/univ-calendar-indexes.enum";
 import { CalendarEventTypeDTO, CalendarSourceType } from "@/app/types/calendar.type";
-import assert from "assert";
 import axios from "axios";
-import {
-    APIInternalServerError,
-    APIUnprocessableEntityError,
-} from "@/app/errors/api.error";
 import { handleAxiosError } from "@/app/utils/api.utils";
 import ICAL from 'ical.js';
 import { Collection, DeleteResult, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
@@ -21,14 +15,15 @@ export namespace serverCalendarDataService {
 
     export const fetchIcalData = async (url: string): Promise<string> => axios.get(url).then(res => res.data).catch(handleAxiosError);
 
-    export const parseEventsFromIcal = (icsData: string): Promise<CalendarEventTypeDTO[]> => Promise.resolve(
-        new ICAL.Component(ICAL.parse(icsData)).getAllSubcomponents('vevent').map((event: any) => ({ 
-            dtEnd: event.getFirstPropertyValue('dtend').toJSDate().toISOString(),
-            dtStart: event.getFirstPropertyValue('dtstart').toJSDate().toISOString(),
+    export const parseEventsFromIcal = (calData: string): Promise<CalendarEventTypeDTO[]> => {
+        return Promise.resolve(
+        new ICAL.Component(ICAL.parse(calData)).getAllSubcomponents('vevent').map((event: any) => ({
+            dtEnd: event.getFirstPropertyValue('dtend')?.toJSDate()?.toISOString(),
+            dtStart: event.getFirstPropertyValue('dtstart')?.toJSDate()?.toISOString(),
             location: event.getFirstPropertyValue('location'),
             summary: event.getFirstPropertyValue('summary') 
         })
-    ) as CalendarEventTypeDTO[]);
+    ) as CalendarEventTypeDTO[])};
 
     export const saveNewCalendarSource = async (source: CalendarSourceType): Promise<CalendarSourceType> => serverMongoDataService.insertOne<CalendarSourceType>(await getCollection(), source).then(insertOneResult => findCalendarSourceById(insertOneResult.insertedId) as Promise<CalendarSourceType>);
     // MongoDB operations

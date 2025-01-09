@@ -3,6 +3,9 @@ import { serverCalendarDataService } from "@/app/services/server/calendar-data.s
 import { handleAPIError } from "@/app/utils/api.utils"
 import { ObjectId } from "mongodb"
 
+// Force dynamic
+export const dynamic = 'force-dynamic'
+
 export const GET = (
     req: Request,
     { params }: { params: { id: string } }
@@ -12,3 +15,5 @@ export const GET = (
     } 
     return source.url as string;
 }).then(serverCalendarDataService.fetchIcalData).then(serverCalendarDataService.parseEventsFromIcal).then(Response.json).catch(handleAPIError)
+
+export const DELETE = (_: Request, {params}: {params: {id: string}}) => serverCalendarDataService.deleteCalendarSourceById(new ObjectId(params.id)).then(Response.json).catch(handleAPIError)

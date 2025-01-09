@@ -9,7 +9,7 @@ export default function CalendarItem({event}: {event: CalendarEventType} ) {
             <div>
                 <h3 className="text-[rgba(255,255,255,0.6)]">{event.summary}</h3>
                 <p>
-                    {`${formatNumber(event.dtStart.hour())}:${formatNumber(event.dtStart.minute())} - ${formatNumber(event.dtEnd.hour())}:${formatNumber(event.dtEnd.minute())}`}</p> 
+                    {`${event.dtStart.format('HH:mm')} - ${event.dtEnd.format('HH:mm')}`}</p> 
                 <p className="text-[rgb(149,149,149)]">{event.location}</p>
             </div>
         </div>

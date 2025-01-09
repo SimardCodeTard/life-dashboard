@@ -9,21 +9,18 @@ export namespace clientCalendarDataService {
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-    const formatDateUnivClaudeBernard = (dateStr: string): Moment => moment.parseZone(dateStr);
-
-    export const formatDate = (dateStr: string, dateSource: CalendarUtils.CalendarSourcesEnum = CalendarUtils.CalendarSourcesEnum.ADELB_UNIV_LYON_1) => {
-       switch(dateSource) {
-            case(CalendarUtils.CalendarSourcesEnum.ADELB_UNIV_LYON_1): return formatDateUnivClaudeBernard(dateStr)
-            default: throw new Error('INVALID_DATE_SOURCE');
-        }
-    } 
+    const formatDate = (dateStr: string): Moment => moment.parseZone(dateStr);
 
     export const mapCalendarEventDTOtoDO = (calendarEventDto: CalendarEventTypeDTO): CalendarEventType => {
-        return {
+        const object = {
             ...calendarEventDto,
             dtStart: formatDate(calendarEventDto.dtStart),
             dtEnd: formatDate(calendarEventDto.dtEnd),
-        }
+        };
+
+        Logger.debug('Mapped calendar event DTO to DO: ' + JSON.stringify(object));
+
+        return object;
     }
 
     export const mapCalendarEventDTOListToDO = (calendarEventDTOList: CalendarEventTypeDTO[]): CalendarEventType[] => calendarEventDTOList.map(mapCalendarEventDTOtoDO);
@@ -63,10 +60,16 @@ export namespace clientCalendarDataService {
     export const fetchCalendarSources = async (): Promise<CalendarSourceType[]> => 
         axiosClientService.GET<CalendarSourceType[]>(API_URL + '/calendar/source').then(res => res.data);
 
-    export const fetchCalendarEventsBySourceId = (sourceId: ObjectId): Promise<Map<string, CalendarEventType[]>> => 
-        axiosClientService.GET<CalendarEventType[]>(API_URL + '/calendar/source/' + sourceId.id.toString()).then(res => res.data).then(groupCalEventsByDate);
+    export const fetchAndGroupCalendarEventsBySourceId = (sourceId: ObjectId): Promise<Map<string, CalendarEventType[]>> => 
+        axiosClientService.GET<CalendarEventTypeDTO[]>(API_URL + '/calendar/source/' + sourceId.toString())
+            .then(res => res.data)
+            .then(mapCalendarEventDTOListToDO)
+            .then(groupCalEventsByDate)
 
     export const postCalendarSource = async (calendarEvent: any): Promise<CalendarSourceType>  => 
         axiosClientService.POST<CalendarSourceType>(API_URL + 'calendar/source/new', calendarEvent).then(res => res.data);
+
+    export const deleteCalendarSource = async (sourceId: ObjectId): Promise<void> =>
+        axiosClientService.DELETE<void>(API_URL + 'calendar/source/' + sourceId.toString()).then(res => res.data);
 } 
 
