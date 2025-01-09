@@ -26,7 +26,7 @@ export namespace serverMongoDataService {
     let pendingRequests = 0;
 
     // Wrapper function to handle pending requests
-    const usePendingRequests = async <T>(operation: () => Promise<T>): Promise<T> => {
+    const withPendingRequests = async <T>(operation: () => Promise<T>): Promise<T> => {
         pendingRequests++;
         let operationResult
         try {
@@ -71,7 +71,7 @@ export namespace serverMongoDataService {
 
     export const find = async <T extends MongodItemType> (collection: Collection, query: object): Promise<T[]> => {
         Logger.debug("finding in collection " + collection.collectionName + " with query " + JSON.stringify(query));
-        return usePendingRequests(async () => {
+        return withPendingRequests(async () => {
             return await collection.find(query).toArray() as T[];
         });
     }
@@ -82,21 +82,21 @@ export namespace serverMongoDataService {
 
     export const deleteById = async (collection: Collection, id: ObjectId): Promise<DeleteResult> => {
         Logger.debug("deleting item with id " + id + " in collection " + collection.collectionName);
-        return usePendingRequests(async () => {
+        return withPendingRequests(async () => {
             return await collection.deleteOne({_id: new ObjectId(id)});
         });
     };
 
     export const insertOne = async <T extends MongodItemType> (collection: Collection, item: T): Promise<InsertOneResult> => {
         Logger.debug("inserting item " + JSON.stringify(item) + " in collection " + collection.collectionName);
-        return usePendingRequests(async () => {
+        return withPendingRequests(async () => {
             return await collection.insertOne({...item});
         });
     };
 
     export const insertMany = async <T extends MongodItemType> (collection: Collection, items: T[]): Promise<InsertManyResult> => {
         Logger.debug("inserting items " + JSON.stringify(items) + " in collection " + collection.collectionName);
-        return usePendingRequests(async () => {
+        return withPendingRequests(async () => {
             return await collection.insertMany(items);
         });
     }
@@ -109,7 +109,7 @@ export namespace serverMongoDataService {
             return null;
         }
 
-        return usePendingRequests(async () => {
+        return withPendingRequests(async () => {
             return await collection.updateOne(
                 { _id: new ObjectId(_id) },
                 { $set: updateData }
