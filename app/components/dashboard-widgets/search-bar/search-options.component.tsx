@@ -3,7 +3,8 @@ import { SearchBarOptionsPropsType, SearchOptionType } from "../../../types/sear
 import { useEffect } from "react";
 import { SearchOptionPropsType } from '../../../types/search-bar.types';
 import Image, { StaticImageData } from 'next/image'
-import styles from '../../components.module.css'
+
+import 'components.css';
 
 function SearchOption({ searchOption, setSelectedSearchOption }: SearchOptionPropsType) {
     return (
@@ -23,7 +24,7 @@ export default function SearchOptions({ showOptions, setSelectedSearchOption }: 
     const options = Object.values(SearchOptionData) as SearchOptionType[];
 
     return (
-        <div className={`flex shadow-inner space-x-2 transition ${styles.search_options} ${!showOptions ? styles.folded : ''}`}>
+        <div className={`search-options ${!showOptions && 'folded'}`}>
             {options.map((option, key) => (
                 <SearchOption 
                     setSelectedSearchOption={setSelectedSearchOption} 

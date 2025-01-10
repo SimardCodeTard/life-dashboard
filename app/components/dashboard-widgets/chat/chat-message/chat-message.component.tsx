@@ -1,8 +1,7 @@
-import { ChatMessage } from "@/app/types/chat.type";
-import { RefObject } from "react";
+import { ChatMessageType } from "@/app/types/chat.type";
 import Image from "next/image";
 
-export default function ChatMessage({message}: {message: ChatMessage}) {
+export default function ChatMessage({message}: {message: ChatMessageType}) {
     let imagePath = '';
     let senderName = '';
 

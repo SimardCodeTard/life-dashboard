@@ -4,8 +4,14 @@
 
 :root {
   --foreground: rgb(255, 255, 255);
+  --foreground-rgb: 255, 255, 255;
+
   --background: rgb(0, 0, 0);
   --background-lighter: rgb(25, 25, 25);
+  --background-lighter-rgb: 25, 25, 25;
+
+  --background-lightest: rgb(50, 50, 50);
+  --background-lightest-rgb: 50, 50, 50;
   
   --card-background: rgba(250, 250, 250, 0.06);
   --card-foreground: linear-gradient(
@@ -19,21 +25,32 @@
   --background-navbar-rgb: 50, 50, 50;
   --background-navbar: rgba(250, 250, 250, 0.02);
 
-  --modal-background: rgba(25,25,25,0.9);
-  --modal-border: solid 1px rgba(255,255,255,0.2);  
+  --border: solid 1px rgba(255,255,255,0.2);  
+  --border-thick: solid 2px rgba(255,255,255,0.2);  
 
   --accent1: rgb(217, 80, 235);
+  --accent1-rgb: 217, 80, 235;
+
+  --accent2: rgb(101, 13, 208);
+  --accent2-rgb: 101, 13, 208;
+
+  --accent3: rgb(24, 80, 222);
+  --accent3-rgb: 24, 80, 222;
+
+  --error: rgb(231, 51, 51);
+  --error-rgb: 231, 51, 51;
+
+  --shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+  --shadow-lg: 0 0 15px 0 rgba(0, 0, 0, 0.75);
+  --shadow-inset: inset 0 0 5px 0 rgba(0, 0, 0, 0.75);
+
+  --focus-outline: solid 1px rgba(var(--accent1-rgb), 0.8);
 }
 
-h1 {
-  font-size: 24px;
-  color: var(--accent1);
-  font-weight: bolder;
-}
 
 @keyframes gradient-motion {
   0% {
-      background-position: 0% 0%;
+    background-position: 0% 0%;
   } 50% {
     background-position: 100% 100%;
   }100% {
@@ -53,10 +70,146 @@ body {
   animation: gradient-motion 8s ease-in-out infinite;
 }
 
-.task-item {
-  border-bottom: 1px solid rgb(var(--separator-rgb));
-  border-top: 1px solid rgb(var(--separator-rgb));
+h1 {
+  font-size: 24px;
+  color: var(--accent1);
+  font-weight: 800;
 }
+
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+h4 {
+  font-size: 14px;
+  font-weight: 300;
+}
+
+h5 {
+  font-size: 12px;
+  font-weight: 200;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 2rem;
+}
+
+input {
+  transition: all ease .5s;
+  background-color: var(--background-lighter);
+  border: var(--border-thick);
+  border-radius: .25rem;
+  padding: .5rem;
+  width: 100%;
+  color-scheme: dark;
+}
+
+input:focus {
+  outline: var(--focus-outline);
+}
+
+input:not(:first-child) {
+  margin-top: 1rem;
+}
+
+input:hover{
+  transition: all ease .2s;
+  scale: 1.03;
+  background-color: var(--background-lightest);
+}
+
+button, button[type="submit"] {
+  background-color: var(--accent1);
+  border: var(--border-thick);
+  border-radius: .25rem;
+  padding: .5rem 1rem;
+  color: var(--background-lighter);
+  font-weight: bold;
+  transition: all ease .5s;
+  color: white;
+  width: 100%;
+  box-shadow: var(--shadow);
+}
+
+button:hover, button[type="submit"]:hover  {
+  background-color: var(--accent2);
+  transition: all ease .2s;
+  scale: 1.03;
+  box-shadow: var(--shadow-lg);
+}
+
+button:active, button[type="submit"]:active  {
+  background-color: var(--accent3);
+  transition: all ease .2s;
+  scale: .96;
+  box-shadow: var(--shadow-inset);
+}
+
+form button, form button[type="submit"]  {
+  margin-top: 1rem;
+}
+
+select {
+  background-color: rgba(256,255,255,.2);
+  border-radius: .25rem;
+  border: solid 1px white;
+  padding: .2rem 1rem;
+}   
+
+select option {
+  background-color: rgba(256,255,255,.2);
+  border: solid 1px white;
+  padding: .2rem 1rem;
+}
+
+.actions-wrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.actions-wrapper > svg {
+  transition: all ease .3s;
+  cursor: pointer;
+  color: rgba(var(--foreground-rgb), .75);
+}
+
+.actions-wrapper > svg:hover {
+  transition: all ease .1s;
+  scale: 1.2;
+  color: rgba(var(--foreground-rgb), .9);
+}
+
+.modal {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.modal-body {
+  background-color: rgba(var(--background-lighter-rgb), .8);
+  backdrop-filter: blur(5px);
+  border: var(--border);
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.subtitle {
+  color: rgba(var(--foreground-rgb), .5);
+}
+
+
 .card {
   background-color: var(--card-background);
   /* width: fit-content; */
@@ -117,4 +270,22 @@ button:disabled {
 
 .left-section-card {
   width: 365px !important;
+}
+
+.loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.loader > * {
+  pointer-events: auto;
 }

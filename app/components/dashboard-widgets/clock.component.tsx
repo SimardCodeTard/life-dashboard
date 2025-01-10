@@ -2,7 +2,7 @@
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 
-import styles from '../components.module.css'
+import  '../components.css'
 
 let lastSecond: number = -1;
 let lastMinute: number = -1;
@@ -50,12 +50,9 @@ export default function Clock() {
     }, [updateClock]);
 
     return (
-        <div className={[
-                "p-5 text-2xl font-bold w-full flex flex-col items-center justify-center",
-                styles.clock
-                ].join(' ')}>
-            <p className={styles.time}>{hourDisplay}<b className={styles.seconds}>{secondsDisplay}</b></p>
-            <p className={styles.date}>{dateDisplay}</p>
+        <div className="clock">
+            <p className='"clock-time'>{hourDisplay}<b className="clock-seconds">{secondsDisplay}</b></p>
+            <p className="clock-date">{dateDisplay}</p>
         </div>
     );
 }

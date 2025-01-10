@@ -1,10 +1,11 @@
 "use client"
 import { useEffect, useState, FormEvent, ReactElement } from 'react';
-import styles from '../../components.module.css';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import SearchOptions from './search-options/search-options.component';
 import { SearchOptionType } from '../../../types/search-bar.types';
 import Image, { StaticImageData } from 'next/image';
+
+import '../../components.css';
 
 type SearchBarProps = {};
 
@@ -77,13 +78,13 @@ export default function SearchBar({ }: SearchBarProps) {
     }, [selectedSearchOption])
 
     return (
-        <form className={'w-1/2 flex flex-col justify-center'} onSubmit={onSearchBarSubmit}>
-            <span className={`${styles.search_bar} flex items-center`}>
+        <form onSubmit={onSearchBarSubmit}>
+            <span className='search-bar flex items-center'>
                 {icon}
                 <input autoFocus onBlur={onBlur} type='text'
-                    className={`${styles.search_input} p-2 w-full focus:shadow-inner rounded-sm`}
+                    className='search-input'
                     placeholder={`Search on ${selectedSearchOption ? selectedSearchOption.name : 'the web'}`}></input>
-                <button type='submit' className='ml-2 mr-2 bg-transaprent shadow-none text-[rgba(255,255,255,0.5)]'>
+                <button type='submit'>
                     <SearchSharpIcon></SearchSharpIcon>
                 </button>
             </span>

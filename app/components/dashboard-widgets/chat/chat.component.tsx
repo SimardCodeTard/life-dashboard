@@ -1,18 +1,18 @@
 'use client'
 
-import styles from './chat.module.css';
+import './chat.css';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { clientOpenAIService } from '@/app/services/client/openai-client.service';
 import { Logger } from '@/app/services/logger.service';
 import ChatMessage from './chat-message/chat-message.component';
-import { ChatMessage as ChatMessageModel } from '@/app/types/chat.type';
+import { ChatMessageType } from '@/app/types/chat.type';
 import Loader from '../../shared/loader/loader.component';
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import CloseFullscreenRoundedIcon from '@mui/icons-material/CloseFullscreenRounded';
 
 export default function Chat() {
 
-    const [messages, setMessages] = useState<ChatMessageModel[]>([]);
+    const [messages, setMessages] = useState<ChatMessageType[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const[isFullscreen, setIsFullscreen] = useState(false);
 
@@ -38,7 +38,7 @@ export default function Chat() {
         const message = (event.target as any)[0].value;
         (event.target as any)[0].value = "";
 
-        clientOpenAIService.sendMessage(message).then((messages: ChatMessageModel[]) => {
+        clientOpenAIService.sendMessage(message).then((messages: ChatMessageType[]) => {
             setMessages(messages);
         }).then(() => setIsLoading(false)).catch(Logger.error);
     }
@@ -48,21 +48,23 @@ export default function Chat() {
     }
 
     return (
-        <div className={[styles.chat, isFullscreen ? styles.fullScreenChat : undefined].join(' ')}>
+        <div className={ `chat ${isFullscreen && 'fullscreen-chat'}` }>
             
             
-            <div className={['flex flex-col p-2 rounded h-full', styles.chatMessages].join(' ')}>
-                {isFullscreen 
-                    ? <CloseFullscreenRoundedIcon className={['m-1 ml-auto text-white/50 cursor-pointer hover:text-white/75', styles.closeFullscreenIcon].join(' ')} 
-                        onClick={onChatExpandClick}></CloseFullscreenRoundedIcon>
-                    : <OpenInFullRoundedIcon className='m-1 ml-auto text-white/50 cursor-pointer hover:text-white/75' onClick={onChatExpandClick}></OpenInFullRoundedIcon> }
-                {messages.map((message: ChatMessageModel, key: number) => <ChatMessage key={key} message={message}></ChatMessage>)}
+            <div className='chat-messages'>
+                <span className="actions-wrapper">
+                    {isFullscreen 
+                        ? <CloseFullscreenRoundedIcon className='close-fullscreen-icon' 
+                            onClick={onChatExpandClick}></CloseFullscreenRoundedIcon>
+                        : <OpenInFullRoundedIcon className='open-fullscreen-icon' onClick={onChatExpandClick}></OpenInFullRoundedIcon>}
+                </span>
+                {messages.map((message: ChatMessageType, key: number) => <ChatMessage key={key} message={message}></ChatMessage>)}
                 {isLoading && <Loader></Loader>}
                 <div ref={messagesEndRef}></div>
             </div>
-            <form onSubmit={sendMessage} className='p-2 flex h-fit flex-row justify-end items-end'>
-                <input type="text" className="p-1 rounded bg-[rgba(255,255,255,0.2)]" placeholder="Type a message"></input>
-                <button type="submit" className="ml-2 p-1 rounded bg-[rgba(0,0,0,0.2)] hover:bg-[rgba(255,255,255,0.2)]">Send</button>
+            <form onSubmit={sendMessage}>
+                <input type="text" placeholder="Type a message"></input>
+                <button type="submit">Send</button>
             </form>
         </div>
     )

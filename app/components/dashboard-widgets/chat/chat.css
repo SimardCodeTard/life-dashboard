@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
 }
-.fullScreenChat {
+.full-screen-chat {
     position: fixed;
     top: 0;
     left: 0;
@@ -17,39 +17,32 @@
     align-items: center;
 }
 
-.fullScreenChat > *:not(.closeFullscreenIcon) {
+.full-screen-chat > *:not(.close-fullscreen-icon) {
     width: 80vw;
     margin: 1rem;
 }
 
-.fullScreenChat > .closeFullscreenIcon {
+.full-screen-chat > .close-fullscreen-icon {
     margin-bottom: auto;
 }
 
-.fullScreenChat > .chatMessages {
+.full-screen-chat > .chat-messages {
     min-height: 0;
     max-height: 80vh;
     overflow-y: auto;
     border: solid 1px rgba(255,255,255,0.1);
     background-color: rgba(255,255,255,0.1);
-}
+}   
 
-.fullScreenChat > form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.fullScreenChat > form > input {
+.full-screen-chat > form > input {
     width: 75%;
 }
 
-.fullScreenChat > form > button {
+.full-screen-chat > form > button {
     width: 15%;
 }
 
-
-.chatMessages {
+.chat-messages {
     position: relative;
     min-height: 4rem;
     max-height: 34dvh;

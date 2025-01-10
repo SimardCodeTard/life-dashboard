@@ -14,6 +14,7 @@
     color: rgba(210,200,210,0.65);
 }
 .weather {
+    position: relative;
     min-height: 4rem;
 }
 .search_bar{
@@ -56,4 +57,34 @@
     background-color: rgba(255,255,255,0.1);
     border-radius: 0.25rem;
     padding: 1rem;
+}
+
+/* WEATHER TEMPERATURE COLORS */
+
+.temperature-color-freezing {
+    color: #00f;
+}
+
+.temperature-color-cold {
+    color: #0af;
+}
+
+.temperature-color-mild {
+    color: rgb(0, 191, 35);
+}
+
+.temperature-color-warm {
+    color: rgb(220, 193, 13);
+}
+
+.temperature-color-hot {
+    color: rgb(219, 121, 9);
+}
+
+.temperature-color-very-hot {
+    color: rgb(186, 9, 9);
+}
+
+.temperature-color-extreme {
+    color: rgb(97, 3, 179);
 }
