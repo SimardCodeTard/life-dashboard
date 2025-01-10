@@ -60,9 +60,7 @@ export default function Calendar() {
             setCalendarSources(prev => [...prev, newSource]);
             setModalOpened(false);
             setSourceFormState({ name: '', url: '' });
-        }).catch(error => {
-
-        console.error(error);
+            setSelectedSource(newSource);
         });
     }
 
