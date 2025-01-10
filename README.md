@@ -18,5 +18,5 @@ Create a .env or .local.env file and define the following environment variables:
 - OPEN_WEATHER_API_KEY: API key to OpenWeather
 
 ### Persistence
-Life Dashboard uses MongoDB to handle persistence, in a development environment, consider hosting an nstance locally using docker, use MongoDB Atlas for remote deployment.
+Life Dashboard uses MongoDB to handle persistence, in a development environment, consider locally hosting an instance using docker, use MongoDB Atlas for remote deployment.
 
