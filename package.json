@@ -20,6 +20,7 @@
     "@types/js-cookie": "^3.0.6",
     "@types/luxon": "^3.3.3",
     "@types/moment": "^2.13.0",
+    "@vercel/speed-insights": "^1.1.0",
     "axios": "^1.5.1",
     "bcrypt": "^5.1.1",
     "caniuse-lite": "^1.0.30001662",
