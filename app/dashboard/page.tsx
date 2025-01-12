@@ -7,37 +7,39 @@ import SearchBar from "../components/dashboard-widgets/search-bar/search-bar.com
 import FavoritesBar from "../components/dashboard-widgets/favorites-bar/favorites-bar";
 import Chat from "../components/dashboard-widgets/chat/chat.component";
 
+import './dashboard-page.css'
+
 export default function DashboardPage() {
 
     return (
-        <main className="flex h-screen w-full justify-between">
+        <main>
 
-            <div className="left-section w-1/4">
+            <div className="left-section dashboard-section">
                 <Card className="left-section-card"><Tasks></Tasks></Card>
                 <Card className="left-section-card"><Weather></Weather></Card>
             </div>
 
 
-            <div className="center-col m-4 flex flex-col w-full items-center">
+            <div className="center-col">
             
-                <div className="top-section w-full flex flex-col items-center justify-items-start space-y-24">
+                <div className="top-section dashboard-section">
                     <SearchBar></SearchBar>
                     <Clock></Clock>
                 </div>
 
-                <div className="center-section"></div>
+                <div className="center-section dashboard-section">
+                </div>
 
-                <div className="bottom-section">
+                <div className="bottom-section dashboard-section">
                     <FavoritesBar></FavoritesBar>
                 </div>
 
             </div>
 
-            <div className="right-section flex flex-col self-end w-1/4 h-full">
+            <div className="right-section dashboard-section">
                     <Card><Calendar></Calendar></Card>
                     <Card><Chat></Chat></Card>
             </div>
-
         </main>
     )
 }
