@@ -8,9 +8,9 @@ import '../../../components.css';
 
 function SearchOption({ searchOption, setSelectedSearchOption }: SearchOptionPropsType) {
     return (
-        <button type="button" onClick={() => {setSelectedSearchOption(searchOption)}} className='text-xs'>
+        <span className="action-icon-wrapper" onClick={() => {setSelectedSearchOption(searchOption)}}>
             {searchOption.Icon ?  <searchOption.Icon></searchOption.Icon> : <Image src={searchOption.imageData as StaticImageData} alt={searchOption.name} width={20} height={20} ></Image>}
-        </button>
+        </span>
     );
 }
 
@@ -23,7 +23,7 @@ export default function SearchOptions({ showOptions, setSelectedSearchOption }: 
 
     
     return (
-        <div className={`search-options ${!showOptions ? 'folded' : ''}`}>
+        <span className={`search-options actions-wrapper ${!showOptions ? 'folded' : ''}`}>
             {SearchOptionData.map((option: SearchOptionType, key: Key) => (
                 <SearchOption 
                     setSelectedSearchOption={setSelectedSearchOption} 
@@ -31,7 +31,7 @@ export default function SearchOptions({ showOptions, setSelectedSearchOption }: 
                     searchOption={option}   
                 />
             ))}
-        </div>
+        </span>
     );
 }
 

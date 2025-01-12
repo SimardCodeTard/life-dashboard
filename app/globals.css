@@ -174,17 +174,22 @@ select option {
 
 .actions-wrapper {
   display: flex;
-  justify-content: space-between;
   width: 100%;
 }
 
-.actions-wrapper > svg {
+.actions-wrapper > svg, 
+.actions-wrapper > img, 
+.actions-wrapper > .action-icon-wrapper > svg, 
+.actions-wrapper > .action-icon-wrapper > img {
   transition: all ease .3s;
   cursor: pointer;
   color: rgba(var(--foreground-rgb), .75);
 }
 
-.actions-wrapper > svg:hover {
+.actions-wrapper > svg:hover, 
+.actions-wrapper > img:hover, 
+.actions-wrapper > .action-icon-wrapper > svg:hover, 
+.actions-wrapper > .action-icon-wrapper > img:hover {
   transition: all ease .1s;
   scale: 1.2;
   color: rgba(var(--foreground-rgb), .9);
@@ -212,13 +217,16 @@ select option {
 
 .card {
   background-color: var(--card-background);
-  /* width: fit-content; */
   padding: 0.75rem;
-  margin: 0.5rem;
   border-radius: 0.25rem;
   transition: all ease 0.3s;
   transition: box-shadow ease-in 0.4s;
 }
+
+.card:not(:first-child) {
+  margin-top: 1rem;
+}
+
 .card-content {
   --tw-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.15);
   --tw-shadow-colored: inset 0 2px 4px 0 var(--tw-shadow-color);
