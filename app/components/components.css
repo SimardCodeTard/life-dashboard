@@ -70,21 +70,35 @@
 }
 
 .temperature-color-mild {
-    color: rgb(0, 191, 35);
+    color: rgb(49, 197, 76);
 }
 
 .temperature-color-warm {
-    color: rgb(220, 193, 13);
+    color: rgb(212, 185, 10);
 }
 
 .temperature-color-hot {
-    color: rgb(219, 121, 9);
+    color: rgb(214, 85, 29);
 }
 
 .temperature-color-very-hot {
-    color: rgb(186, 9, 9);
+    color: rgb(215, 13, 13);
 }
 
 .temperature-color-extreme {
     color: rgb(97, 3, 179);
+}
+
+.weather-body {
+    display: flex;
+    align-items: center;
+}
+
+.temperature-display {
+    display: flex;
+    align-items: center;
+}
+
+.temperature-display > h3 {
+    margin-right: .5rem;
 }
