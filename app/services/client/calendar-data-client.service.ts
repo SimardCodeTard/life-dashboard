@@ -67,7 +67,7 @@ export namespace clientCalendarDataService {
             .then(groupCalEventsByDate)
 
     export const postCalendarSource = async (calendarEvent: any): Promise<CalendarSourceType>  => 
-        axiosClientService.POST<CalendarSourceType>(API_URL + 'calendar/source/new', calendarEvent).then(res => res.data);
+        axiosClientService.POST<CalendarSourceType>(API_URL + '/calendar/source/new/', calendarEvent).then(res => res.data);
 
     export const deleteCalendarSource = async (sourceId: ObjectId): Promise<void> =>
         axiosClientService.DELETE<void>(API_URL + 'calendar/source/' + sourceId.toString()).then(res => res.data);
