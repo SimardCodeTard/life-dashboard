@@ -8,11 +8,9 @@ export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemD
 
     const [editModalOpened, setEditModalOpened] = useState(false);
 
-    const onItemContextMenu = (e: MouseEvent<HTMLDivElement>) => {
-        e.preventDefault();
-    }
 
     const onItemClick = (e: MouseEvent<HTMLDivElement>) => {
+        console.log(e.button, (e as any).which);
         e.preventDefault();
         if (e.button === 1 || e.ctrlKey) { // Middle click or Ctrl + click
             window.open(item.url, '_blank', 'noreferrer');
@@ -30,7 +28,7 @@ export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemD
 
     return (
         <>
-            <div onClick={onItemClick} onContextMenu={onItemContextMenu} className='favorite-item'>
+            <div onClick={onItemClick} onContextMenu={onItemClick} className='favorite-item action-icon-wrapper'>
                 <img width="22" height="22" src={item.url + "/favicon.ico"} alt={item.name.slice(0,2)} />
             </div>
             <EditFavorite item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onItemDelete} modalOpen={editModalOpened} setModalOpen={setEditModalOpened}
