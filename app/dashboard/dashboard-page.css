@@ -7,11 +7,11 @@ main {
 }
 
 .center-col {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
+width: 100%;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: space-between;
 }
 
 .dashboard-section {
@@ -29,9 +29,10 @@ main > .dashboard-section {
 }   
 
 .bottom-section {
-margin-top: auto;
+    margin-top: auto;
+    align-items: center;
 }
 
 .top-section {
-justify-content: start;
+    justify-content: start;
 }

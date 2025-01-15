@@ -34,7 +34,7 @@ export default function FavoritesBar() {
     }, [setFavorites]);
 
     return (
-        <div className='favorites-bar'>
+        <div className='favorites-bar actions-wrapper'>
             {favorites.map((item: FavoriteItemType, key: number) => <FavoriteItem key={key} item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onFavoriteItemDelete}
             ></FavoriteItem>)}
             <AddFavorite updateFavoritesList={updateFavoritesList}></AddFavorite>

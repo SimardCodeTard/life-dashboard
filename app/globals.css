@@ -39,6 +39,10 @@
 
   --error: rgb(231, 51, 51);
   --error-rgb: 231, 51, 51;
+  --error-hover: rgb(255, 0, 0);
+  --error-hover-rgb: 255, 0, 0;
+  --error-active: rgb(200, 0, 0);
+  --error-active-rgb: 200, 0, 0;
 
   --shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
   --shadow-lg: 0 0 15px 0 rgba(0, 0, 0, 0.75);
@@ -155,6 +159,18 @@ button:active, button[type="submit"]:active  {
   box-shadow: var(--shadow-inset);
 }
 
+button[aria-roledescription="delete"] {
+  background-color: var(--error);
+}
+
+button[aria-roledescription="delete"]:hover {
+  background-color: var(--error-hover);
+}
+
+button[aria-roledescription="delete"]:active {
+  background-color: var(--error-active);
+}
+
 form button, form button[type="submit"]  {
   margin-top: 1rem;
 }
@@ -174,7 +190,6 @@ select option {
 
 .actions-wrapper {
   display: flex;
-  width: 100%;
 }
 
 .actions-wrapper > svg, 
