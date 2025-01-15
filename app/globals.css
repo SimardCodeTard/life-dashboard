@@ -255,6 +255,8 @@ select option {
   --tw-shadow-colored: inset 0 2px 4px 0 var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   background: var(--card-foreground);
+  border-radius: .25rem;
+  padding: 1rem;
 }
 
 .card:hover {

@@ -89,7 +89,7 @@ export default function Calendar() {
         <div className="calendar">
 
             <div className="calendar-header">
-                <h3>Calendrier</h3>
+                <h2>Calendrier</h2>
                 <div className="calendar-source-select-wrapper">
                     <select
                         value={selectedSource?._id?.toString()}
