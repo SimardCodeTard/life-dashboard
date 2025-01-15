@@ -15,25 +15,19 @@ export default function DashboardPage() {
         <main>
 
             <div className="left-section dashboard-section">
-                <Card className="left-section-card"><Tasks></Tasks></Card>
-                <Card className="left-section-card"><Weather></Weather></Card>
+                <Card><Tasks></Tasks></Card>
+                <Card><Weather></Weather></Card>
             </div>
 
-
             <div className="center-col">
-            
                 <div className="top-section dashboard-section">
                     <SearchBar></SearchBar>
                     <Clock></Clock>
                 </div>
 
-                <div className="center-section dashboard-section">
-                </div>
-
                 <div className="bottom-section dashboard-section">
                     <FavoritesBar></FavoritesBar>
                 </div>
-
             </div>
 
             <div className="right-section dashboard-section">
