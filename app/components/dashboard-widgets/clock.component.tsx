@@ -51,7 +51,7 @@ export default function Clock() {
 
     return (
         <div className="clock">
-            <p className='"clock-time'>{hourDisplay}<b className="clock-seconds">{secondsDisplay}</b></p>
+            <p className='clock-time'>{hourDisplay}<span className="clock-seconds subtitle">{secondsDisplay}</span></p>
             <p className="clock-date">{dateDisplay}</p>
         </div>
     );

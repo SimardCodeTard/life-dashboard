@@ -6,10 +6,6 @@ main {
     width: 100%;
 }
 
-.center-col, .dashboard-section {
-    height: 100%;
-}
-
 .center-col {
     width: 100%;
     display: flex;
@@ -32,6 +28,10 @@ main > .dashboard-section {
     width: 100%;
 }   
 
+.bottom-section {
+margin-top: auto;
+}
+
 .top-section {
-    justify-content: space-between;
+justify-content: start;
 }
