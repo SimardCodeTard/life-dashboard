@@ -3,7 +3,7 @@
     display: flex;
     width: fit-content;
     border-radius: .5rem;
-    padding: .5rem;
+    padding: .75rem;
 }
 
 .favorite-item {
@@ -13,7 +13,7 @@
 }
 
 .favorite-item > img {
-    width: 30px;
+    width: 22px;
     height: auto;
 }
 
