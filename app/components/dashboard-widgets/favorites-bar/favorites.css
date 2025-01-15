@@ -2,7 +2,6 @@
     background: var(--card-background);
     display: flex;
     width: fit-content;
-    margin-bottom: .5rem;
     border-radius: .5rem;
     padding: .5rem;
 }
