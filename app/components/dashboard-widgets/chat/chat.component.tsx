@@ -1,6 +1,5 @@
 'use client'
 
-import './chat.css';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { clientOpenAIService } from '@/app/services/client/openai-client.service';
 import { Logger } from '@/app/services/logger.service';
@@ -9,6 +8,9 @@ import { ChatMessageType } from '@/app/types/chat.type';
 import Loader from '../../shared/loader/loader.component';
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import CloseFullscreenRoundedIcon from '@mui/icons-material/CloseFullscreenRounded';
+
+
+import './chat.css';
 
 export default function Chat() {
 
@@ -62,7 +64,7 @@ export default function Chat() {
                 {isLoading && <Loader></Loader>}
                 <div ref={messagesEndRef}></div>
             </div>
-            <form onSubmit={sendMessage}>
+            <form onSubmit={sendMessage} className='chat-form'>
                 <input type="text" placeholder="Type a message"></input>
                 <button type="submit">Send</button>
             </form>

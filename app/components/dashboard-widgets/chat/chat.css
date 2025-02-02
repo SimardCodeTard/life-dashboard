@@ -49,3 +49,18 @@
     overflow-y: auto;
 }
 
+.chat-form {
+    flex-direction: row;
+    align-items: baseline;
+    padding: 0;
+    margin-top: .5rem;
+}
+
+.chat-form input {
+    margin-right: .5rem;
+}
+
+.chat-form button {
+    width: 5rem;
+    margin-top: 0 !important;
+}
