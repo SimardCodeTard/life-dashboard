@@ -1,9 +1,10 @@
 import { CircularProgress } from "@mui/material";
-import styles from './loader.module.css'
+
+import './loader.css'
 
 export default function Loader() {
     return (
-        <div className={styles.loader}>
+        <div className="loader">
             <CircularProgress color="secondary" />
         </div>
     )

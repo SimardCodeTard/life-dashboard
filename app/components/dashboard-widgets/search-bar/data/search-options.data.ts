@@ -5,7 +5,7 @@ import YouTubeIcon from '@mui/icons-material/YouTube';
 export const SearchOptionData: SearchOptionType[] =  [
     {
         iconType: 'icon',
-        name: 'google',
+        name: 'Google',
         url: 'https://google.com',
         queryParamName: 'q',
         queryWordsSeparator: '+',
@@ -13,7 +13,7 @@ export const SearchOptionData: SearchOptionType[] =  [
         Icon: GoogleIcon
     }, {
         iconType: 'icon',
-        name: 'youtube',
+        name: 'Youtube',
         url: 'https://www.youtube.com',
         queryParamName: 'search_query',
         queryWordsSeparator: '+',

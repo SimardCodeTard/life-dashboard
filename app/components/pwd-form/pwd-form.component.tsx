@@ -5,6 +5,8 @@ import { FormEvent, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { Logger } from "@/app/services/logger.service";
 
+import './pwd-form.css';
+
 export default function PWDForm() {
 
     const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -48,12 +50,11 @@ export default function PWDForm() {
 
     return (
         <>
-            <form onSubmit={onSubmit} className="flex flex-col space-y-4 bg-[var(--card-background)] p-3 rounded-md shadow-md">
-                <input autoFocus className="rounded-sm bg-[rgba(255,255,255,0.2)] backdrop-blur-xl border-white/20-1" type="password" />
-                <button type="submit" className="bg-[rgba(255,255,255,0.2)] rounded-sm hover:bg-[rgba(255,255,255,0.4)]" 
-                disabled={isLoggingIn as boolean}>Login</button>
+            <form className="pdw-form" onSubmit={onSubmit}>
+                <input type="password" autoFocus/>
+                <button type="submit" disabled={isLoggingIn as boolean}>Login</button>
             </form>
-            {passwordInvalid && <p className="text-red-500">Invalid password</p>}
+            {passwordInvalid && <p className="error-text">Invalid password</p>}
         </>
     )
 }

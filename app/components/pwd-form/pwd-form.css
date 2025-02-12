@@ -1,0 +1,9 @@
+.error-text {
+    color: red;
+    font-weight: bold;
+}
+
+.pdw-form {
+    padding: 1rem;
+    width: 100%;
+}

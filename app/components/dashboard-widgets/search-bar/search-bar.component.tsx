@@ -1,10 +1,13 @@
 "use client"
 import { useEffect, useState, FormEvent, ReactElement } from 'react';
-import styles from '../../components.module.css';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import SearchOptions from './search-options/search-options.component';
 import { SearchOptionType } from '../../../types/search-bar.types';
 import Image, { StaticImageData } from 'next/image';
+
+import '../../components.css';
+import './search-bar.css';
+import { Logger } from '@/app/services/logger.service';
 
 type SearchBarProps = {};
 
@@ -26,10 +29,17 @@ export default function SearchBar({ }: SearchBarProps) {
         const target = event.target as typeof event.target & {
             0: { value: string };
         };
+
         if (selectedSearchOption && target[0].value) {
-            window.location.href = buildSearchUrl(target[0].value);
+            openInNewTab(buildSearchUrl(target[0].value));
         }
     }
+
+    const openInNewTab = (url: string) => {
+        Logger.debug(`opening new windows to url ${url}`);
+        const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
+        if (newWindow) newWindow.opener = null
+      }
 
     const onBlur = () => setShowOptions(false);
     const onSelectedSearchOptionClick = () => {
@@ -77,13 +87,15 @@ export default function SearchBar({ }: SearchBarProps) {
     }, [selectedSearchOption])
 
     return (
-        <form className={'w-1/2 flex flex-col justify-center'} onSubmit={onSearchBarSubmit}>
-            <span className={`${styles.search_bar} flex items-center`}>
-                {icon}
+        <form className='search-bar' onSubmit={onSearchBarSubmit}>
+            <span className='search-bar-container'>
+                <span className="actions-wrapper search-option-icon-wrapper">
+                    {icon}
+                </span>
                 <input autoFocus onBlur={onBlur} type='text'
-                    className={`${styles.search_input} p-2 w-full focus:shadow-inner rounded-sm`}
+                    className='search-input'
                     placeholder={`Search on ${selectedSearchOption ? selectedSearchOption.name : 'the web'}`}></input>
-                <button type='submit' className='ml-2 mr-2 bg-transaprent shadow-none text-[rgba(255,255,255,0.5)]'>
+                <button type='submit'>
                     <SearchSharpIcon></SearchSharpIcon>
                 </button>
             </span>

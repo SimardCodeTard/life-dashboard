@@ -6,6 +6,8 @@ import AddFavorite from './add-favorite';
 import { useEffect, useState } from 'react';
 import { clientFavoritesDataService } from '@/app/services/client/favorites-data.client.service';
 
+import './favorites.css'
+
 export default function FavoritesBar() {
 
     const [favorites, setFavorites] = useState<FavoriteItemType[]>([]);
@@ -32,7 +34,7 @@ export default function FavoritesBar() {
     }, [setFavorites]);
 
     return (
-        <div className={'mb-2 p-2 rounded-lg space-x-2 flex flex-row w-fit bg-[--card-background]'}>
+        <div className='favorites-bar actions-wrapper'>
             {favorites.map((item: FavoriteItemType, key: number) => <FavoriteItem key={key} item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onFavoriteItemDelete}
             ></FavoriteItem>)}
             <AddFavorite updateFavoritesList={updateFavoritesList}></AddFavorite>

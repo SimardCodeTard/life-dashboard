@@ -1,0 +1,78 @@
+.task-list {
+    position: relative;
+    border-radius: .5rem;
+}
+
+.task-items-wrapper {
+    margin-top: 1rem;
+}
+
+.task-item {
+    padding: 1rem 0;
+    position: relative;
+    padding: .5rem;
+    border-radius: .5rem;
+}
+
+.completed-task .task-item-wrapper{
+    opacity: .5;
+}
+
+.task-item:not(:last-child) {
+    border-bottom: 1px solid rgb(var(--separator-rgb));
+}
+
+.task-item-content {
+    display: flex;
+}
+
+.task-item-content .actions-wrapper {
+    justify-content: flex-start;
+    width: fit-content;
+    margin-left: auto;
+}
+
+.task-checkbox {
+    width: fit-content;
+    margin-right: .5rem;
+}
+
+.passed-task-deadline {
+    color: rgba(var(--error-rgb), .75);
+}
+
+.task-checkbox:focus {
+    outline: none;
+}
+
+.task-checkbox:checked + .task-content {
+    text-decoration: line-through;
+    color: rgba(var(--foreground-rgb), .5);
+}
+
+.task-deadline {
+    margin-top: .5rem;
+}
+
+.task-remaining-time {
+    margin-left: .25rem;
+}
+
+.tasks-form-deploy-actions {
+    width: 100%;
+    display: flex;
+    background-color: rgba(var(--background-lighter-rgb), .4);
+    border-radius: .25rem;
+    padding: .2rem 2rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.new-task-form {
+    padding: 1rem 0rem;
+}
+
+.task-item .loader {
+    opacity: 1!important;
+    border-radius: .25rem;
+}
