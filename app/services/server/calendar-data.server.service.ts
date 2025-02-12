@@ -4,6 +4,7 @@ import { handleAxiosError } from "@/app/utils/api.utils";
 import ICAL from 'ical.js';
 import { Collection, DeleteResult, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import { serverMongoDataService } from "./mongod-data.server.service";
+import { RemoveCircleOutlineRounded } from "@mui/icons-material";
 
 export namespace serverCalendarDataService {
     const collectionName = "calendar";
@@ -15,6 +16,19 @@ export namespace serverCalendarDataService {
      */
     export const patchCalendarSourceURL = (url: string): string => {
         return url.replace('webcal://', 'https://');
+    }
+
+    /**
+     * Fetches and parses calendar events from the given calendar source.
+     * @param calendarSource - The calendar source to fetch and parse events from.
+     * @returns - A promise that resolves to a map of calendar events by source.
+     */
+    export const fetchAndParseCalendarEvents = async (calendarSource: CalendarSourceType): Promise<CalendarEventTypeDTO[]> => {
+
+        const iCalData = await serverCalendarDataService.fetchIcalData(calendarSource.url as string);
+        const calendarEvents = await serverCalendarDataService.parseEventsFromIcal(iCalData);
+
+        return calendarEvents;
     }
 
     /**
@@ -33,11 +47,11 @@ export namespace serverCalendarDataService {
      */
     export const parseEventsFromIcal = (calData: string): Promise<CalendarEventTypeDTO[]> => {
         return Promise.resolve(
-            new ICAL.Component(ICAL.parse(calData)).getAllSubcomponents('vevent').map((event: any) => ({
-                dtEnd: event.getFirstPropertyValue('dtend')?.toJSDate()?.toISOString(),
-                dtStart: event.getFirstPropertyValue('dtstart')?.toJSDate()?.toISOString(),
-                location: event.getFirstPropertyValue('location'),
-                summary: event.getFirstPropertyValue('summary')
+            new ICAL.Component(ICAL.parse(calData)).getAllSubcomponents('vevent').map((event: ICAL.Component) => ({
+                dtEnd: (event.getFirstPropertyValue('dtend') as ICAL.Time | null)?.toJSDate().toISOString(),
+                dtStart: (event.getFirstPropertyValue('dtstart') as ICAL.Time | null)?.toJSDate().toISOString(),
+                location: event.getFirstPropertyValue('location') as string,
+                summary: event.getFirstPropertyValue('summary') as string
             })) as CalendarEventTypeDTO[]
         );
     }
@@ -77,6 +91,15 @@ export namespace serverCalendarDataService {
      */
     export const findCalendarSourceById = async (id: ObjectId): Promise<CalendarSourceType | null> => {
         return serverMongoDataService.findById<CalendarSourceType>(await getCollection(), id);
+    }
+
+    /**
+     * Finds calendar sources by their IDs.
+     * @param ids - The IDs of the calendar sources to find.
+     * @returns A promise that resolves to an array of CalendarSourceType.
+     */
+    export const findCalendarSourceByIds = async (ids: ObjectId[]): Promise<CalendarSourceType[]> => {
+        return serverMongoDataService.findByIds<CalendarSourceType>(await getCollection(), ids);
     }
 
     /**

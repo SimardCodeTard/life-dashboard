@@ -1,0 +1,19 @@
+@import '/app/shared/variables.scss';
+
+.greeting {
+
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    min-height: 89px;
+    position: relative;
+
+    & > * {
+        margin: 0;
+    }
+
+    .subtitle {
+        font-size: 1.5rem;
+        margin-top: 1rem;
+    }
+}

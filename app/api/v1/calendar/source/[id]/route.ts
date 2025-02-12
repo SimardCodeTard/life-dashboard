@@ -1,6 +1,7 @@
 import { APIBadRequestError } from "@/app/errors/api.error";
 import { serverCalendarDataService } from "@/app/services/server/calendar-data.server.service";
-import { handleAPIError } from "@/app/utils/api.utils";
+import { CalendarSourceType } from "@/app/types/calendar.type";
+import { handleAPIError, parseBody } from "@/app/utils/api.utils";
 import { ObjectId } from "mongodb";
 
 // Force dynamic
@@ -46,3 +47,15 @@ export const DELETE = async (
         return handleAPIError(error as Error);
     }
 };
+
+export const PUT = async (
+    req: Request,
+): Promise<Response> => {
+    try {
+        const body = await parseBody<CalendarSourceType>(req);
+        const result = await serverCalendarDataService.updateCalendarSource(body);
+        return Response.json(result);
+    } catch (error) {
+        return handleAPIError(error as Error);
+    }
+}

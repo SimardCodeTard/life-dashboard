@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { Logger } from "@/app/services/logger.service";
 
-import './pwd-form.css';
+import './pwd-form.scss';
 
 export default function PWDForm() {
 
@@ -46,11 +46,14 @@ export default function PWDForm() {
             ? window.location.replace('/dashboard')
             : null
         })
-    }, [clientLoginService, window])
+    }, [clientLoginService])
 
     return (
         <>
-            <form className="pdw-form" onSubmit={onSubmit}>
+            <form className="pwd-form" onSubmit={onSubmit}>
+                <h1>Welcome back, {process.env.NEXT_PUBLIC_USER_NAME}</h1>
+                <h2>Please enter your password to continue</h2>
+                
                 <input type="password" autoFocus/>
                 <button type="submit" disabled={isLoggingIn as boolean}>Login</button>
             </form>

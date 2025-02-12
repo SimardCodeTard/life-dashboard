@@ -1,0 +1,92 @@
+@import '/app/shared/variables.scss';
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;
+    border-radius: $card-border-radius;
+
+    .new-task-form {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: .5rem;
+    
+        .task-name-field {
+            flex: 1;
+        }
+
+        .task-date-field {
+            width: auto;
+        }
+
+        button {
+            $padding-x: 0;
+            $padding-y: 0;
+        
+            padding: $padding-y $padding-x;
+            height: 3rem;
+            width: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: center;
+        }
+    }
+
+    .task-items-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        .task-item {
+            border: $border;
+            border-radius: .5rem;
+            padding: 1rem;
+            position: relative;
+
+            &.completed-task {
+                p.task-item-title {
+                    text-decoration: line-through;
+                }
+
+                .task-deadline {
+                    p {
+                        color: $foreground-light;
+                        opacity: 25%;
+                    }
+                }
+            }
+
+            .task-item-content {
+                display: flex;
+                flex-direction: column;
+                height: fit-content;
+                p {
+                    margin: 0;
+                }
+    
+                .passed-task-deadline {
+                    color: $error-mild;
+                }
+    
+                .task-deadline {
+                    display: flex;
+                    align-items: center;
+                    gap: .2rem
+                }
+            }
+            display: flex;
+            flex-direction: row;
+            gap: .5rem;
+            align-items: center;
+            .actions-wrapper {
+                margin-left: auto;
+            }
+        }
+    }   
+
+    .completed-tasks-count {
+        margin: 0;
+    }
+}

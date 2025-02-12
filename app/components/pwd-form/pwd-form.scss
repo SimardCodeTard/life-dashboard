@@ -1,0 +1,12 @@
+@import '/app/shared/variables.scss';
+
+.pwd-form {
+    align-items: flex-start;
+    h1, h2 {
+        margin: 0;
+    }
+
+    padding: 2rem;
+    background-color: $background-lighter;
+    box-shadow: $shadow-lg;
+}

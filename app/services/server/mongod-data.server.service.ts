@@ -106,6 +106,16 @@ export namespace serverMongoDataService {
         find(collection, { _id: new ObjectId(id) }).then((result: MongodItemType[]) => result[0] as T);
 
     /**
+     * Finds documents by their IDs.
+     * @param collection - The collection to search in.
+     * @param ids - The IDs of the documents to find.
+     * @returns An array of documents with the specified IDs.
+     */
+    export const findByIds = async <T extends MongodItemType>(collection: Collection, ids: ObjectId[]): Promise<T[]> => {
+        return find(collection, { _id: { $in: ids } });
+    };
+
+    /**
      * Deletes a document by its ID.
      * @param collection - The collection to delete from.
      * @param id - The ID of the document to delete.

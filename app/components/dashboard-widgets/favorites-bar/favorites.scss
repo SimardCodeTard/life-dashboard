@@ -1,0 +1,17 @@
+@import '/app/shared/variables.scss';
+
+.favorites-bar {
+    display: flex;
+    justify-content: center;
+    
+    .favorite-item:not(:last-child) {
+        margin-left: .2rem;
+    }
+}
+
+.new-favorite-form {
+    h3 {
+        margin: 0;
+        width: 100%;
+    }
+}

@@ -77,7 +77,7 @@ export namespace clientTaskDataService {
      */
     export const mapTaskToTaskDto = (task: Task): TaskDto => ({
         ...task,
-        deadline: task.deadline ? formatTaskDateToInput(task.deadline) : undefined
+        deadline: task.deadline ? formatTaskDateToInput(task.deadline) : null
     });
 
     /**

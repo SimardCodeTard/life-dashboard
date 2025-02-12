@@ -4,8 +4,11 @@ import { AddFavoritePropsType, FavoriteItemType } from '@/app/types/favorites.ty
 import AddIcon from '@mui/icons-material/Add';  
 import { FormEvent, useState } from 'react';
 import ModalComponent from '../../shared/modal.component';
+import { Logger } from '@/app/services/logger.service';
 
-export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType) {
+import './favorites.scss';
+
+export default function AddFavorite({updateFavoritesList, setIsLoading}: AddFavoritePropsType) {
 
     const [modalOpen, setModalOpen] = useState<boolean>(false);
 
@@ -24,8 +27,15 @@ export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType)
         const name: string = (e.target as any)[0].value;
         const url: string = clientFavoritesDataService.validateUrl((e.target as any)[1].value);
         const newFavoriteItem: FavoriteItemType = { name, url };
-        if ((await clientFavoritesDataService.saveNewFavoriteItem(newFavoriteItem)).success) {
-            updateFavoritesList();
+        setIsLoading && setIsLoading(true);
+        try {
+            if ((await clientFavoritesDataService.saveNewFavoriteItem(newFavoriteItem)).success) {
+                updateFavoritesList();
+            }
+        } catch(error) {
+            Logger.error(error as Error);
+        } finally {
+            setIsLoading && setIsLoading(false);
         }
     }
 
@@ -33,7 +43,8 @@ export default function AddFavorite({updateFavoritesList}: AddFavoritePropsType)
         <div className="actions-wrapper">
             <AddIcon onClick={openModal} className='cursor-pointer'></AddIcon>
             <ModalComponent modalOpened={modalOpen} setModalOpened={setModalOpen}>
-                <form onSubmit={handleFormSubmit}>
+                <form className='new-favorite-form' onSubmit={handleFormSubmit}>
+                    <h3>Create new favorite item...</h3>
                     <input autoFocus={true} type="text" placeholder='Name'></input>
                     <input type="text" placeholder='Url'></input>
                     <button>Save</button>

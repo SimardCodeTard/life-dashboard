@@ -4,7 +4,7 @@ import { FavoriteItemPropsType, FavoriteItemType } from '@/app/types/favorites.t
 import { MouseEvent, useState } from 'react';
 import EditFavorite from './edit-favorite';
 
-export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemDelete }: FavoriteItemPropsType) {
+export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemDelete, setIsLoading }: FavoriteItemPropsType) {
 
     const [editModalOpened, setEditModalOpened] = useState(false);
 
@@ -31,7 +31,7 @@ export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemD
             <div onClick={onItemClick} onContextMenu={onItemClick} className='favorite-item action-icon-wrapper'>
                 <img width="22" height="22" src={item.url + "/favicon.ico"} alt={item.name.slice(0,2)} />
             </div>
-            <EditFavorite item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onItemDelete} modalOpen={editModalOpened} setModalOpen={setEditModalOpened}
+            <EditFavorite setIsLoading={setIsLoading} item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onItemDelete} modalOpen={editModalOpened} setModalOpen={setEditModalOpened}
             ></EditFavorite>
         </>
     );
