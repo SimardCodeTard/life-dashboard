@@ -50,8 +50,8 @@ export default function PWDForm() {
 
     return (
         <>
-            <form onSubmit={onSubmit}>
-                <input autoFocus/>
+            <form className="pdw-form" onSubmit={onSubmit}>
+                <input type="password" autoFocus/>
                 <button type="submit" disabled={isLoggingIn as boolean}>Login</button>
             </form>
             {passwordInvalid && <p className="error-text">Invalid password</p>}

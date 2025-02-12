@@ -22,7 +22,7 @@ export default function LoginPage() {
             <Card>
                 <div className="p-4 space-y-4 flex flex-col w-full items-center">
                     <h1>Welcome to Life Dashboard</h1>
-                    <p>Please enter your password to continue</p>
+                    <h2>Please enter your password to continue</h2>
                     <PWDForm/>    
                 </div>
             </Card>
