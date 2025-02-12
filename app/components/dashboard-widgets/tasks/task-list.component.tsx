@@ -53,11 +53,14 @@ export default function Tasks() {
     return (
         <div className="task-list">
             <h2 >Tasks</h2>
-            <div className="task-items-wrapper">
-                {tasks.map((task: Task, key: number) => {
-                    return <TaskItem deleteTask={deleteTask} updateTask={updateTask} task={task} key={key}></TaskItem>
-                })}
-            </div>
+            {isLoading 
+                ? <Loader></Loader>
+                : <div className="task-items-wrapper">
+                    {tasks.map((task: Task, key: number) => {
+                        return <TaskItem deleteTask={deleteTask} updateTask={updateTask} task={task} key={key}></TaskItem>
+                    })}
+                </div>
+            }
             <NewTaskForm onNewTaskSubmit={onNewTaskSubmit}></NewTaskForm>
         </div>
     );
