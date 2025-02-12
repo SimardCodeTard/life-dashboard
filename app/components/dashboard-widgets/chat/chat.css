@@ -64,3 +64,8 @@
     width: 5rem;
     margin-top: 0 !important;
 }
+
+.chat-expand {
+    display: flex;
+    justify-content: end;
+}
