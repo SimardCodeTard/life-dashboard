@@ -3,6 +3,10 @@
     border-radius: .5rem;
 }
 
+.task-items-wrapper {
+    margin-top: 1rem;
+}
+
 .task-item {
     padding: 1rem 0;
     position: relative;
@@ -61,6 +65,7 @@
     border-radius: .25rem;
     padding: .2rem 2rem;
     justify-content: center;
+    margin-top: 1rem;
 }
 
 .new-task-form {
