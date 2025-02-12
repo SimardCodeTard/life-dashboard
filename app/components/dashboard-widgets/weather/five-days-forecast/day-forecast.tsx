@@ -1,12 +1,12 @@
 'use client';
 import { ForecastWeatherApiResponse } from "@/app/types/weather.type";
-
-import './five-days-forecast.scss';
 import { useState } from "react";
 import { DateTime } from "luxon";
 import { capitalize } from "@/app/utils/string.util";
 
-export default function DayForecast({dayForecastData}: {dayForecastData: ForecastWeatherApiResponse}) {
+import './five-days-forecast.scss';
+
+export default function DayForecast({dayForecastData}: Readonly<{dayForecastData: ForecastWeatherApiResponse}>) {
 
     const [date] = useState(DateTime.fromSeconds(Math.floor(dayForecastData.data[0].dt)));
     const [weekDay] = useState(capitalize(date.weekdayShort));

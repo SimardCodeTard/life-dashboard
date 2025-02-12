@@ -1,8 +1,7 @@
 import Loader from "@/app/components/shared/loader/loader.component";
 import { CalendarSourceEditEventsEnum, EventKeysEnum } from "@/app/enums/events.enum";
 import EventEmitter from "@/app/lib/event-emitter";
-import { Logger } from "@/app/services/logger.service";
-import { CalendarSourceEventsFakeMapType, CalendarSourceType } from "@/app/types/calendar.type";
+import { CalendarSourceType } from "@/app/types/calendar.type";
 import { Visibility, VisibilityOff, Cancel, Edit, Delete } from "@mui/icons-material";
 import { ObjectId } from "mongodb";
 import { useEffect, useState } from "react";
@@ -13,13 +12,13 @@ export default function CalendarSource({
     editSource,
     deleteSource,
     onVisibilityChange
-}: {    
+}: Readonly<{    
     source: CalendarSourceType,
     sourceEditEventEmitter: EventEmitter,
     editSource: (source: CalendarSourceType) => void,
     deleteSource: (id: ObjectId) => void,
     onVisibilityChange: (source: CalendarSourceType) => void
-}) {
+}>) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);

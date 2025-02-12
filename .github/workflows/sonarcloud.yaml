@@ -23,7 +23,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps #TODO: when NextJS 15.3 releases, remove the flag --legacy-peer-deps
 
       - name: Build project
         env:
@@ -31,14 +31,15 @@ jobs:
           NEXT_PUBLIC_LOGGING_LEVEL: 0
           NEXT_PUBLIC_USER_NAME: Simard
 
-          MONGO_DB_URL_LOCAL: ${{ secrets.MONGO_DB_URL_LOCAL }}
+          MONGO_DB_URI: ${{ secrets.MONGO_DB_URI }}
           DB_NAME: ${{ secrets.DB_NAME }}
           OPEN_WEATHER_API_KEY: ${{ secrets.OPEN_WEATHER_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_GPT_MODEL: ${{ secrets.OPENAI_GPT_MODEL }}
           BLOCK_OPEN_AI_API_CALLS: ${{ secrets.BLOCK_OPEN_AI_API_CALLS }}
-          APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          BCRYPT_SALT_ROUNDS: ${{ secrets.BCRYPT_SALT_ROUNDS }}
+          NEXT_PUBLIC_LOCAL_STORAGE_PREFIX: ${{ secrets.NEXT_PUBLIC_LOCAL_STORAGE_PREFIX }}
         run: npm run build
 
       - name: Run SonarCloud Scan

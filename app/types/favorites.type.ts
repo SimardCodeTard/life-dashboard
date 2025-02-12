@@ -1,7 +1,9 @@
 import { ObjectId } from "mongodb"
+import { UserTypeClient } from "./user.type";
 
 export type FavoriteItemType = {
     _id?: ObjectId;
+    userId: ObjectId;
     name: string;
     url: string;
 }
@@ -20,6 +22,7 @@ export type AddFavoritePropsType = {
 
 export type EditFavoritePropsType = {
     item: FavoriteItemType;
+    user: UserTypeClient;
     onFavoriteItemEdit: (item: FavoriteItemType) => Promise<void>;
     onFavoriteItemDelete: (item: FavoriteItemType) => Promise<void>;
     modalOpen: boolean;

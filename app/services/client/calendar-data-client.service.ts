@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 import { axiosClientService } from "./axios.client.service";
 import { DateTime } from "luxon";
 import { Logger } from "../logger.service";
+import { CalendarEventsBySourceIdResponseType, CalendarEventsResponseType, CalendarSourceIdDeleteResponseType, CalendarSourceIdPutRequestBodyType, CalendarSourceIdPutResponseType, CalendarSourceNewRequestBodyType, CalendarSourceNewResponseType, CalendarSourceResponseType } from "@/app/types/api.type";
 
 export namespace clientCalendarDataService {
 
@@ -62,8 +63,8 @@ export namespace clientCalendarDataService {
      * Fetches calendar sources from the API.
      * @returns A promise that resolves to a list of CalendarSourceTypes.
      */
-    export const fetchCalendarSources = async (): Promise<CalendarSourceType[]> => {
-        return axiosClientService.GET<CalendarSourceType[]>(`${API_URL}/calendar/source`).then(res => res.data);
+    export const fetchCalendarSources = async (userId: ObjectId): Promise<CalendarSourceResponseType> => {
+        return axiosClientService.GET<CalendarSourceResponseType>(`${API_URL}/calendar/source?userId=${userId.toString()}`).then(res => res.data);
     };
 
     export const groupEventsByDateAndSource = (
@@ -103,7 +104,7 @@ export namespace clientCalendarDataService {
     export const fetchAndGroupCalendarEventsBySourceIds = async (sourceIds: ObjectId[]): Promise<Map<string, CalendarSourceEventsFakeMapType[]>> => {
         try {
             // Fetch events from API
-            const response = await axiosClientService.GET<Map<CalendarSourceType, CalendarEventTypeDTO[]>>(
+            const response = await axiosClientService.GET<CalendarEventsResponseType>(
                 `${API_URL}/calendar/events?ids=${sourceIds.join(',')}`
             );
 
@@ -129,7 +130,7 @@ export namespace clientCalendarDataService {
      * @returns A promise that resolves to a list of CalendarEventTypes.
      */
     export const fetchCalendarEventsBySourceId = async (sourceId: ObjectId): Promise<CalendarEventType[]> => {
-        return axiosClientService.GET<CalendarEventTypeDTO[]>(`${API_URL}/calendar/source/${sourceId.toString()}/events/`).then(res => res.data.map(mapCalendarEventDTOtoDO));
+        return axiosClientService.GET<CalendarEventsBySourceIdResponseType>(`${API_URL}/calendar/source/${sourceId.toString()}/events/`).then(res => res.data.map(mapCalendarEventDTOtoDO));
     }
 
     /**
@@ -137,8 +138,8 @@ export namespace clientCalendarDataService {
      * @param source - The calendar event to post.
      * @returns A promise that resolves to the created CalendarSourceType.
      */
-    export const createNewCalendarSource = async (source: CalendarSourceType): Promise<CalendarSourceType> => {
-        return axiosClientService.POST<CalendarSourceType>(`${API_URL}/calendar/source/new/`, source).then(res => res.data);
+    export const createNewCalendarSource = async (source: CalendarSourceNewRequestBodyType): Promise<CalendarSourceNewResponseType> => {
+        return axiosClientService.POST<CalendarSourceNewResponseType, CalendarSourceNewRequestBodyType>(`${API_URL}/calendar/source/new/`, source).then(res => res.data);
     };
 
     /**
@@ -146,8 +147,8 @@ export namespace clientCalendarDataService {
      * @param source - The source to update.
      * @returns A promise that resolves to the updated CalendarSourceType.
      */
-    export const updateCalendarSource = async (source: CalendarSourceType): Promise<CalendarSourceType> => {
-        return axiosClientService.PUT<CalendarSourceType>(`${API_URL}/calendar/source/${source._id}/`, source).then(res => res.data);
+    export const updateCalendarSource = async (source: CalendarSourceIdPutRequestBodyType): Promise<CalendarSourceIdPutResponseType> => {
+        return axiosClientService.PUT<CalendarSourceIdPutResponseType, CalendarSourceIdPutRequestBodyType>(`${API_URL}/calendar/source/${source._id}/`, source).then(res => res.data);
     }
 
     /**
@@ -155,7 +156,7 @@ export namespace clientCalendarDataService {
      * @param sourceId - The ID of the source to delete.
      * @returns A promise that resolves when the source is deleted.
      */
-    export const deleteCalendarSource = async (sourceId: ObjectId): Promise<void> => {
-        return axiosClientService.DELETE<void>(`${API_URL}/calendar/source/${sourceId.toString()}`).then(res => res.data);
+    export const deleteCalendarSource = async (sourceId: ObjectId): Promise<CalendarSourceIdDeleteResponseType> => {
+        return axiosClientService.DELETE<CalendarSourceIdDeleteResponseType>(`${API_URL}/calendar/source/${sourceId}`).then(res => res.data);
     };
 }

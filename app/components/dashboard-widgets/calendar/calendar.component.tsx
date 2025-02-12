@@ -13,8 +13,9 @@ import Loader from "../../shared/loader/loader.component";
 import EventEmitter from "@/app/lib/event-emitter";
 import CalendarSource from "./calendar-source/calendar-source.component";
 import { CalendarSourceEditEventsEnum, EventKeysEnum } from "@/app/enums/events.enum";
+import { getUserFromLocalStorage } from "@/app/utils/localstorage.utils";
 
-export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boolean) => void}) {
+export default function Calendar({setIsLoading}: Readonly<{setIsLoading?: (isLoading: boolean) => void}>) {
 
     function stringToHexColor(input: string): string {
         // This is a silly but effective way to generate a unique color for the calendar sources
@@ -33,11 +34,13 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
         return `#${color}`;
     }
 
+    const getDefaultSourceFormState = () => ({ name: '', url: '', color:'', visible: true, userId: null as unknown as ObjectId })
+
     const [calendarSources, setCalendarSources] = useState<CalendarSourceType[]>([]);
     const [calendarsMap, setCalendarsMap] = useState<Map<string, CalendarSourceEventsFakeMapType[]>>();
     const [selectedDate, setSelectedDate] = useState<DateTime | null>(null);
     
-    const [sourceFormState, setSourceFormState] = useState<CalendarSourceType>({ name: '', url: '', color:'', visible: true });
+    const [sourceFormState, setSourceFormState] = useState<CalendarSourceType>(getDefaultSourceFormState());
     
     const [sidePanelOpened, setSidePanelOpened] = useState(true);
     const [formInEditMode, setFormInEditMode] = useState(false);
@@ -46,6 +49,8 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
     const [mainPanelLoading, setMainPanelLoading] = useState(false);
     
     const [calendarSourceEditEventEmitter] = useState(new EventEmitter());
+
+    const [userId, setUserId] = useState<ObjectId>();
 
     const fetchCalendarEvents = async (sources: CalendarSourceType[]) => {
         // Fetch the events of multiple sources and group them by date
@@ -68,7 +73,6 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
     }
 
     const fetchCalendarSources = async () => {
-
         const onSourcedFetched = (sources: CalendarSourceType[]) => {
             setCalendarSources(sources)
             return sources;
@@ -78,7 +82,7 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
 
         // Set the side panel to loading
         setSidePanelLoading(true);
-        return clientCalendarDataService.fetchCalendarSources() // Call the big guy
+        return clientCalendarDataService.fetchCalendarSources(userId as ObjectId) // Call the big guy
             .then(onSourcedFetched)
             .finally(() => setSidePanelLoading(false)); // Stop the loader
     }
@@ -131,14 +135,14 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
 
         // Emit an event that will inform the component displaying the source that it has to start loading
         // This is the exact same system as the one used in the task list component
-        calendarSourceEditEventEmitter.emit(EventKeysEnum.CALENDAR_SOURCE_EDIT, CalendarSourceEditEventsEnum.CALENDAR_SOURCE_EDIT_START, sourceId as ObjectId);
+        calendarSourceEditEventEmitter.emit(EventKeysEnum.CALENDAR_SOURCE_EDIT, CalendarSourceEditEventsEnum.CALENDAR_SOURCE_EDIT_START, sourceId);
         // Call the big guy
         return clientCalendarDataService.deleteCalendarSource(sourceId)
             // Remove the deleted source from the state
             .then(() => setCalendarSources(prev => prev.filter(filterSourceByDeletedId)))
             .then(updateCalendarMap)
             // Emit an event that will inform the component displaying the source that it has to stop loading
-            .finally(() => calendarSourceEditEventEmitter.emit(EventKeysEnum.CALENDAR_SOURCE_EDIT, CalendarSourceEditEventsEnum.CALENDAR_SOURCE_EDIT_END, sourceId as ObjectId)); 
+            .finally(() => calendarSourceEditEventEmitter.emit(EventKeysEnum.CALENDAR_SOURCE_EDIT, CalendarSourceEditEventsEnum.CALENDAR_SOURCE_EDIT_END, sourceId)); 
     }
 
     const updateCalendarSource = async (sourceToUpdate: CalendarSourceType) => {
@@ -197,17 +201,27 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
     }
 
     useEffect(() => {
+        const user = getUserFromLocalStorage();
+        if(!user?._id) {
+            return
+        }
+        setUserId(getUserFromLocalStorage()?._id as ObjectId);
+    }, []);
+
+    useEffect(() => {
+        if(!userId) return;
+
         fetchCalendarSources()
         .then(sources => {
-            if(sources.length > 0) {
+            if(sources && sources.length > 0) {
                 fetchCalendarEvents(sources);
             }
         })
         .finally(() => {
             setSelectedDate(DateTime.now());
-            setIsLoading && setIsLoading(false);
+            setIsLoading?.(false);
         });
-    }, []);
+    }, [userId]);
 
     function onSourceFormNameChange(e: ChangeEvent<HTMLInputElement>) {
         setSourceFormState({ ...sourceFormState, name: e.target.value });
@@ -221,8 +235,9 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
         e.preventDefault();
 
         if(formInEditMode) {
-            updateCalendarSource(sourceFormState).finally(() => {
-                setSourceFormState({ name: '', url: '', color: '', visible: true });
+            updateCalendarSource({...sourceFormState, userId: userId as ObjectId})
+            .finally(() => {
+                setSourceFormState(getDefaultSourceFormState());
                 setFormInEditMode(false);
             });
         } else {
@@ -230,8 +245,9 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
                 return;
             }
 
-            createNewCalendarSource(sourceFormState).finally(() => {
-                setSourceFormState({ name: '', url: '', color: '', visible: true });
+            createNewCalendarSource({...sourceFormState, userId: userId as ObjectId})
+            .finally(() => {
+                setSourceFormState(getDefaultSourceFormState());
             });
         }
     }
@@ -239,7 +255,7 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
     function deleteSource(sourceId: ObjectId) {
         if(formInEditMode && sourceFormState._id === sourceId) {
             setFormInEditMode(false);
-            setSourceFormState({ name: '', url: '', color: '', visible: true });
+            setSourceFormState(getDefaultSourceFormState());
         }
         deleteCalendarSource(sourceId);
     }
@@ -253,7 +269,7 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
             newSelectedDate.set({day: 1});
         }
  
-        newSelectedDate.set({day: selectedDate?.day || newSelectedDate.daysInMonth});
+        newSelectedDate.set({day: selectedDate?.day ?? newSelectedDate.daysInMonth});
 
         setSelectedDate(newSelectedDate);
     }
@@ -277,7 +293,7 @@ export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boo
                 return;
             }
             setFormInEditMode(false);
-            setSourceFormState({ name: '', url: '', color: '', visible: true });
+            setSourceFormState(getDefaultSourceFormState());
         } else {
             setFormInEditMode(true);
             setSourceFormState(source);

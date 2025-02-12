@@ -1,17 +1,16 @@
-import { Task } from "@/app/types/task.type";
+import { TaskType } from "@/app/types/task.type";
 import TaskCheckbox from "./task-checkbox.component";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { EditNote } from "@mui/icons-material";
-import { Cancel } from "@mui/icons-material";
+import { EditNote, Cancel } from "@mui/icons-material";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
-
-import './tasks.scss';
 import Loader from "../../shared/loader/loader.component";
 import EventEmitter from "@/app/lib/event-emitter";
 import { EventKeysEnum, TaskEditEventsEnum } from "@/app/enums/events.enum";
 import { Logger } from "@/app/services/logger.service";
 import { ObjectId } from "mongodb";
+
+import './tasks.scss';
 
 export default function TaskItem (
     { 
@@ -20,12 +19,12 @@ export default function TaskItem (
         updateTask,
         onTaskEditIconClicked,
         taskItemEditEventEmitter}: 
-    { 
-        task: Task,
-        deleteTask: (task: Task) => Promise<void>,
-        updateTask: (task: Task, status: boolean) => Promise<void>,
-        onTaskEditIconClicked: (task: Task) => void, 
-        taskItemEditEventEmitter: EventEmitter}
+    Readonly<{ 
+        task: TaskType,
+        deleteTask: (task: TaskType) => Promise<void>,
+        updateTask: (task: TaskType, status: boolean) => Promise<void>,
+        onTaskEditIconClicked: (task: TaskType) => void, 
+        taskItemEditEventEmitter: EventEmitter}>
 ) {
 
     const [isLoading, setIsLoading] = useState(false);
@@ -56,7 +55,10 @@ export default function TaskItem (
 
     const deadlineIsPassed = (): boolean => {
         if(!task.deadline) return false;
-        return DateTime.now().toMillis() > task.deadline.toMillis();
+        const now = DateTime.now();
+        const diff = getTimeDiffInDays(now, task.deadline);
+        console.log('deadlineIsPassed', diff < 0)
+        return diff < 0;
     }
 
     let [day, month, year]: string[] | undefined[] = task.deadline
@@ -67,24 +69,34 @@ export default function TaskItem (
     month = month?.padStart(2, "0")
 
 
-    const onTaskDelete = (task: Task) => {
+    const onTaskDelete = (task: TaskType) => {
         setIsLoading(true);
         deleteTask(task)
         .then(() => setIsLoading(false));
     }
 
-    const onTaskUpdate = (task: Task, completed: boolean) => {
+    const onTaskUpdate = (task: TaskType, completed: boolean) => {
         setIsLoading(true);
         updateTask(task, completed)
         .then(() => setIsLoading(false));
     }
 
-    const getTimeDiffInDays = (deadline: DateTime): string => {
-        const diff = deadline.diffNow();
-        if(diff.as('days') > 0) {
-            return `${Math.floor(diff.as('days'))} days`;
+    const getTimeDiffInDays = (a: DateTime, b: DateTime): number => b.set({hour: a.hour, minute: a.minute, second: a.second, millisecond: a.millisecond}).diff(b).as('days')
+
+    const getTimeDiffLabel = (deadline: DateTime): string => {
+        const now = DateTime.now();
+        const diff = getTimeDiffInDays(now, deadline);
+        console.log(deadline.toISODate(), diff)
+        if(diff >= 0) {
+            if(diff > 1) {
+                return `${Math.floor(diff)} days`;
+            }
+            return `${Math.floor(diff)} day`;
         } else {
-            return `${Math.floor(diff.as('days')) * - 1} days`;
+            if(diff <= - 2) {
+                return `${Math.floor(diff) * - 1} days`;
+            }
+            return `${Math.floor(diff) * - 1} day`;
         }
     }
 
@@ -104,10 +116,10 @@ export default function TaskItem (
         } 
 
         if(deadlineIsPassed()) {
-            return `(${getTimeDiffInDays(task.deadline)} late)`
+            return `(${getTimeDiffLabel(task.deadline)} late)`
         }
 
-        return `(${getTimeDiffInDays(task.deadline)} remaining)`;
+        return `(${getTimeDiffLabel(task.deadline)} remaining)`;
     }
     return(
         <div className={`task-item ${task.completed && 'completed-task'}`}>

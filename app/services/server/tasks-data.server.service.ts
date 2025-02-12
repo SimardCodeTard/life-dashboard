@@ -1,5 +1,5 @@
 import { Collection, DeleteResult, InsertOneResult, ObjectId, UpdateResult } from 'mongodb';
-import { Task } from '../../types/task.type';
+import { TaskType, TaskTypeDto } from '../../types/task.type';
 import { serverMongoDataService } from './mongod-data.server.service';
 
 /**
@@ -17,23 +17,28 @@ export namespace serverTasksDataService {
         return db.collection(collectionName);
     };
 
+    export const findTaskById = async (taskId: ObjectId): Promise<TaskTypeDto | null> => {
+        const collection = await getCollection();
+        return serverMongoDataService.findById(collection, taskId);
+    }
+
     /**
      * Retrieves all tasks from the collection.
-     * @returns {Promise<Task[]>} A promise that resolves to an array of tasks.
+     * @returns {Promise<TaskType[]>} A promise that resolves to an array of tasks.
      */
-    export const findAllTasks = async (): Promise<Task[]> => {
+    export const findAllTasks = async (userId: string): Promise<TaskTypeDto[]> => {
         const collection = await getCollection();
-        return serverMongoDataService.findAll<Task>(collection);
+        return serverMongoDataService.findAll<TaskTypeDto>(collection, userId);
     };
 
     /**
      * Saves a single task to the collection.
-     * @param {Task} task - The task to save.
+     * @param {TaskType} task - The task to save.
      * @returns {Promise<InsertOneResult>} A promise that resolves to the result of the insert operation.
      */
-    export const saveTask = async (task: Task): Promise<InsertOneResult> => {
+    export const saveTask = async (task: TaskTypeDto): Promise<InsertOneResult> => {
         const collection = await getCollection();
-        return serverMongoDataService.insertOne<Task>(collection, task);
+        return serverMongoDataService.insertOne<TaskTypeDto>(collection, task);
     };
 
     /**
@@ -48,11 +53,11 @@ export namespace serverTasksDataService {
 
     /**
      * Updates a task by its ID in the collection.
-     * @param {Task} task - The task to update.
+     * @param {TaskType} task - The task to update.
      * @returns {Promise<null | UpdateResult>} A promise that resolves to the result of the update operation, or null if the task does not exist.
      */
-    export const updateTask = async (task: Task): Promise<null | UpdateResult> => {
+    export const updateTask = async (task: TaskTypeDto): Promise<null | UpdateResult> => {
         const collection = await getCollection();
-        return serverMongoDataService.updateOne<Task>(collection, task);
+        return serverMongoDataService.updateOne<TaskTypeDto>(collection, task);
     };
 }

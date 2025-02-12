@@ -8,7 +8,7 @@ import { capitalize } from '@/app/utils/string.util';
 
 export default function CalendarRender(
     { currentDay, eventsMap, setSelectedDate }: 
-    { currentDay : DateTime, eventsMap: Map<string, CalendarSourceEventsFakeMapType[]>, setSelectedDate: (date: DateTime) => void }
+    Readonly<{ currentDay : DateTime, eventsMap: Map<string, CalendarSourceEventsFakeMapType[]>, setSelectedDate: (date: DateTime) => void }>
 ) {
 
     let daysLabels: string[] = [];

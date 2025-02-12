@@ -1,5 +1,5 @@
-'use client'
-import { Task, TaskDto } from "@/app/types/task.type";
+'use client';;
+import { TaskType, TaskTypeDto } from "@/app/types/task.type";
 import TaskItem from "./task-item.component";
 import { FormEvent, useEffect, useState } from "react";
 import { clientTaskDataService } from "@/app/services/client/tasks-data-client.service";
@@ -9,23 +9,42 @@ import { DateTime } from "luxon";
 import EventEmitter from "@/app/lib/event-emitter";
 import { EventKeysEnum, TaskEditEventsEnum } from "@/app/enums/events.enum";
 import { TaskAlt } from "@mui/icons-material";
+import { UserTypeClient } from "@/app/types/user.type";
+import { getUserFromLocalStorage } from "@/app/utils/localstorage.utils";
+import { ObjectId } from "mongodb";
 
-export default function Tasks({setIsLoading}: {setIsLoading?: (isLoading: boolean) => void}) {
+export default function Tasks({setIsLoading}: Readonly<{setIsLoading?: (isLoading: boolean) => void}>) {
 
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const [tasks, setTasks] = useState<TaskType[]>([]);
     const [isEditingTask, setIsEditingTask] = useState(false);
-    const [taskToEdit, setTaskToEdit] = useState<Task | undefined>();
+    const [taskToEdit, setTaskToEdit] = useState<TaskType | undefined>();
     const [completedTasksCount, setCompletedTasksCount] = useState(0);
-    const [taskItemEditEventEmitter] = useState(new EventEmitter()); // Must be a state, don't ask me why
+    const [taskItemEditEventEmitter] = useState(new EventEmitter());
+    
+    const [user, setUser] = useState<UserTypeClient>();
 
-    const countCompletedTasks = (tasks: Task[] | TaskDto[]): number => tasks.reduce((acc: number, task: Task | TaskDto) => task.completed ? acc + 1 : acc, 0);
+
+    useEffect(() => {
+        setUser(getUserFromLocalStorage());
+    }, [])
+
+    useEffect(() => {
+        if(user) {
+            setIsLoading && setIsLoading(true);
+            user && updateTaskList()
+            .finally(() => setIsLoading && setIsLoading(false))
+            .catch(Logger.error);
+        }
+    }, [user]);
+
+    const countCompletedTasks = (tasks: TaskType[] | TaskTypeDto[]): number => tasks.reduce((acc: number, task: TaskType | TaskTypeDto) => task.completed ? acc + 1 : acc, 0);
 
     const updateTaskList = async () => {
-        const tasks = await clientTaskDataService.fetchAllTasks();
+        const tasks = await clientTaskDataService.fetchAllTasks(user?._id as ObjectId);
         const completedTasksCount = countCompletedTasks(tasks);
         Logger.debug(`Fetched ${tasks.length} tasks with ${completedTasksCount} completed`);
         setCompletedTasksCount(completedTasksCount);
-        setTasks(clientTaskDataService.mapTaskDtoToTaskList(tasks));
+        setTasks(tasks);
         return tasks;
     }
 
@@ -39,7 +58,7 @@ export default function Tasks({setIsLoading}: {setIsLoading?: (isLoading: boolea
         if(deadline && !deadline.isValid) deadline = undefined;
 
         const completed = false;
-        const newTask: Task = {title, deadline, completed};
+        const newTask: TaskType = {title, deadline, completed, userId: user?._id as ObjectId};
 
         if(isEditingTask && taskToEdit) {
             // Ideally, when a task is updated, the loader should only cover said task
@@ -71,37 +90,42 @@ export default function Tasks({setIsLoading}: {setIsLoading?: (isLoading: boolea
         (event.target as any)[1].value = "";
     }
 
-    const saveTask = async (task: Task) => {
+    const saveTask = async (task: TaskType) => {
         // Save a new task
-        
+
         // POST to the big guy
-        return clientTaskDataService.saveTask(clientTaskDataService.mapTaskToTaskDto(task))
-            // Fetch all the tasks TODO. Optimize to only fetch the updated task by returning the id from the server
-            .then((res) => res.data.success ? updateTaskList() : undefined)
-            // Map and update the tasks state
-            .then((tasks) => tasks && setTasks(clientTaskDataService.mapTaskDtoToTaskList(tasks)))
-            // Catch errors like a boss
-            .catch(Logger.error)
+        const res = await clientTaskDataService.saveTask({...task, userId: user?._id as ObjectId});
+        // Update the tasks state
+        if (res.acknowledged && res.insertedId) {
+            // Fetch the new task
+            const newTask = await clientTaskDataService.fetchTaskById(res.insertedId);
+            // Clone the tasks array
+            const newTaskList = [...tasks];
+            // Push the new task
+            newTaskList.push(newTask);
+            // Sort the new tasks and update the state
+            setTasks(clientTaskDataService.sortTaskByMostUrgent(newTaskList));
+        }
     }
 
-    const updateTask = async (task: Task, completed?: boolean) => {
+    const updateTask = async (task: TaskType, completed?: boolean) => {
         // Update a task by Id
 
         // Build the post payload
-        task = {...task, _id: task._id, completed: completed !== undefined ? completed : task.completed};
+        task = {...task, _id: task._id, completed: completed ?? task.completed, userId: user?._id as ObjectId};
         // Map the payload to a DTO
-        const taskDto = clientTaskDataService.mapTaskToTaskDto(task);
+        const taskDto = task;
         // PUT to the big guy
-        return clientTaskDataService.updateTask(taskDto)
-            // Fetch all the tasks TODO. Optimize to only fetch the updated task, we already have the full updated item
-            .then(res => res.data.success ? updateTaskList() : undefined)
-            // Map and update the tasks state
-            .then((tasks) => tasks && setTasks(clientTaskDataService.mapTaskDtoToTaskList(tasks)))
-            // Catch errors like a boss
-            .catch(Logger.error);
+        const res = await clientTaskDataService.updateTask(taskDto);
+        // Update the tasks state
+        if (res?.acknowledged && task._id) {
+            // Find and update the updated task
+            const newTaskList = tasks.map(oldTask => oldTask._id === task._id ? task : oldTask);
+            setTasks(clientTaskDataService.sortTaskByMostUrgent(newTaskList));
+        }
     }
 
-    const deleteTask = async (task: Task) => {
+    const deleteTask = async (task: TaskType) => {
         // Delete a task by id
 
         // Check if the task to delete is being edited
@@ -111,17 +135,18 @@ export default function Tasks({setIsLoading}: {setIsLoading?: (isLoading: boolea
             setTaskToEdit(undefined);
         }
 
-        // Validate the ID and DELETE to the big guy
-        return task._id && clientTaskDataService.deleteTaskById(task._id)
-            // Fetch all the tasks TODO: Do not refetch, just remove the deleted task from the list (if the opration succeded duh)
-            .then((res) =>{ return res.data.success ? updateTaskList() : undefined})
-            // Map and update the tasks state
-            .then((tasks) => tasks && setTasks(clientTaskDataService.mapTaskDtoToTaskList(tasks)))
-            // Catch errors like a boss
-            .catch(Logger.error);
+        // DELETE to the big guy
+        const res = await clientTaskDataService.deleteTaskById(task._id as ObjectId)
+        // Update the task state
+        if(res.acknowledged) {
+            // Clone the tasks array and remove the deleted task
+            const newTaskList = [...tasks.filter(oldTask => oldTask._id !== task._id)];
+            // Update the tasks state
+            setTasks(newTaskList);
+        }
     }
 
-    const onTaskEditIconClicked = (task: Task) => {
+    const onTaskEditIconClicked = (task: TaskType) => {
         // When the user clicks on the edit icon of a task, the creation form becomes an edit form
         // We use the state isEditingTask to know in witch mode we are and the taskToEdit state to have the previous values
         if(isEditingTask && task._id === taskToEdit?._id) {
@@ -140,11 +165,6 @@ export default function Tasks({setIsLoading}: {setIsLoading?: (isLoading: boolea
         }
     }
 
-    useEffect(() => {
-        setIsLoading && setIsLoading(true);
-        updateTaskList().finally(() => setIsLoading && setIsLoading(false)).catch(console.error);
-    }, [])
-
     return (
         <div className="card-content">
             <div className="card-main-panel task-list">
@@ -152,9 +172,9 @@ export default function Tasks({setIsLoading}: {setIsLoading?: (isLoading: boolea
                     <h2>Tasks</h2>
                     <TaskAlt/>
                 </div>
-                <TaskForm onSubmit={onTaskFormSubmit} mode={isEditingTask ? 'edit' : 'new'} taskToEdit={taskToEdit}></TaskForm>
+                <TaskForm userId={user?._id as ObjectId} onSubmit={onTaskFormSubmit} mode={isEditingTask ? 'edit' : 'new'} taskToEdit={taskToEdit}></TaskForm>
                 <div className="task-items-wrapper">
-                    {tasks.map((task: Task, key: number) => {
+                    {tasks.map((task: TaskType, key: number) => {
                         return <TaskItem taskItemEditEventEmitter={taskItemEditEventEmitter} deleteTask={deleteTask} updateTask={updateTask} task={task} key={`task-item-${task._id?.toString()}`} onTaskEditIconClicked={onTaskEditIconClicked}></TaskItem>
                     })}
                 </div>

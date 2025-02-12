@@ -1,14 +1,11 @@
 "use client";;
-import { useEffect, FormEvent, createRef } from 'react';
+import { useEffect, FormEvent } from 'react';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 
 import '../../components.scss';
 import './search-bar.scss';
 
-export default function SearchBar({ setIsLoading }: {setIsLoading?: (isLoading: boolean) => void}) {
-
-
-    const searchBarRef = createRef() as React.RefObject<HTMLFormElement>;
+export default function SearchBar({ setIsLoading }: Readonly<{setIsLoading?: (isLoading: boolean) => void}>) {
 
     const buildSearchUrl = (query: string): string => `https://www.google.com/search?q=${query.replaceAll(' ', '+')}`
 
@@ -32,7 +29,7 @@ export default function SearchBar({ setIsLoading }: {setIsLoading?: (isLoading: 
 
     return (
         <div className="card-content">
-            <form className='search-bar card-main-panel' onSubmit={onSearchBarSubmit} ref={searchBarRef}>
+            <form className='search-bar card-main-panel' onSubmit={onSearchBarSubmit}>
                 <div className='search-bar-container'>
                     <div className="search-bar-input-container">
                         <span className="search-input-icon-wrapper">

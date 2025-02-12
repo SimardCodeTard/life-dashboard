@@ -50,13 +50,17 @@ export const handleAPIError = (error: Error): Response => {
 
     // If the error was not properly handled, it will not be an APIError
     // Return a generic 500 error response
-    if(!(error instanceof APIError)) return new Response(JSON.stringify({
-        success: false,
-        error: { status: 500, message: 'Unhandeled internal error: ' + error.message }
-    }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    if(!(error instanceof APIError)) {
+        Logger.debug('Error was not an APIError, returning generic 500 error response');
+        return new Response(JSON.stringify({
+            success: false,
+            error: { status: 500, message: 'Unhandeled internal error: ' + error.message }
+        }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+    Logger.debug('Error was an APIError, returning an appropriate error response with status code ' + error.status);
 
     // The error was properly handled, return an appropriate error response
-    const apiError = error as APIError;
+    const apiError = error;
     return new Response(JSON.stringify({
         success: false,
         error: { status: apiError.status, message: error.message }

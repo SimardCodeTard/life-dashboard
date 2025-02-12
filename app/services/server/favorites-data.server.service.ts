@@ -19,9 +19,9 @@ export namespace serverFavoritesDataService {
      * Find all favorite items.
      * @returns {Promise<FavoriteItemType[]>} A promise that resolves to an array of favorite items.
      */
-    export const findAllFavorites = async (): Promise<FavoriteItemType[]> => {
+    export const findAllFavorites = async (userId: string): Promise<FavoriteItemType[]> => {
         const collection = await getCollection();
-        return serverMongoDataService.findAll<FavoriteItemType>(collection);
+        return serverMongoDataService.findAll<FavoriteItemType>(collection, userId);
     };
 
     /**

@@ -3,7 +3,7 @@ import Checkbox from "../../shared/checkbox.component";
 
 export default function TaskCheckbox(
     { completed, updateTaskStatus, disabled = false}
-    : { completed: boolean, updateTaskStatus: (status: boolean) => void, disabled: boolean}
+    : Readonly<{ completed: boolean, updateTaskStatus: (status: boolean) => void, disabled: boolean}>
 ) {
 
     const onStatusChange = (): void => {

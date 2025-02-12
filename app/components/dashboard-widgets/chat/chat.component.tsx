@@ -10,7 +10,7 @@ import Loader from '../../shared/loader/loader.component';
 
 import './chat.scss';
 
-export default function Chat({setIsLoading}: {setIsLoading?: (isLoading: boolean) => boolean}) {
+export default function Chat({setIsLoading}: Readonly<{setIsLoading?: (isLoading: boolean) => boolean}>) {
 
     const [messages, setMessages] = useState<ChatMessageType[]>([]);
 

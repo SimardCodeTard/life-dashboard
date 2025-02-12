@@ -2,6 +2,9 @@
 
 const nextConfig = {
     reactStrictMode: true,
+    experimental: {
+      nodeMiddleware: true,
+    },
     async headers() {
       return [
         {
@@ -19,7 +22,7 @@ const nextConfig = {
     webpack: (config) => {
       config.externals = [...config.externals, 'bcryptjs'];
       return config;
-    } 
+    }
 };
 
 module.exports = nextConfig
