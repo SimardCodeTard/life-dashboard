@@ -1,3 +1,5 @@
 export default function Greeting () {
-    return <div>Hello World !</div>
+    const userName = process.env.NEXT_PUBLIC_USER_NAME;
+
+    return <div className="greeting">Hello {userName} !</div>
 }

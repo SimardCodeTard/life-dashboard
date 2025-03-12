@@ -13,23 +13,20 @@ export default function DashboardPage() {
 
     return (
         <main>
+            <Greeting></Greeting>
 
-            <div className="dashboard-row">
-                <Greeting></Greeting>
-            </div>
-            
-            <div className="dashboard-row">
+            <div className="dashboard-widget-container">
+
                 <Card><SearchBar></SearchBar></Card>
-            </div>
 
-            <div className="dashboard-row">
                 <Card><Tasks></Tasks></Card>
-                <Card><Weather></Weather></Card>
-                <Card><Clock></Clock></Card>
-            </div>
 
-            <div className="dashboard-row">
+                <Card><Weather></Weather></Card>
+
+                <Card><Clock></Clock></Card>
+
                 <Card><Calendar></Calendar></Card>
+
                 <Card><Chat></Chat></Card>
             </div>
         </main>
