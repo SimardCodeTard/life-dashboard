@@ -4,15 +4,53 @@ import { Collection, DeleteResult, InsertOneResult, ObjectId, UpdateResult } fro
 
 export namespace serverFavoritesDataService {
 
-    const collectionName = "favorites"
+    const collectionName = "favorites";
 
-    const getCollection = async (): Promise<Collection> => (await serverMongoDataService.getDb()).collection(collectionName);
+    /**
+     * Get the MongoDB collection for favorites.
+     * @returns {Promise<Collection>} The favorites collection.
+     */
+    const getCollection = async (): Promise<Collection> => {
+        const db = await serverMongoDataService.getDb();
+        return db.collection(collectionName);
+    };
 
-    export const findAllFavorites = async (): Promise<FavoriteItemType[]> => serverMongoDataService.findAll<FavoriteItemType>(await getCollection());
+    /**
+     * Find all favorite items.
+     * @returns {Promise<FavoriteItemType[]>} A promise that resolves to an array of favorite items.
+     */
+    export const findAllFavorites = async (): Promise<FavoriteItemType[]> => {
+        const collection = await getCollection();
+        return serverMongoDataService.findAll<FavoriteItemType>(collection);
+    };
 
-    export const insertNewFavoriteItem = async (item: FavoriteItemType): Promise<InsertOneResult> => serverMongoDataService.insertOne<FavoriteItemType>(await getCollection(), item);
+    /**
+     * Insert a new favorite item.
+     * @param {FavoriteItemType} item - The favorite item to insert.
+     * @returns {Promise<InsertOneResult>} A promise that resolves to the result of the insert operation.
+     */
+    export const insertNewFavoriteItem = async (item: FavoriteItemType): Promise<InsertOneResult> => {
+        const collection = await getCollection();
+        return serverMongoDataService.insertOne<FavoriteItemType>(collection, item);
+    };
 
-    export const deleteFavoriteItemById = async (id: ObjectId): Promise<DeleteResult> => serverMongoDataService.deleteById(await getCollection(), id);
+    /**
+     * Delete a favorite item by its ID.
+     * @param {ObjectId} id - The ID of the favorite item to delete.
+     * @returns {Promise<DeleteResult>} A promise that resolves to the result of the delete operation.
+     */
+    export const deleteFavoriteItemById = async (id: ObjectId): Promise<DeleteResult> => {
+        const collection = await getCollection();
+        return serverMongoDataService.deleteById(collection, id);
+    };
 
-    export const updateFavorite = async (favorite: FavoriteItemType): Promise<null | UpdateResult> => serverMongoDataService.updateOne<FavoriteItemType>(await getCollection(), favorite);
+    /**
+     * Update a favorite item.
+     * @param {FavoriteItemType} favorite - The favorite item to update.
+     * @returns {Promise<null | UpdateResult>} A promise that resolves to the result of the update operation.
+     */
+    export const updateFavorite = async (favorite: FavoriteItemType): Promise<null | UpdateResult> => {
+        const collection = await getCollection();
+        return serverMongoDataService.updateOne<FavoriteItemType>(collection, favorite);
+    };
 }

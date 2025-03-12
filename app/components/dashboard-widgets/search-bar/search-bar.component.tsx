@@ -1,44 +1,53 @@
-"use client"
-import { useEffect, useState, FormEvent, ReactElement } from 'react';
-import styles from '../../components.module.css';
+"use client";;
+import { useEffect, useState, FormEvent, ReactElement, createRef } from 'react';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import SearchOptions from './search-options/search-options.component';
 import { SearchOptionType } from '../../../types/search-bar.types';
 import Image, { StaticImageData } from 'next/image';
 
+import '../../components.css';
+import './search-bar.css';
+import { Logger } from '@/app/services/logger.service';
+
 type SearchBarProps = {};
 
 export default function SearchBar({ }: SearchBarProps) {
+
+    const searchBarRef = createRef() as React.RefObject<HTMLFormElement>;
 
     const buildSearchUrl = (query: string): string => {
         const {url, path, queryParamName, queryWordsSeparator} = selectedSearchOption as SearchOptionType;
         return `${ url }${ path ? path.startsWith('/') ? path : `/${ path }` : '' }?${ queryParamName }=${ query.replaceAll(' ', queryWordsSeparator) }` 
     }
 
+    const redirectToSearchUrl = (url: string) => {
+        window.location.assign(url);
+    }
+
     const onSearchBarSubmit = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
 
-        if (userShifting && selectedSearchOption) {
-            window.location.href = selectedSearchOption?.url;
-            return;
-        }
-
-        const target = event.target as typeof event.target & {
+        const eventValue = (event.target as typeof event.target & {
             0: { value: string };
-        };
-        if (selectedSearchOption && target[0].value) {
-            window.location.href = buildSearchUrl(target[0].value);
+        })[0].value;
+
+        if (selectedSearchOption && eventValue) {
+            Logger.debug(`User is not shifting and selected search option is ${selectedSearchOption.name}`);
+            redirectToSearchUrl(buildSearchUrl(eventValue));
         }
     }
-
     const onBlur = () => setShowOptions(false);
+
     const onSelectedSearchOptionClick = () => {
-        if(userShifting && selectedSearchOption) {
-            window.location.href = selectedSearchOption?.url;
-        } else {
-            setShowOptions(!showOptions)
-        }
+        setShowOptions(!showOptions)
     };
+
+    const onSearchOptionShiftClick = (searchOption: SearchOptionType) => {
+        setSelectedSearchOption(searchOption);
+        searchBarRef.current?.requestSubmit();
+    }
+
+
 
     const [showOptions, setShowOptions] = useState(false);
     const [selectedSearchOption, setSelectedSearchOption] = useState<SearchOptionType | undefined>();
@@ -55,21 +64,7 @@ export default function SearchBar({ }: SearchBarProps) {
         }
     }
 
-    useEffect(() => {
-        // Shift key detection
-        window.onkeyup = (e: KeyboardEvent) => {
-            if(e.key == 'Shift') {
-                // User started shifting
-                setUserShifting(false);
-            }
-        }
-        window.onkeydown = (e: KeyboardEvent) => {
-            if(e.key == 'Shift') {
-                // User stopped shifting
-                setUserShifting(true);
-            }
-        }
-    }, [])
+
 
     useEffect(() => {
         // Close search options tab on select
@@ -77,17 +72,19 @@ export default function SearchBar({ }: SearchBarProps) {
     }, [selectedSearchOption])
 
     return (
-        <form className={'w-1/2 flex flex-col justify-center'} onSubmit={onSearchBarSubmit}>
-            <span className={`${styles.search_bar} flex items-center`}>
-                {icon}
+        <form className='search-bar' onSubmit={onSearchBarSubmit} ref={searchBarRef}>
+            <span className='search-bar-container'>
+                <span className="actions-wrapper search-option-icon-wrapper">
+                    {icon}
+                </span>
                 <input autoFocus onBlur={onBlur} type='text'
-                    className={`${styles.search_input} p-2 w-full focus:shadow-inner rounded-sm`}
+                    className='search-input'
                     placeholder={`Search on ${selectedSearchOption ? selectedSearchOption.name : 'the web'}`}></input>
-                <button type='submit' className='ml-2 mr-2 bg-transaprent shadow-none text-[rgba(255,255,255,0.5)]'>
+                <button type='submit'>
                     <SearchSharpIcon></SearchSharpIcon>
                 </button>
             </span>
-            <SearchOptions setSelectedSearchOption={setSelectedSearchOption} showOptions={showOptions}></SearchOptions>
+            <SearchOptions selectedSearchOption={selectedSearchOption} setSelectedSearchOption={setSelectedSearchOption} onSearchOptionShiftClick={onSearchOptionShiftClick} showOptions={showOptions}></SearchOptions>
         </form>
     );
 }

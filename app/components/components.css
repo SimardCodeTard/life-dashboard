@@ -1,19 +1,37 @@
 .clock {
     margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-.time  {
+
+.clock-time  {
     font-family: monospace;
     color: rgba(210,200,200,0.8);
     letter-spacing: -0.1rem;
-    height: 4rem;
+    height: fit-content;
     font-size: 5rem;
+    display: flex;
+    align-items: center;
+    text-align: center;
 }
-.seconds {
+
+.clock-time, .clock-seconds {
+    display: inline-block;
+}
+
+.clock-seconds {
     font-weight: 400;
     font-size: 3rem;
     color: rgba(210,200,210,0.65);
 }
+
+.clock-date {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
 .weather {
+    position: relative;
     min-height: 4rem;
 }
 .search_bar{
@@ -56,4 +74,48 @@
     background-color: rgba(255,255,255,0.1);
     border-radius: 0.25rem;
     padding: 1rem;
+}
+
+/* WEATHER TEMPERATURE COLORS */
+
+.temperature-color-freezing {
+    color: #00f;
+}
+
+.temperature-color-cold {
+    color: #0af;
+}
+
+.temperature-color-mild {
+    color: rgb(49, 197, 76);
+}
+
+.temperature-color-warm {
+    color: rgb(212, 185, 10);
+}
+
+.temperature-color-hot {
+    color: rgb(214, 85, 29);
+}
+
+.temperature-color-very-hot {
+    color: rgb(215, 13, 13);
+}
+
+.temperature-color-extreme {
+    color: rgb(97, 3, 179);
+}
+
+.weather-body {
+    display: flex;
+    align-items: center;
+}
+
+.temperature-display {
+    display: flex;
+    align-items: center;
+}
+
+.temperature-display > h3 {
+    margin-right: .5rem;
 }
