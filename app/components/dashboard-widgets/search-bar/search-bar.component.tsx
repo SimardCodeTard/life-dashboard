@@ -84,7 +84,7 @@ export default function SearchBar({ }: SearchBarProps) {
                     <SearchSharpIcon></SearchSharpIcon>
                 </button>
             </span>
-            <SearchOptions setSelectedSearchOption={setSelectedSearchOption} onSearchOptionShiftClick={onSearchOptionShiftClick} showOptions={showOptions}></SearchOptions>
+            <SearchOptions selectedSearchOption={selectedSearchOption} setSelectedSearchOption={setSelectedSearchOption} onSearchOptionShiftClick={onSearchOptionShiftClick} showOptions={showOptions}></SearchOptions>
         </form>
     );
 }

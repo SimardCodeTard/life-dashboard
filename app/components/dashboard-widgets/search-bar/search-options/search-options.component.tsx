@@ -16,18 +16,21 @@ function SearchOption({ searchOption, onClick }: SearchOptionPropsType) {
 }
 
 
-export default function SearchOptions({ showOptions, setSelectedSearchOption, onSearchOptionShiftClick }: SearchBarOptionsPropsType) {
+export default function SearchOptions({ showOptions, setSelectedSearchOption, selectedSearchOption, onSearchOptionShiftClick }: SearchBarOptionsPropsType) {
     
     const [userShifting, setUserShifting] = useState<boolean>(false);
 
     const onSearchOptionClick = (searchOption: SearchOptionType) => {
         Logger.debug(`Search option clicked: ${searchOption.name}, is shifting: ${userShifting}`);
-        if(userShifting) {
-            onSearchOptionShiftClick(searchOption);
-            return;
-        }
         setSelectedSearchOption(searchOption);
     }
+
+    useEffect(() => {
+        Logger.debug(`Selected search option changed to ${selectedSearchOption?.name}, is shifting: ${userShifting}`);
+        if(userShifting) {
+            onSearchOptionShiftClick(selectedSearchOption as SearchOptionType);
+        }
+    }, [selectedSearchOption]);
 
     useEffect(() => {
         setSelectedSearchOption(SearchOptionData[0]);
