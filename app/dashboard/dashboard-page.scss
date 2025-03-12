@@ -23,15 +23,45 @@
         }
     
         .tasks-card {
-            grid-column: 1 / span 2;
+            grid-column: auto / span 2;
         }
     
         .calendar-card {
-            grid-column: 1 / span 2;
+            grid-column: auto / span 2;
         }
     
         .chat-card {
-            grid-column: 3 / span 2;
+            grid-column: auto / span 2;
+        }
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .dashboard-page .dashboard-widgets-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        .tasks-card {
+            grid-column: auto / span 2;
+        }
+
+        .calendar-card {
+            grid-column: auto / span 2;
+        }
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .dashboard-page .dashboard-widgets-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .dashboard-page .dashboard-widgets-grid {
+        grid-template-columns: 1fr;
+        
+        .card {
+            grid-column: 1 / 1;
+        
         }
     }
 }
