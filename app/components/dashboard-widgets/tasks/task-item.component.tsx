@@ -7,7 +7,7 @@ import ModalComponent from "../../shared/modal.component";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { clientTaskDataService } from "@/app/services/client/tasks-data-client.service";
 
-import './tasks.css';
+import './tasks.scss';
 import Loader from "../../shared/loader/loader.component";
 
 export default function TaskItem ({task, deleteTask, updateTask}: 

@@ -5,8 +5,8 @@ import SearchOptions from './search-options/search-options.component';
 import { SearchOptionType } from '../../../types/search-bar.types';
 import Image, { StaticImageData } from 'next/image';
 
-import '../../components.css';
-import './search-bar.css';
+import '../../components.scss';
+import './search-bar.scss';
 import { Logger } from '@/app/services/logger.service';
 
 type SearchBarProps = {};

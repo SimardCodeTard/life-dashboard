@@ -4,7 +4,7 @@ import { Key, useEffect, useState } from "react";
 import { SearchOptionPropsType } from '../../../../types/search-bar.types';
 import Image, { StaticImageData } from 'next/image';
 
-import '../../../components.css';
+import '../../../components.scss';
 import { Logger } from "@/app/services/logger.service";
 
 function SearchOption({ searchOption, onClick }: SearchOptionPropsType) {

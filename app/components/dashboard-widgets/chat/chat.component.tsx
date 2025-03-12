@@ -8,7 +8,7 @@ import { ChatMessageType } from '@/app/types/chat.type';
 import Loader from '../../shared/loader/loader.component';
 
 
-import './chat.css';
+import './chat.scss';
 
 export default function Chat() {
 

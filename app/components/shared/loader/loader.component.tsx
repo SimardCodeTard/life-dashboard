@@ -1,6 +1,6 @@
 import { CircularProgress } from "@mui/material";
 
-import './loader.css'
+import './loader.scss';
 
 export default function Loader() {
     return (

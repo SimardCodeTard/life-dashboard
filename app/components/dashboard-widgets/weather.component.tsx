@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Loader from "../shared/loader/loader.component";
 
-import '../components.css';
+import '../components.scss';
 
 export default function Weather() {
     let [weatherData, setWeatherData] = useState<any>(null);

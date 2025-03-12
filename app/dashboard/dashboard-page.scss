@@ -1,0 +1,13 @@
+@import '/app/shared/variables.scss';
+
+.dashboard-row {
+    display: flex;
+    align-items: center;
+
+    .card {
+        margin: .5rem;
+        border: $border;
+        height: 25rem;
+        width: 25rem;
+    }
+}

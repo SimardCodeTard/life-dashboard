@@ -2,7 +2,7 @@
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 
-import  '../components.css'
+import '../components.scss';
 
 let lastSecond: number = -1;
 let lastMinute: number = -1;

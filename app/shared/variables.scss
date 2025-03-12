@@ -1,0 +1,31 @@
+// Variables globales
+$foreground: rgb(255, 255, 255);
+
+$background: rgb(0, 0, 0);
+$background-lighter: rgb(25, 25, 25);
+
+$background-lightest: rgb(50, 50, 50);
+
+$card-background: rgba(250, 250, 250, 0.06);
+$card-foreground: linear-gradient(45deg, rgba(82, 48, 121, 0.05), rgba(0, 0, 0, 0.1));
+
+$separator: rgb(60, 60, 60);
+$text-lighter: rgb(150, 150, 150);
+$background-navbar: rgba(250, 250, 250, 0.02);
+
+$border: solid 1px rgba(255, 255, 255, 0.2);
+$border-thick: solid 2px rgba(255, 255, 255, 0.2);
+
+$accent1: rgb(217, 80, 235);
+$accent2: rgb(101, 13, 208);
+$accent3: rgb(24, 80, 222);
+
+$error: rgb(231, 51, 51);
+$error-hover: rgb(255, 0, 0);
+$error-active: rgb(200, 0, 0);
+
+$shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+$shadow-lg: 0 0 15px 0 rgba(0, 0, 0, 0.75);
+$shadow-inset: inset 0 0 5px 0 rgba(0, 0, 0, 0.75);
+
+$focus-outline: solid 1px $accent1;

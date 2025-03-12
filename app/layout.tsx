@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import './globals.css'
+import './globals.scss'
 
 export const metadata: Metadata = {
   title: 'Life Dashboard',
