@@ -18,10 +18,11 @@ export type SearchOptionType = {
 
 export type SearchOptionPropsType = {
     searchOption: SearchOptionType,
-    setSelectedSearchOption: Dispatch<SetStateAction<SearchOptionType | undefined>>
+    onClick: (searchOption: SearchOptionType) => void
 };
 
 export type SearchBarOptionsPropsType = {
     showOptions: boolean,
     setSelectedSearchOption: Dispatch<SetStateAction<SearchOptionType | undefined>>
+    onSearchOptionShiftClick: (searchOption: SearchOptionType ) => void
 }

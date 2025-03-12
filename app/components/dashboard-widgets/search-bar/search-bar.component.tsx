@@ -1,5 +1,5 @@
-"use client"
-import { useEffect, useState, FormEvent, ReactElement } from 'react';
+"use client";;
+import { useEffect, useState, FormEvent, ReactElement, createRef } from 'react';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import SearchOptions from './search-options/search-options.component';
 import { SearchOptionType } from '../../../types/search-bar.types';
@@ -13,42 +13,41 @@ type SearchBarProps = {};
 
 export default function SearchBar({ }: SearchBarProps) {
 
+    const searchBarRef = createRef() as React.RefObject<HTMLFormElement>;
+
     const buildSearchUrl = (query: string): string => {
         const {url, path, queryParamName, queryWordsSeparator} = selectedSearchOption as SearchOptionType;
         return `${ url }${ path ? path.startsWith('/') ? path : `/${ path }` : '' }?${ queryParamName }=${ query.replaceAll(' ', queryWordsSeparator) }` 
     }
 
+    const redirectToSearchUrl = (url: string) => {
+        window.location.assign(url);
+    }
+
     const onSearchBarSubmit = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
 
-        if (userShifting && selectedSearchOption) {
-            window.location.href = selectedSearchOption?.url;
-            return;
-        }
-
-        const target = event.target as typeof event.target & {
+        const eventValue = (event.target as typeof event.target & {
             0: { value: string };
-        };
+        })[0].value;
 
-        if (selectedSearchOption && target[0].value) {
-            openInNewTab(buildSearchUrl(target[0].value));
+        if (selectedSearchOption && eventValue) {
+            Logger.debug(`User is not shifting and selected search option is ${selectedSearchOption.name}`);
+            redirectToSearchUrl(buildSearchUrl(eventValue));
         }
     }
-
-    const openInNewTab = (url: string) => {
-        Logger.debug(`opening new windows to url ${url}`);
-        const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
-        if (newWindow) newWindow.opener = null
-      }
-
     const onBlur = () => setShowOptions(false);
+
     const onSelectedSearchOptionClick = () => {
-        if(userShifting && selectedSearchOption) {
-            window.location.href = selectedSearchOption?.url;
-        } else {
-            setShowOptions(!showOptions)
-        }
+        setShowOptions(!showOptions)
     };
+
+    const onSearchOptionShiftClick = (searchOption: SearchOptionType) => {
+        setSelectedSearchOption(searchOption);
+        searchBarRef.current?.requestSubmit();
+    }
+
+
 
     const [showOptions, setShowOptions] = useState(false);
     const [selectedSearchOption, setSelectedSearchOption] = useState<SearchOptionType | undefined>();
@@ -65,21 +64,7 @@ export default function SearchBar({ }: SearchBarProps) {
         }
     }
 
-    useEffect(() => {
-        // Shift key detection
-        window.onkeyup = (e: KeyboardEvent) => {
-            if(e.key == 'Shift') {
-                // User started shifting
-                setUserShifting(false);
-            }
-        }
-        window.onkeydown = (e: KeyboardEvent) => {
-            if(e.key == 'Shift') {
-                // User stopped shifting
-                setUserShifting(true);
-            }
-        }
-    }, [])
+
 
     useEffect(() => {
         // Close search options tab on select
@@ -87,7 +72,7 @@ export default function SearchBar({ }: SearchBarProps) {
     }, [selectedSearchOption])
 
     return (
-        <form className='search-bar' onSubmit={onSearchBarSubmit}>
+        <form className='search-bar' onSubmit={onSearchBarSubmit} ref={searchBarRef}>
             <span className='search-bar-container'>
                 <span className="actions-wrapper search-option-icon-wrapper">
                     {icon}
@@ -99,7 +84,7 @@ export default function SearchBar({ }: SearchBarProps) {
                     <SearchSharpIcon></SearchSharpIcon>
                 </button>
             </span>
-            <SearchOptions setSelectedSearchOption={setSelectedSearchOption} showOptions={showOptions}></SearchOptions>
+            <SearchOptions setSelectedSearchOption={setSelectedSearchOption} onSearchOptionShiftClick={onSearchOptionShiftClick} showOptions={showOptions}></SearchOptions>
         </form>
     );
 }
