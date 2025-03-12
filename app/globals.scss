@@ -7,6 +7,15 @@ body {
     min-height: 100dvh; /* I LOVE DVH I WILL GIVE MY LIFE FOR DVH AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH */
     color: $foreground;
     background-color: $background;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+main {
+    min-height: 100%;
+    min-height: 100dvh;
 }
 
 .loader {

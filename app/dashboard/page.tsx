@@ -12,22 +12,22 @@ import Greeting from "../components/dashboard-widgets/greeting/greeting.componen
 export default function DashboardPage() {
 
     return (
-        <main>
+        <main className="dashboard-page">
             <Greeting></Greeting>
+            <Card className="search-bar-card"><SearchBar></SearchBar></Card>
 
-            <div className="dashboard-widget-container">
+            <div className="dashboard-widgets-grid">
 
-                <Card><SearchBar></SearchBar></Card>
 
-                <Card><Tasks></Tasks></Card>
+                <Card className="tasks-card"><Tasks></Tasks></Card>
 
-                <Card><Weather></Weather></Card>
+                <Card className="weather-card"><Weather></Weather></Card>
 
-                <Card><Clock></Clock></Card>
+                <Card className="clock-card"><Clock></Clock></Card>
 
-                <Card><Calendar></Calendar></Card>
+                <Card className="calendar-card"><Calendar></Calendar></Card>
 
-                <Card><Chat></Chat></Card>
+                <Card className="chat-card"><Chat></Chat></Card>
             </div>
         </main>
     )

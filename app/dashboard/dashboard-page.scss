@@ -1,13 +1,37 @@
 @import '/app/shared/variables.scss';
 
-.dashboard-row {
-    display: flex;
-    align-items: center;
+.dashboard-page {
+    max-width: 78rem;
+    width: 100%;
 
-    .card {
-        margin: .5rem;
-        border: $border;
-        height: 25rem;
-        width: 25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    &>* {
+        width: 100%;
+    }
+
+    .dashboard-widgets-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-gap: 1rem;
+    
+        .card {
+            border: $border;
+        }
+    
+        .tasks-card {
+            grid-column: 1 / span 2;
+        }
+    
+        .calendar-card {
+            grid-column: 1 / span 2;
+        }
+    
+        .chat-card {
+            grid-column: 3 / span 2;
+        }
     }
 }
