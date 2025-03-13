@@ -1,2 +1,10 @@
 @import '/app/shared/variables.scss';
 
+.card {
+    border: $border;
+    border-radius: .2rem;
+}
+
+.card-content {
+    padding: .5rem;
+}

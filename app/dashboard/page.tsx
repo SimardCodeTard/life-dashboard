@@ -8,6 +8,7 @@ import Chat from "../components/dashboard-widgets/chat/chat.component";
 
 import './dashboard-page.scss';
 import Greeting from "../components/dashboard-widgets/greeting/greeting.component";
+import FavoritesBar from "../components/dashboard-widgets/favorites-bar/favorites-bar";
 
 export default function DashboardPage() {
 
@@ -29,6 +30,8 @@ export default function DashboardPage() {
 
                 <Card className="chat-card"><Chat></Chat></Card>
             </div>
+
+            <Card className="favorites-bar-card"><FavoritesBar></FavoritesBar></Card>
         </main>
     )
 }

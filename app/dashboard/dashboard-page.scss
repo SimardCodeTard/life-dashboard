@@ -18,10 +18,7 @@
         grid-template-columns: 1fr 1fr 1fr 1fr;
         grid-gap: 1rem;
     
-        .card {
-            border: $border;
-        }
-    
+
         .tasks-card {
             grid-column: auto / span 2;
         }
