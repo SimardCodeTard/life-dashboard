@@ -49,6 +49,8 @@
   --shadow-inset: inset 0 0 5px 0 rgba(0, 0, 0, 0.75);
 
   --focus-outline: solid 1px rgba(var(--accent1-rgb), 0.8);
+
+  --navbar-height: 3rem;
 }
 
 
@@ -106,6 +108,10 @@ form {
   justify-content: center;
   align-items: center;
   padding: 4rem 2rem;
+}
+
+label {
+  font-weight: bold;
 }
 
 input {

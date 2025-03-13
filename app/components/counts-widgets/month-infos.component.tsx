@@ -3,21 +3,27 @@
 import { Budget, Month } from "@/app/types/count.type";
 import { ChangeEvent, useEffect, useState } from "react";
 
+import './counts-widgets.css';
+
 export default function MonthInfos({ month }: { month: Month }) {
 
-    const getRemainingBudget = (): number =>  month?.previousMonthPay + month?.pay + month?.otherIncome - month?.budgets.reduce((prev, curr) =>  ({amount: prev.amount + curr.amount} as Budget)).amount ?? 0;
+    const getRemainingBudget = (): number =>  month?.previousMonthBalance + month?.pay + month?.otherIncome - month?.budgets.reduce((prev, curr) =>  ({amount: prev.amount + curr.amount} as Budget)).amount;
 
     const [editMonth, setEditMonth] = useState<Month>(month);
     const [remainingBudget, setRemainingBudget] = useState(getRemainingBudget());
 
-    const onPreviousMonthPayValueChange = (e: ChangeEvent<HTMLInputElement>) => {
+    useEffect(() => {
+        console.log(month)
+    }, []);
+
+    const onPreviousMonthBalanceValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         console.log(e)
         if(e.target.value !== null) {
-            const previousMonthPay = e.target.valueAsNumber;
-            if(!isNaN(previousMonthPay)) {
+            const previousMonthBalance = e.target.valueAsNumber;
+            if(!isNaN(previousMonthBalance)) {
                 setEditMonth({
                     ...editMonth,
-                    previousMonthPay
+                    previousMonthBalance
                 })
             }
         }
@@ -51,33 +57,37 @@ export default function MonthInfos({ month }: { month: Month }) {
         setRemainingBudget(getRemainingBudget())
     }, [setRemainingBudget, getRemainingBudget, month]);
 
-    return <div className="p-2 flex flex-col">
+    return <div className="month-infos">
         <h1>{month?.label}</h1>
         
+        <label htmlFor="previousMonthBalance">Solde du mois précédent</label>
         <input
-            type="number" 
-            placeholder="Solde du mois précédent" 
-            value={editMonth?.previousMonthPay} 
-            onChange={onPreviousMonthPayValueChange}>
+            name="previousMonthBalance"
+            type="number"  
+            value={editMonth?.previousMonthBalance} 
+            onChange={onPreviousMonthBalanceValueChange}>
         </input>
 
+
+        <label htmlFor="pay">Salaire du mois</label>
         <input
+            name="pay"
             type="number"
-            placeholder="Salaire du mois" 
             value={editMonth?.pay}
             onChange={onPayValueChange}>
         </input>
         
+        <label htmlFor="otherIncome">Autres rentrées d'argent</label>
         <input
             type="number" 
-            placeholder="Autres rentrées d'argent" 
+            name="otherIncome"
             value={editMonth?.otherIncome}
             onChange={onOtherIncomeValueChange}>
         </input>
         
         <div>
             <h2>Budget restant</h2>
-            <p>{remainingBudget}</p>
+            <b>{remainingBudget}</b>
         </div>
     </div>
 }

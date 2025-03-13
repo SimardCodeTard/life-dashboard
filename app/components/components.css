@@ -76,6 +76,13 @@
     padding: 1rem;
 }
 
+.navbar {
+    height: var(--navbar-height);
+    display: flex;
+    align-items: center;
+    padding: .5rem;
+}
+
 /* WEATHER TEMPERATURE COLORS */
 
 .temperature-color-freezing {

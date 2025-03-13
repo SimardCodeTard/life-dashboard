@@ -1,0 +1,8 @@
+.counts-page {
+    height: calc(100vh - var(--navbar-height));
+    padding: 1rem;
+}
+
+.counts-page-right-section {
+    width: 33%;
+}

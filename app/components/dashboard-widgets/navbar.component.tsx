@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { useState } from 'react';
 import FitbitSharpIcon from '@mui/icons-material/FitbitSharp';
 
-import './components.css';
+import '../components.css';
 
-const Tab = ({ href, label, isSelected, onClose }: { href: string, label: string, isSelected: boolean, onClose: (href: string) => void}) => {
+const Tab = ({ href, label, isSelected }: { href: string, label: string, isSelected: boolean}) => {
     return (
     <Link href={href}
         className={`tab ${isSelected && 'selected tab'}`}
@@ -15,9 +15,6 @@ const Tab = ({ href, label, isSelected, onClose }: { href: string, label: string
             window.location.replace(href)
         }}>
         {label}
-        <span className='actions-wrapper'>
-          <CloseSharpIcon onClick={() => onClose(href)}></CloseSharpIcon>   
-        </span>
     </Link>
     );
 };
