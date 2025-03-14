@@ -36,6 +36,7 @@ export default function TaskItem (
             Logger.debug('TaskItem: onNewLocalLoadEvent ' + value);
             if(value === LoadEventsEnum.TASK_ITEM_EDIT_START && taskId === task._id) {
                 setIsLoading(true);
+                setIsEditing(true);
             } else if (
                 (value === LoadEventsEnum.TASK_ITEM_EDIT_END 
                 || value === LoadEventsEnum.TASK_ITEM_EDIT_TASK_REPLACED) 
@@ -81,11 +82,6 @@ export default function TaskItem (
         .then(() => setIsLoading(false));
     }
 
-    const toggleEditMode = () => {
-        setIsEditing(!isEditing);
-        onTaskEditIconClicked(task);
-    }
-    
     const getTimeDiffInDays = (deadline: DateTime): string => {
         const diff = deadline.diffNow();
         if(diff.as('days') > 0) {
@@ -93,6 +89,16 @@ export default function TaskItem (
         } else {
             return `${Math.floor(diff.as('days')) * - 1} days`;
         }
+    }
+
+    const onTaskEditCancel = () => {
+        setIsEditing(false);
+        onTaskEditIconClicked(task);
+    }
+
+    const onTaskEdit = () => {
+        setIsEditing(true);
+        onTaskEditIconClicked(task);
     }
 
     return(
@@ -107,8 +113,8 @@ export default function TaskItem (
             </div>
             <span className="actions-wrapper">
                 {isEditing 
-                    ? <Cancel onClick={() => toggleEditMode()}/> 
-                    : <EditNote onClick={() => toggleEditMode()}></EditNote>
+                    ? <Cancel onClick={() => onTaskEditCancel()}/> 
+                    : <EditNote onClick={() => onTaskEdit()}></EditNote>
                 }
                 <DeleteIcon onClick={() => onTaskDelete(task)}></DeleteIcon>
             </span>
