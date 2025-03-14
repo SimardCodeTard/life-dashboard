@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 
 import './weather.scss';
-import Loader from "../../shared/loader/loader.component";
+import { Logger } from "@/app/services/logger.service";
 
-export default function Weather() {
+export default function Weather({setIsLoading}: {setIsLoading?: (isLoading: boolean) => void}) {
     let [weatherData, setWeatherData] = useState<any>(null);
 
     const fetchWeatherData = (latitude: number, longitude: number) => {
@@ -34,11 +34,14 @@ export default function Weather() {
 
 
     useEffect(() => {
+        setIsLoading && setIsLoading(true);
         navigator.geolocation.getCurrentPosition((userLocation: GeolocationPosition) => {
             if(userLocation.coords.latitude && userLocation.coords.longitude) {
                 fetchWeatherData(userLocation.coords.latitude, userLocation.coords.longitude)
                 .then((res) => res.json())
-                .then(setWeatherData);    
+                .then(setWeatherData)
+                .finally(() => setIsLoading && setIsLoading(false))
+                .catch(Logger.error);    
             } else {
                 console.error("Error: Invalid geolocation coordinates")
             }
@@ -54,21 +57,18 @@ export default function Weather() {
     return (
         <div className='weather'>
             <h2>Météo</h2>
-            {weatherData?.current
-                ? <div className="weather-body">
-                    <div>
-                        <img src={`https://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`}></img>
+            <div className="weather-body">
+                <div>
+                    <img src={`https://openweathermap.org/img/wn/${weatherData?.current.weather[0].icon}@2x.png`}></img>
+                </div>
+                <div>
+                    <div className="temperature-display">
+                        <h3>{(weatherData as any)?.current.weather[0].main}</h3>
+                        <p className={getTemperatureColorClass(weatherData?.current.temp)}>{(weatherData as any)?.current.temp + '°C'}</p>
                     </div>
-                    <div>
-                        <div className="temperature-display">
-                            <h3>{(weatherData as any).current.weather[0].main}</h3>
-                            <p className={getTemperatureColorClass(weatherData.current.temp)}>{(weatherData as any).current.temp + '°C'}</p>
-                        </div>
-                        <p className="subtitle">{(weatherData as any).current.weather[0].description}</p>
-                    </div>
-                </div> 
-                : <Loader></Loader>
-            }
+                    <p className="subtitle">{(weatherData as any)?.current.weather[0].description}</p>
+                </div>
+            </div> 
         </div>
     )
 }

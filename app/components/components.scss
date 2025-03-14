@@ -4,7 +4,7 @@
     border: $border;
     border-radius: $card-border-radius;
     background-color: $background-lighter;
-
+    position: relative;
     .card-header {
         display: flex;
         align-items: center;

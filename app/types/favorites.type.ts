@@ -10,10 +10,12 @@ export type FavoriteItemPropsType = {
     item: FavoriteItemType;
     onFavoriteItemEdit: (item: FavoriteItemType) => Promise<void>;
     onFavoriteItemDelete: (item: FavoriteItemType) => Promise<void>;
+    setIsLoading: (isLoading: boolean) => void;
 }
 
 export type AddFavoritePropsType = {
-    updateFavoritesList: () => void;
+    updateFavoritesList: () => void,
+    setIsLoading: (isLoading: boolean) => void
 }
 
 export type EditFavoritePropsType = {
@@ -21,5 +23,6 @@ export type EditFavoritePropsType = {
     onFavoriteItemEdit: (item: FavoriteItemType) => Promise<void>;
     onFavoriteItemDelete: (item: FavoriteItemType) => Promise<void>;
     modalOpen: boolean;
-    setModalOpen: (modalOpen: boolean) => void
+    setModalOpen: (modalOpen: boolean) => void;
+    setIsLoading?: (isLoading: boolean) => void;
 }

@@ -9,9 +9,9 @@ import '../../components.scss';
 import './search-bar.scss';
 import { Logger } from '@/app/services/logger.service';
 
-type SearchBarProps = {};
+type SearchBarProps = {setIsLoading?: () => boolean};
 
-export default function SearchBar({ }: SearchBarProps) {
+export default function SearchBar({ setIsLoading }: SearchBarProps) {
 
     const searchBarRef = createRef() as React.RefObject<HTMLFormElement>;
 
@@ -45,6 +45,10 @@ export default function SearchBar({ }: SearchBarProps) {
 
     const [showOptions, setShowOptions] = useState(false);
     const [selectedSearchOption, setSelectedSearchOption] = useState<SearchOptionType | undefined>();
+
+    useEffect(() => {
+        setIsLoading && setIsLoading();
+    }, [setIsLoading]);
 
     useEffect(() => {
         // Close search options tab on select

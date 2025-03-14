@@ -11,10 +11,9 @@ import EventEmitter from "@/app/lib/event-emitter";
 import { EventKeysEnum, LoadEventsEnum } from "@/app/enums/events.enum";
 import { TaskAlt } from "@mui/icons-material";
 
-export default function Tasks() {
+export default function Tasks({setIsLoading}: {setIsLoading?: (isLoading: boolean) => void}) {
 
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [isEditingTask, setIsEditingTask] = useState(false);
     const [taskToEdit, setTaskToEdit] = useState<Task | undefined>();
     const [completedTasksCount, setCompletedTasksCount] = useState(0);
@@ -64,9 +63,9 @@ export default function Tasks() {
             updateTask(newTask)
                 .finally(() => taskItemEditEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.TASK_ITEM_EDIT_END, taskToEdit._id));
         } else {
-            setIsLoading(true);
+            setIsLoading && setIsLoading(true);
             saveTask(newTask)
-            .finally(() => setIsLoading(false));
+            .finally(() => setIsLoading &&  setIsLoading(false));
         }
        
         (event.target as any)[0].value = "";
@@ -143,8 +142,8 @@ export default function Tasks() {
     }
 
     useEffect(() => {
-        setIsLoading(true);
-        updateTaskList().then(() => setIsLoading(false)).catch(console.error);
+        setIsLoading && setIsLoading(true);
+        updateTaskList().finally(() => setIsLoading && setIsLoading(false)).catch(console.error);
     }, [])
 
     return (
@@ -154,7 +153,6 @@ export default function Tasks() {
                 <TaskAlt/>
             </div>
             <TaskForm onSubmit={onTaskFormSubmit} mode={isEditingTask ? 'edit' : 'new'} taskToEdit={taskToEdit}></TaskForm>
-            {isLoading && <Loader></Loader>}
             <div className="task-items-wrapper">
                 {tasks.map((task: Task, key: number) => {
                     return <TaskItem taskItemEditEventEmitter={taskItemEditEventEmitter} deleteTask={deleteTask} updateTask={updateTask} task={task} key={key} onTaskEditIconClicked={onTaskEditIconClicked}></TaskItem>

@@ -13,18 +13,15 @@ import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import moment, { Moment } from "moment";
 import CalendarItem from "./calendar-item/calendar-item.component";
 
-export default function Calendar() {
+export default function Calendar({setIsLoading}: {setIsLoading?: (isLoading: boolean) => void}) {
     const [calendarSources, setCalendarSources] = useState<CalendarSourceType[]>([]);
     const [sourceFormState, setSourceFormState] = useState<{ name: string, url: string }>({ name: '', url: '' });
     const [calendarsMap, setCalendarsMap] = useState<Map<string, CalendarEventType[]>>();
     const [selectedSource, setSelectedSource] = useState<CalendarSourceType>();
     const [modalOpened, setModalOpened] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Moment>(moment());
 
     useEffect(() => {
-        setIsLoading(true);
-
         (async () => {
             const sources = await clientCalendarDataService.fetchCalendarSources();
             setCalendarSources(sources);
@@ -35,7 +32,7 @@ export default function Calendar() {
                 const calendarMap = await clientCalendarDataService.fetchAndGroupCalendarEventsBySourceId(selected._id as ObjectId);
                 setCalendarsMap(new Map(calendarMap));
             }
-        })().finally(() => setIsLoading(false));
+        })().finally(() => setIsLoading && setIsLoading(false));
 
     }, []);
 
@@ -63,11 +60,11 @@ export default function Calendar() {
     }
 
     function deleteSource(sourceId: ObjectId) {
-        setIsLoading(true);
+        setIsLoading && setIsLoading(true);
         clientCalendarDataService.deleteCalendarSource(sourceId).then(() => {
             setCalendarSources(prev => prev.filter(source => source._id !== sourceId));
         }).finally(() => {
-            setIsLoading(false);
+            setIsLoading && setIsLoading(false);
         });
     }
 
@@ -130,8 +127,6 @@ export default function Calendar() {
             <div className="calendar-events-wrapper">
                 {calendarsMap?.get(selectedDate.format('DD-MM-YYYY'))?.map((event, key) => <CalendarItem event={event} key={key} />)}
             </div>
-
-            {isLoading && <Loader />}
 
             <ModalComponent modalOpened={modalOpened} setModalOpened={setModalOpened}>
                 <form onSubmit={onNewSourceFormSubmit}>

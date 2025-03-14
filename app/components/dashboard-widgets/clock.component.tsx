@@ -9,7 +9,7 @@ let lastMinute: number = -1;
 let lastHour: number = -1;
 let lastDate: {day: number, month: number, year: number} | null = null;
 
-export default function Clock() {
+export default function Clock({setIsLoading}: {setIsLoading?: (isLoading: boolean) => void}) {
 
     const getSecondsString = (now: DateTime = DateTime.now()): string => `:${ now.second < 10 ? `0${ now.second }`: now.second }`;
     const getHourString = (now: DateTime = DateTime.now()): string => `${ now.hour < 10 ? `0${ now.hour }`: now.hour }:${ now.minute < 10 ? `0${ now.minute }` : now.minute }`;
@@ -48,6 +48,10 @@ export default function Clock() {
         updateClock();
         setInterval(updateClock, 500)
     }, [updateClock]);
+
+    useEffect(() => {
+        setIsLoading && setIsLoading(false);
+    }, [setIsLoading]);
 
     return (
         <div className="clock">

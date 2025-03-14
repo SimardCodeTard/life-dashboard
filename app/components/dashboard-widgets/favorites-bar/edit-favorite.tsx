@@ -2,16 +2,20 @@ import React, { ChangeEvent, FormEvent, useState } from 'react';
 import { clientFavoritesDataService } from "@/app/services/client/favorites-data.client.service";
 import { EditFavoritePropsType, FavoriteItemType } from "@/app/types/favorites.type";
 import ModalComponent from '../../shared/modal.component';
+import { Logger } from '@/app/services/logger.service';
 
-export default function EditFavorite({item, onFavoriteItemEdit, onFavoriteItemDelete, modalOpen, setModalOpen}: EditFavoritePropsType) {
+export default function EditFavorite({item, onFavoriteItemEdit, onFavoriteItemDelete, modalOpen, setModalOpen, setIsLoading}: EditFavoritePropsType) {
     const [name, setName] = useState(item.name);
     const [url, setUrl] = useState(item.url);
 
     const handleFormSubmit = async (e: FormEvent) => {
+        setIsLoading && setIsLoading(true);
         setModalOpen(false);
         e.preventDefault();
         const newFavoriteItem: FavoriteItemType = { _id: item._id, name, url: clientFavoritesDataService.validateUrl(url) };
-        onFavoriteItemEdit(newFavoriteItem);
+        onFavoriteItemEdit(newFavoriteItem)
+            .catch(Logger.error)
+            .finally(() => setIsLoading && setIsLoading(false));
     }
 
     const handleDeleteButtonClick = () => {
