@@ -73,18 +73,19 @@ export default function SearchBar({ }: SearchBarProps) {
 
     return (
         <form className='search-bar' onSubmit={onSearchBarSubmit} ref={searchBarRef}>
-            <span className='search-bar-container'>
-                <span className="actions-wrapper search-option-icon-wrapper">
-                    {icon}
-                </span>
-                <input autoFocus onBlur={onBlur} type='text'
-                    className='search-input'
-                    placeholder={`Search on ${selectedSearchOption ? selectedSearchOption.name : 'the web'}`}></input>
-                <button type='submit'>
-                    <SearchSharpIcon></SearchSharpIcon>
-                </button>
-            </span>
-            <SearchOptions selectedSearchOption={selectedSearchOption} setSelectedSearchOption={setSelectedSearchOption} onSearchOptionShiftClick={onSearchOptionShiftClick} showOptions={showOptions}></SearchOptions>
+            <div className='search-bar-container'>
+                <div className="search-bar-input-container">
+                    <span className="actions-wrapper search-input-icon-wrapper">
+                        <SearchSharpIcon></SearchSharpIcon>
+                    </span>
+                    <input autoFocus onBlur={onBlur} type='text'
+                        className='search-input'
+                        placeholder={`Search on ${selectedSearchOption ? selectedSearchOption.name : 'the web'}...`}>
+                    </input>
+                </div>
+                <SearchOptions selectedSearchOption={selectedSearchOption} setSelectedSearchOption={setSelectedSearchOption} onSearchOptionShiftClick={onSearchOptionShiftClick} showOptions={showOptions}></SearchOptions>
+                <button>Search</button>
+            </div>
         </form>
     );
 }

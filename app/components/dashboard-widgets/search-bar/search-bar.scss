@@ -1,2 +1,42 @@
 @import '/app/shared/variables.scss';
 
+
+.search-bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .search-bar-container {
+        width: 100%;
+        display: flex;
+        .search-bar-input-container {
+            display: flex;
+            position: relative;
+            width: 100%;
+            margin-right: 1rem;            
+            .search-input-icon-wrapper {
+                position: absolute;
+                left: 0.75rem;
+                top: calc(50% - 0.25rem);
+                height: 1rem;
+                width: 1rem;
+                transform: translateY(-50%);
+                svg {
+                    fill: $foreground-light;
+                }
+            }
+
+            input {
+                padding-left: 2.75rem;
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                width: 100%;
+                font-size: 1.5rem;
+            }
+        }  
+        select {
+            margin-right: 1rem;
+        }
+    }
+}
+
