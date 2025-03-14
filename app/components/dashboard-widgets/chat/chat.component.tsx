@@ -22,14 +22,6 @@ export default function Chat() {
         clientOpenAIService.startNewConversation().then(setMessages).then(() => setIsLoading(false)).catch(Logger.error)
     }, [])
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
-
     const sendMessage = (event: FormEvent) => {
         event.preventDefault();
         setIsLoading(true);
