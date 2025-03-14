@@ -6,7 +6,7 @@ import AddFavorite from './add-favorite';
 import { useEffect, useState } from 'react';
 import { clientFavoritesDataService } from '@/app/services/client/favorites-data.client.service';
 
-import './favorites.css'
+import './favorites.scss';
 
 export default function FavoritesBar() {
 

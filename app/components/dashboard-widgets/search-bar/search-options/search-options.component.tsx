@@ -4,14 +4,15 @@ import { Key, useEffect, useState } from "react";
 import { SearchOptionPropsType } from '../../../../types/search-bar.types';
 import Image, { StaticImageData } from 'next/image';
 
-import '../../../components.css';
+import '../../../components.scss';
+import '../search-bar.scss'
 import { Logger } from "@/app/services/logger.service";
 
 function SearchOption({ searchOption, onClick }: SearchOptionPropsType) {
     return (
-        <span className="action-icon-wrapper" onClick={() => {onClick(searchOption)}}>
-            {searchOption.Icon ?  <searchOption.Icon></searchOption.Icon> : <Image src={searchOption.imageData as StaticImageData} alt={searchOption.name} width={20} height={20} ></Image>}
-        </span>
+        <option value={searchOption.name} className="action-icon-wrapper" onClick={() => {onClick(searchOption)}}>
+            {searchOption.name}
+        </option>
     );
 }
 
@@ -54,7 +55,7 @@ export default function SearchOptions({ showOptions, setSelectedSearchOption, se
 
     
     return (
-        <span className={`search-options actions-wrapper ${!showOptions ? 'folded' : ''}`}>
+        <select className={`search-options actions-wrapper`}>
             {SearchOptionData.map((option: SearchOptionType, key: Key) => (
                 <SearchOption 
                     onClick={onSearchOptionClick} 
@@ -62,7 +63,7 @@ export default function SearchOptions({ showOptions, setSelectedSearchOption, se
                     searchOption={option}   
                 />
             ))}
-        </span>
+        </select>
     );
 }
 

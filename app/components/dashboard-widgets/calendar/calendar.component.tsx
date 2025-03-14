@@ -1,6 +1,6 @@
 "use client";;
 import { ChangeEvent, useEffect, useState } from "react";
-import './calendar.css';
+import './calendar.scss';
 import { CalendarEventType, CalendarSourceType } from "@/app/types/calendar.type";
 import { clientCalendarDataService } from "@/app/services/client/calendar-data-client.service";
 import { ObjectId } from "mongodb";

@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useState } from "react";
 import Cookies from 'js-cookie';
 import { Logger } from "@/app/services/logger.service";
 
-import './pwd-form.css';
+import './pwd-form.scss';
 
 export default function PWDForm() {
 
