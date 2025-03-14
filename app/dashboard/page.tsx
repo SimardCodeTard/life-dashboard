@@ -1,5 +1,4 @@
 import Tasks from "../components/dashboard-widgets/tasks/task-list.component";
-import Weather from "../components/dashboard-widgets/weather.component";
 import Calendar from "../components/dashboard-widgets/calendar/calendar.component";
 import Clock from "../components/dashboard-widgets/clock.component";
 import SearchBar from "../components/dashboard-widgets/search-bar/search-bar.component";
@@ -7,6 +6,7 @@ import Chat from "../components/dashboard-widgets/chat/chat.component";
 import Greeting from "../components/dashboard-widgets/greeting/greeting.component";
 import FavoritesBar from "../components/dashboard-widgets/favorites-bar/favorites-bar";
 import Card from "../components/shared/card.component";
+import Weather from "../components/dashboard-widgets/weather/weather.component";
 
 import './dashboard-page.scss';
 

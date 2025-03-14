@@ -31,6 +31,12 @@
             grid-column: auto / span 2;
         }
     }
+    
+    .favorites-bar-card {
+        .card-content {
+            padding: .5rem;
+        }
+    }
 }
 
 @media screen and (max-width: 1200px) {

@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react";
-import Loader from "../shared/loader/loader.component";
 
-import '../components.scss';
+import './weather.scss';
+import Loader from "../../shared/loader/loader.component";
 
 export default function Weather() {
     let [weatherData, setWeatherData] = useState<any>(null);
