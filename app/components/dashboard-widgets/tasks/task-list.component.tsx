@@ -52,6 +52,7 @@ export default function Tasks() {
 
             // Update the task with the new values
             newTask._id = taskToEdit?._id;
+            newTask.completed = taskToEdit.completed;
             Logger.debug(`TaskList: event.task.deadline.isValid ${deadline?.isValid} & value ${deadline}`);
             Logger.debug(`TaskList: Updating task ${taskToEdit.title} with new values ${newTask.title} and ${newTask.deadline}`);
 
