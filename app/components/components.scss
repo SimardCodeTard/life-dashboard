@@ -2,7 +2,7 @@
 
 .card {
     border: $border;
-    border-radius: .5rem;
+    border-radius: $card-border-radius;
 }
 
 .card-content {
