@@ -1,7 +1,9 @@
+@import '/app/shared/variables.scss';
+
 .greeting {
+
     display: flex;
     flex-direction: column;
-    align-items: center;
     margin-bottom: 1rem;
     min-height: 89px;
     position: relative;
@@ -12,5 +14,6 @@
 
     .subtitle {
         font-size: 1.5rem;
+        margin-top: 1rem;
     }
 }
