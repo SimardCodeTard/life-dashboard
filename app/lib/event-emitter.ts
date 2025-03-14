@@ -4,30 +4,30 @@ import { Logger } from "../services/logger.service";
 export default class EventEmitter {
     events: Partial<Record<EventKeysEnum, Function[]>> = {};
 
-    on(event: EventKeysEnum, listener: Function) {
-        if (!this.events[event]) {
-            this.events[event] = [];
+    on(eventKey: EventKeysEnum, listener: Function) {
+        if (!this.events[eventKey]) {
+            this.events[eventKey] = [];
         }
-        this.events[event].push(listener);
+        this.events[eventKey]?.push(listener);
 
-        Logger.debug('EventEmitter: registered new listened for event: ' + event);
+        Logger.debug('EventEmitter: registered new listened for event: ' + eventKey);
     }
 
-    emit(event: EventKeysEnum, ...args: any[]) {
-        if (!this.events[event]) {
+    emit(eventKey: EventKeysEnum, ...args: any[]) {
+        if (!this.events[eventKey]) {
             return;
         }
-        this.events[event].forEach(listener => listener(...args));
+        this.events[eventKey]?.forEach(listener => listener(...args));
 
-        Logger.debug('EventEmitter: emitted event: ' + event);
+        Logger.debug('EventEmitter: emitted event: ' + eventKey);
     }
 
-    off(event: EventKeysEnum, listener: Function) {
-        if (!this.events[event]) {
+    off(eventKey: EventKeysEnum, listener: Function) {
+        if (!this.events[eventKey]) {
             return;
         }
-        this.events[event] = this.events[event].filter(l => l !== listener);
+        this.events[eventKey] = this.events[eventKey]?.filter(l => l !== listener);
 
-        Logger.debug('EventEmitter: removed listener for event: ' + event);
+        Logger.debug('EventEmitter: removed listener for event: ' + eventKey);
     }
 }

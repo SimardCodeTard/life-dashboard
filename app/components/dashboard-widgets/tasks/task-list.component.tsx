@@ -146,7 +146,7 @@ export default function Tasks() {
     return (
         <div className="task-list">
             <h2>Tasks</h2>
-            <TaskForm onSubmit={onNewTaskSubmit} mode={isEditingTask ? 'edit' : 'new'} taskToEdit={taskToEdit} setTaskToEdit={setTaskToEdit}></TaskForm>
+            <TaskForm onSubmit={onNewTaskSubmit} mode={isEditingTask ? 'edit' : 'new'} taskToEdit={taskToEdit}></TaskForm>
             {isLoading && <Loader></Loader>}
             <div className="task-items-wrapper">
                 {tasks.map((task: Task, key: number) => {

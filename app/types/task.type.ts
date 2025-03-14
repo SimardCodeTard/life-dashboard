@@ -20,5 +20,4 @@ export type NewTaskFormProps = {
     onSubmit: FormEventHandler<HTMLFormElement>,
     mode: 'new' | 'edit',
     taskToEdit?: Task,
-    setTaskToEdit: Dispatch<SetStateAction<Task | undefined>>
 }
