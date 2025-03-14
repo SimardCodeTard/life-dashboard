@@ -103,7 +103,7 @@ export default function TaskItem (
 
     return(
         <div className={`task-item ${task.completed && 'completed-task'}`}>
-            <TaskCheckbox updateTaskStatus={(status) => onTaskUpdate(task, status)} completed={task.completed}></TaskCheckbox> 
+            <TaskCheckbox disabled={isLoading || isEditing} updateTaskStatus={(status) => onTaskUpdate(task, status)} completed={task.completed}></TaskCheckbox> 
             <div className='task-item-content'>
                 <p className="task-item-title">{task.title}</p>
                 <div className={`task-deadline subtitle`}>

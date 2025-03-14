@@ -1,6 +1,6 @@
 import { NewTaskFormProps, Task } from "@/app/types/task.type";
 import { Save } from "@mui/icons-material";
-import { Add } from "@mui/icons-material";
+import { AddTask } from "@mui/icons-material";
 
 import './tasks.scss';
 import { DateTime } from "luxon";
@@ -49,6 +49,6 @@ export default function TaskForm({ onSubmit, mode, taskToEdit }: NewTaskFormProp
     return <form className="new-task-form" onSubmit={onSubmitWrapper}>
         <input className="task-name-field" type="text" placeholder={mode === 'new' ? 'Create new task...' : "Edit task..."} value={task?.title} onChange={onTaskTitleChange}></input>
         <input type="date" value={(task?.deadline && task.deadline.isValid ? formatTaskDateToInput(task.deadline) : '')} onChange={onTaskDeadlineChange}></input>
-        <button type="submit">{mode === 'new' ? <Add/> : <Save/>}</button>
+        <button type="submit">{mode === 'new' ? <AddTask/> : <Save/>}</button>
     </form>
 }

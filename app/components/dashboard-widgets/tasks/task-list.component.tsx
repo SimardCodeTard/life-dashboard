@@ -9,6 +9,7 @@ import TaskForm from "./task-form.component";
 import { DateTime } from "luxon";
 import EventEmitter from "@/app/lib/event-emitter";
 import { EventKeysEnum, LoadEventsEnum } from "@/app/enums/events.enum";
+import { TaskAlt } from "@mui/icons-material";
 
 export default function Tasks() {
 
@@ -148,7 +149,10 @@ export default function Tasks() {
 
     return (
         <div className="task-list">
-            <h2>Tasks</h2>
+            <div className="card-header">
+                <h2>Tasks</h2>
+                <TaskAlt/>
+            </div>
             <TaskForm onSubmit={onTaskFormSubmit} mode={isEditingTask ? 'edit' : 'new'} taskToEdit={taskToEdit}></TaskForm>
             {isLoading && <Loader></Loader>}
             <div className="task-items-wrapper">

@@ -2,8 +2,8 @@
 import Checkbox from "../../shared/checkbox.component";
 
 export default function TaskCheckbox(
-    { completed, updateTaskStatus}
-    : { completed: boolean, updateTaskStatus: (status: boolean) => void}
+    { completed, updateTaskStatus, disabled = false}
+    : { completed: boolean, updateTaskStatus: (status: boolean) => void, disabled: boolean}
 ) {
 
     const onStatusChange = (): void => {
@@ -11,6 +11,6 @@ export default function TaskCheckbox(
     }
 
     return (
-        <Checkbox onChange={onStatusChange} checked={completed}></Checkbox>
+        <Checkbox onChange={onStatusChange} disabled={disabled} checked={completed}></Checkbox>
     )
 }
