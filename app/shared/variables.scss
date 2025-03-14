@@ -2,8 +2,8 @@
 $foreground: rgb(250, 250, 250);
 $foreground-light: rgb(200, 200, 200);
 
-$background: rgb(15, 15, 16);
-$background-lighter: rgb(25, 25, 25);
+$background: rgb(15, 15, 17);
+$background-lighter: rgb(23, 23, 26);
 
 $background-lightest: rgb(50, 50, 50);
 
@@ -31,3 +31,4 @@ $shadow-lg: 0 0 15px 0 rgba(0, 0, 0, 0.75);
 $shadow-inset: inset 0 0 5px 0 rgba(0, 0, 0, 0.75);
 
 $focus-outline: solid 1px $accent;
+$focus-outline-white: solid 2px $foreground;
