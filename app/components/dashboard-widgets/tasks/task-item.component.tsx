@@ -100,9 +100,9 @@ export default function TaskItem (
             <TaskCheckbox updateTaskStatus={(status) => onTaskUpdate(task, status)} completed={task.completed}></TaskCheckbox> 
             <div className='task-item-content'>
                 <p className="task-item-title">{task.title}</p>
-                <div className={`task-deadline subtitle ${deadlineIsPassed() && 'passed-task-deadline'}`}>
-                    <p>{task.deadline && `Deadline: ${day}/${month}/${year}`} </p>
-                    <p>{task.deadline?.isValid && (deadlineIsPassed() ? `(${getTimeDiffInDays(task.deadline)} late)` : `(${getTimeDiffInDays(task.deadline)} remaining)`)}</p> 
+                <div className={`task-deadline subtitle`}>
+                    <p>{task.deadline && `Deadline: ${day}/${month}/${year}`}</p>
+                    <p className={deadlineIsPassed() ? 'passed-task-deadline' : ''}>{!task.completed && task.deadline?.isValid ? (deadlineIsPassed() ? `(${getTimeDiffInDays(task.deadline)} late)` : `(${getTimeDiffInDays(task.deadline)} remaining)`) : ''}</p> 
                 </div>
             </div>
             <span className="actions-wrapper">
