@@ -47,7 +47,7 @@ export default function Tasks() {
             // We use an event emitter to send the information to the task item component
 
             // Emit the event to start the loader
-            localLoadEventEmitter.emit(EventKeysEnum.LOCAL_LOAD, LoadEventsEnum.LOCAL_LOAD_START); 
+            localLoadEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.TASK_ITEM_EDIT_START); 
 
             // Update the task with the new values
             newTask._id = taskToEdit?._id;
@@ -59,7 +59,7 @@ export default function Tasks() {
             setIsEditingTask(false);
             // PUT to the big guy
             updateTask(newTask)
-                .finally(() => localLoadEventEmitter.emit(EventKeysEnum.LOCAL_LOAD, LoadEventsEnum.LOCAL_LOAD_END));
+                .finally(() => localLoadEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.LOCAL_LOAD_START));
         } else {
             setIsLoading(true);
             saveTask(newTask)

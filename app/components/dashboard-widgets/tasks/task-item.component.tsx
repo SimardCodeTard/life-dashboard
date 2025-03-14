@@ -33,17 +33,18 @@ export default function TaskItem (
     useEffect(() => {
         const onNewLocalLoadEvent = (value: LoadEventsEnum) => {
             Logger.debug('TaskItem: onNewLocalLoadEvent ' + value);
-            if(value === LoadEventsEnum.LOCAL_LOAD_START) {
+            if(value === LoadEventsEnum.TASK_ITEM_EDIT_START) {
                 setIsLoading(true);
-            } else if (value === LoadEventsEnum.LOCAL_LOAD_END) {
+            } else if (value === LoadEventsEnum.LOCAL_LOAD_START) {
                 setIsLoading(false);
+                setIsEditing(false);
             }
         }
 
-        localLoadEventEmitter.on(EventKeysEnum.LOCAL_LOAD, onNewLocalLoadEvent);
+        localLoadEventEmitter.on(EventKeysEnum.TASK_ITEM_EDIT, onNewLocalLoadEvent);
 
         return () => {
-            localLoadEventEmitter.off(EventKeysEnum.LOCAL_LOAD, onNewLocalLoadEvent);
+            localLoadEventEmitter.off(EventKeysEnum.TASK_ITEM_EDIT, onNewLocalLoadEvent);
         }
     }, []);
 
