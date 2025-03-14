@@ -1,47 +1,53 @@
-"use client"
-
+"use client";
 import { useEffect, useState } from "react";
 
 import './weather.scss';
 import { Logger } from "@/app/services/logger.service";
+import { WeatherData } from "@/app/types/weather.type";
+import CurrentWeather from "./current-weather/current-weather.component";
+import FiveDaysForecast from "./five-days-forecast/five-days-forcast.component";
+import Loader from "../../shared/loader/loader.component";
+import axios from "axios";
+import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat';
 
 export default function Weather({setIsLoading}: {setIsLoading?: (isLoading: boolean) => void}) {
-    let [weatherData, setWeatherData] = useState<any>(null);
 
-    const fetchWeatherData = (latitude: number, longitude: number) => {
+    const [weatherData, setWeatherData] = useState<WeatherData| null>(null);
+    const [locationData, setLocationData] = useState({city: 'San Fransisco', state: 'CA'});
+    
+    const fetchWeatherData = (latitude: number, longitude: number)=> {
         const url = process.env.NEXT_PUBLIC_API_URL + `/weather?latitude=${latitude}&longitude=${longitude}`
         return fetch(url);
     }
 
-    const getTemperatureColorClass = (temperature: number): string => {
-        if(temperature < -20) {
-            return 'temperature-color-freezing'
-        } else if (temperature < 0 ){
-            return 'temperature-color-cold'
-        } else if (temperature < 20){
-            return 'temperature-color-mild'
-        } else if (temperature < 30) {
-            return 'temperature-color-warm'
-        } else if (temperature < 40) {
-            return 'temperature-color-hot'
-        } else if (temperature < 50) {
-            return 'temperature-color-very-hot'
-        } else if (temperature >= 50) {
-            return 'temperature-color-extreme'
-        }
-        return '';
-    }
-
-
     useEffect(() => {
+
+        try {
+            axios.get('http://ip-api.com/json').then(res => {
+                const data = res.data;
+                console.log(data)
+                setLocationData({city: data.city, state: data.countryCode});
+            });
+        } catch (err) {
+            Logger.error((err as Error).message);
+            Logger.error('Failed to call ip-api.com to find user\'s city and state');
+        }
+        
+
         setIsLoading && setIsLoading(true);
         navigator.geolocation.getCurrentPosition((userLocation: GeolocationPosition) => {
             if(userLocation.coords.latitude && userLocation.coords.longitude) {
                 fetchWeatherData(userLocation.coords.latitude, userLocation.coords.longitude)
-                .then((res) => res.json())
-                .then(setWeatherData)
+                .then((res) => res.json() as Promise<WeatherData>)
+                .then(data => {
+                    console.log('Weather: weather data,', data)
+                    return data;
+                })
+                .then(data => setWeatherData(data))
                 .finally(() => setIsLoading && setIsLoading(false))
-                .catch(Logger.error);    
+                .catch((error) => {
+                    Logger.error('Failed to fetch, error: '+ error.message);
+                });    
             } else {
                 console.error("Error: Invalid geolocation coordinates")
             }
@@ -56,19 +62,18 @@ export default function Weather({setIsLoading}: {setIsLoading?: (isLoading: bool
 
     return (
         <div className='weather'>
-            <h2>Météo</h2>
-            <div className="weather-body">
-                <div>
-                    <img src={`https://openweathermap.org/img/wn/${weatherData?.current.weather[0].icon}@2x.png`}></img>
-                </div>
-                <div>
-                    <div className="temperature-display">
-                        <h3>{(weatherData as any)?.current.weather[0].main}</h3>
-                        <p className={getTemperatureColorClass(weatherData?.current.temp)}>{(weatherData as any)?.current.temp + '°C'}</p>
-                    </div>
-                    <p className="subtitle">{(weatherData as any)?.current.weather[0].description}</p>
-                </div>
-            </div> 
+            <div className="card-header">
+                <h2>Weather</h2>
+                <DeviceThermostatIcon/>
+            </div>
+            <div className="weather-body">{
+                weatherData === null || weatherData.current === null || weatherData.forecast === null
+                ? <Loader></Loader>
+                : <>
+                    {weatherData && weatherData.current && <CurrentWeather locationData={locationData} currentWeatherData={weatherData.current}></CurrentWeather>}
+                    <FiveDaysForecast weatherForecastsData={weatherData.forecast}></FiveDaysForecast>
+                </> 
+            }</div> 
         </div>
     )
 }

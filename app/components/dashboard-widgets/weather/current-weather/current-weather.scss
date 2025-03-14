@@ -1,0 +1,31 @@
+@import '/app/shared/variables.scss';
+
+.current-weather {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: $border;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    .weather-temperature-and-city {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+
+        & > * {
+            margin: 0;
+        }
+        
+        .weather-current-temperature {
+            font-size: 2rem;
+        }
+    }
+
+    .weather-infos {
+        display: flex;
+        img {
+            height: 4rem;
+            width: auto;
+        }
+    }
+
+}
