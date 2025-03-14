@@ -56,6 +56,11 @@ h6 {
     color: $foreground-light;
 }
 
+*:focus {
+    outline: $focus-outline;
+    outline-offset: 4px;
+}
+
 input {
     $padding-y: .75rem;
     $padding-x: .5rem;
@@ -68,9 +73,6 @@ input {
     font-size: 1rem;
     line-height: 1.25rem;
     height: calc(3rem - #{$padding-y * 2});
-    &:focus {
-        outline: $focus-outline;
-    }
 }
 
 button {
@@ -87,8 +89,23 @@ button {
     height: calc(3rem - #{$padding-y * 2});
     cursor: pointer;
 
-    &:focus {
-        outline: $focus-outline;
+    transition: box-shadow ease .5s;
+    box-shadow: $shadow;
+
+    &:hover {
+        transition: box-shadow ease .25s;
+        box-shadow: $shadow-lg;
+    }
+
+    &:active {
+        transition: box-shadow ease .25s;
+        box-shadow: $shadow-inset;
+    }
+
+    &[disabled] {
+        background-color: $foreground-light;
+        color: $background-lighter;
+        cursor: not-allowed;
     }
 }
 
@@ -117,11 +134,14 @@ button[role="checkbox"] {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: border-radius ease .25s;
 }
 
 button[role="checkbox"][aria-checked="true"] {
     background-color: $foreground;
     outline: none;
+    border-radius: 50%;
+    transition: border-radius ease .25s;
 }
 
 .actions-wrapper {
