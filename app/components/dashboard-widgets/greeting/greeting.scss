@@ -1,0 +1,15 @@
+.greeting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+    min-height: 89px;
+
+    & > * {
+        margin: 0;
+    }
+
+    .subtitle {
+        font-size: 1.5rem;
+    }
+}

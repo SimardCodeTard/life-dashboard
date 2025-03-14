@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import Loader from "../../shared/loader/loader.component";
 
+import './greeting.scss'
+
 export default function Greeting() {
   const [greeting, setGreeting] = useState("");
   const [time, setTime] = useState<string | null>(null);
 
-  const name = process.env.NEXT_PUBLIC_SER_NAME || "User";
+  const name = process.env.NEXT_PUBLIC_USER_NAME || "User";
 
   useEffect(() => {
     const updateTime = () => {
@@ -17,7 +19,7 @@ export default function Greeting() {
     };
 
     updateTime();
-    const timer = setInterval(updateTime, 60000); // Update every minute
+     const timer = setInterval(updateTime, 60000); // Update every minute
 
     return () => clearInterval(timer);
   }, []);
@@ -40,7 +42,7 @@ export default function Greeting() {
             <h1>
                 {greeting}, {name}
             </h1>
-            <p>{time}</p>
+            <p className="subtitle">{time}</p>
         </> : <Loader></Loader>
         }
     </div>  
