@@ -5,7 +5,7 @@ import './loader.scss';
 export default function Loader() {
     return (
         <div className="loader">
-            <CircularProgress color="secondary" />
+            <CircularProgress color="primary" />
         </div>
     )
 }
