@@ -11,6 +11,7 @@ import Loader from "../../shared/loader/loader.component";
 import EventEmitter from "@/app/lib/event-emitter";
 import { EventKeysEnum, LoadEventsEnum } from "@/app/enums/events.enum";
 import { Logger } from "@/app/services/logger.service";
+import { ObjectId } from "mongodb";
 
 export default function TaskItem (
     { 
@@ -31,11 +32,11 @@ export default function TaskItem (
     const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
-        const onNewLocalLoadEvent = (value: LoadEventsEnum) => {
+        const onNewLocalLoadEvent = (value: LoadEventsEnum, taskId: ObjectId) => {
             Logger.debug('TaskItem: onNewLocalLoadEvent ' + value);
-            if(value === LoadEventsEnum.TASK_ITEM_EDIT_START) {
+            if(value === LoadEventsEnum.TASK_ITEM_EDIT_START && taskId === task._id) {
                 setIsLoading(true);
-            } else if (value === LoadEventsEnum.LOCAL_LOAD_START) {
+            } else if (value === LoadEventsEnum.LOCAL_LOAD_START && taskId === task._id) {
                 setIsLoading(false);
                 setIsEditing(false);
             }

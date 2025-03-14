@@ -6,6 +6,7 @@ import './tasks.scss';
 import { DateTime } from "luxon";
 import { FormEvent, useEffect, useState } from "react";
 import { get } from "http";
+import { Logger } from "@/app/services/logger.service";
 
 export default function TaskForm({ onSubmit, mode, taskToEdit }: NewTaskFormProps) {
 
@@ -15,6 +16,8 @@ export default function TaskForm({ onSubmit, mode, taskToEdit }: NewTaskFormProp
         deadline: undefined
     });
 
+    const [task, setTask] =  useState<Task>(getDefaultTask());
+
     useEffect(() => {
         if(mode === 'edit' && taskToEdit) {
             setTask(taskToEdit);
@@ -23,11 +26,10 @@ export default function TaskForm({ onSubmit, mode, taskToEdit }: NewTaskFormProp
         }
     }, [mode]);
 
-    const [task, setTask] =  useState<Task>(getDefaultTask());
 
     const onSubmitWrapper = (e: FormEvent<HTMLFormElement>) => {
-        setTask(getDefaultTask());
         onSubmit(e);
+        setTask(getDefaultTask());
     }
 
     const onTaskTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

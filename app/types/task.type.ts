@@ -1,11 +1,11 @@
 import { DateTime } from "luxon"
 import { ObjectId } from "mongodb"
-import { Dispatch, FormEventHandler, SetStateAction } from "react"
+import { Dispatch, FormEventHandler } from "react"
 
 export type TaskDto = {
     title: string,
     completed: boolean,
-    deadline?: string,
+    deadline: string | null,
     _id?: ObjectId
 }
 

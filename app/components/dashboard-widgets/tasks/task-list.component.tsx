@@ -30,13 +30,14 @@ export default function Tasks() {
         return tasks;
     }
 
-    const onNewTaskSubmit = (event: FormEvent) => {
+    const onTaskFormSubmit = (event: FormEvent) => {
         event.preventDefault();
+
 
         const title = (event.target as any)[0].value;
         let deadline: DateTime | undefined = DateTime.fromJSDate(new Date((event.target as any)[1].value));
-        
-        if(!deadline.isValid) deadline = undefined;
+
+        if(deadline && !deadline.isValid) deadline = undefined;
 
         const completed = false;
         const newTask: Task = {title, deadline, completed};
@@ -47,19 +48,19 @@ export default function Tasks() {
             // We use an event emitter to send the information to the task item component
 
             // Emit the event to start the loader
-            localLoadEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.TASK_ITEM_EDIT_START); 
+            localLoadEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.TASK_ITEM_EDIT_START, taskToEdit._id); 
 
             // Update the task with the new values
             newTask._id = taskToEdit?._id;
-            newTask.completed = taskToEdit?.completed || false;
-            newTask.deadline = taskToEdit.deadline?.isValid ? taskToEdit?.deadline : undefined;
+            Logger.debug(`TaskList: event.task.deadline.isValid ${deadline?.isValid} & value ${deadline}`);
+            Logger.debug(`TaskList: Updating task ${taskToEdit.title} with new values ${newTask.title} and ${newTask.deadline}`);
 
             // Exit edit mode
             setTaskToEdit(undefined);
             setIsEditingTask(false);
             // PUT to the big guy
             updateTask(newTask)
-                .finally(() => localLoadEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.LOCAL_LOAD_START));
+                .finally(() => localLoadEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.LOCAL_LOAD_START, taskToEdit._id));
         } else {
             setIsLoading(true);
             saveTask(newTask)
@@ -146,7 +147,7 @@ export default function Tasks() {
     return (
         <div className="task-list">
             <h2>Tasks</h2>
-            <TaskForm onSubmit={onNewTaskSubmit} mode={isEditingTask ? 'edit' : 'new'} taskToEdit={taskToEdit}></TaskForm>
+            <TaskForm onSubmit={onTaskFormSubmit} mode={isEditingTask ? 'edit' : 'new'} taskToEdit={taskToEdit}></TaskForm>
             {isLoading && <Loader></Loader>}
             <div className="task-items-wrapper">
                 {tasks.map((task: Task, key: number) => {
