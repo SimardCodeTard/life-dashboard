@@ -3,8 +3,16 @@
 .card {
     border: $border;
     border-radius: $card-border-radius;
+    background-color: $background-lighter;
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
 }
 
-.card-content {
-    padding: 1.5rem;
-}
