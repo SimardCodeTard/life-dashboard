@@ -26,10 +26,14 @@ export default function TaskForm({ onSubmit, mode, taskToEdit }: NewTaskFormProp
         }
     }, [mode]);
 
+    useEffect(() => {
+        setTask(taskToEdit || getDefaultTask());
+    }, [taskToEdit])
+
 
     const onSubmitWrapper = (e: FormEvent<HTMLFormElement>) => {
-        onSubmit(e);
         setTask(getDefaultTask());
+        onSubmit(e);
     }
 
     const onTaskTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

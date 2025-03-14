@@ -17,7 +17,7 @@ export default function Tasks() {
     const [isEditingTask, setIsEditingTask] = useState(false);
     const [taskToEdit, setTaskToEdit] = useState<Task | undefined>();
     const [completedTasksCount, setCompletedTasksCount] = useState(0);
-    const [localLoadEventEmitter] = useState(new EventEmitter()); // Must be a state, don't ask me why
+    const [taskItemEditEventEmitter] = useState(new EventEmitter()); // Must be a state, don't ask me why
 
     const countCompletedTasks = (tasks: Task[] | TaskDto[]): number => tasks.reduce((acc: number, task: Task | TaskDto) => task.completed ? acc + 1 : acc, 0);
 
@@ -48,7 +48,7 @@ export default function Tasks() {
             // We use an event emitter to send the information to the task item component
 
             // Emit the event to start the loader
-            localLoadEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.TASK_ITEM_EDIT_START, taskToEdit._id); 
+            taskItemEditEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.TASK_ITEM_EDIT_START, taskToEdit._id); 
 
             // Update the task with the new values
             newTask._id = taskToEdit?._id;
@@ -60,7 +60,7 @@ export default function Tasks() {
             setIsEditingTask(false);
             // PUT to the big guy
             updateTask(newTask)
-                .finally(() => localLoadEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.LOCAL_LOAD_START, taskToEdit._id));
+                .finally(() => taskItemEditEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.TASK_ITEM_EDIT_END, taskToEdit._id));
         } else {
             setIsLoading(true);
             saveTask(newTask)
@@ -124,14 +124,15 @@ export default function Tasks() {
     const onTaskEditIconClicked = (task: Task) => {
         // When the user clicks on the edit icon of a task, the creation form becomes an edit form
         // We use the state isEditingTask to know in witch mode we are and the taskToEdit state to have the previous values
-        // The issue right now is that if a user deletes the task that they just clicked to edit, and if there are no more tasks in the list,
-        // The form is stuck in edit mode
-        // So, TODO: Add a check in the function deleteTask to check if the task to delete is being edited, and either set the form to
-        // 'new' mode or block the deletion with a message on the interface
-        if(isEditingTask) {
-            // The user was in edit mode, we switch to new mode and reset the taskToEdit state to undefined
+        if(isEditingTask && task._id === taskToEdit?._id) {
+            // The user was in edit mode and canceled the edit, we switch to new mode and reset the taskToEdit state to undefined
             setIsEditingTask(false);
             setTaskToEdit(undefined);
+        } else if (isEditingTask && task._id !== taskToEdit?._id) {
+            // The user was in edit mode and clicked on another task, send a message to the previous item that he must update his icon 
+            // and set the taskToEdit state to the clicked task
+            taskItemEditEventEmitter.emit(EventKeysEnum.TASK_ITEM_EDIT, LoadEventsEnum.TASK_ITEM_EDIT_TASK_REPLACED, taskToEdit?._id);
+            setTaskToEdit(task);
         } else {
             // THe user was in new mode, we switch to edit mode and set the taskToEdit state to the clicked task
             setIsEditingTask(true);
@@ -151,7 +152,7 @@ export default function Tasks() {
             {isLoading && <Loader></Loader>}
             <div className="task-items-wrapper">
                 {tasks.map((task: Task, key: number) => {
-                    return <TaskItem localLoadEventEmitter={localLoadEventEmitter} deleteTask={deleteTask} updateTask={updateTask} task={task} key={key} onTaskEditIconClicked={onTaskEditIconClicked}></TaskItem>
+                    return <TaskItem taskItemEditEventEmitter={taskItemEditEventEmitter} deleteTask={deleteTask} updateTask={updateTask} task={task} key={key} onTaskEditIconClicked={onTaskEditIconClicked}></TaskItem>
                 })}
             </div>
             {

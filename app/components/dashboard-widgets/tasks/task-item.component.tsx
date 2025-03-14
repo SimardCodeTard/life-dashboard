@@ -19,33 +19,37 @@ export default function TaskItem (
         deleteTask,
         updateTask,
         onTaskEditIconClicked,
-        localLoadEventEmitter}: 
+        taskItemEditEventEmitter}: 
     { 
         task: Task,
         deleteTask: (task: Task) => Promise<void>,
         updateTask: (task: Task, status: boolean) => Promise<void>,
         onTaskEditIconClicked: (task: Task) => void, 
-        localLoadEventEmitter: EventEmitter}
+        taskItemEditEventEmitter: EventEmitter}
 ) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
 
     useEffect(() => {
-        const onNewLocalLoadEvent = (value: LoadEventsEnum, taskId: ObjectId) => {
+        const onNewTaskItemEditEvent = (value: LoadEventsEnum, taskId: ObjectId) => {
             Logger.debug('TaskItem: onNewLocalLoadEvent ' + value);
             if(value === LoadEventsEnum.TASK_ITEM_EDIT_START && taskId === task._id) {
                 setIsLoading(true);
-            } else if (value === LoadEventsEnum.LOCAL_LOAD_START && taskId === task._id) {
+            } else if (
+                (value === LoadEventsEnum.TASK_ITEM_EDIT_END 
+                || value === LoadEventsEnum.TASK_ITEM_EDIT_TASK_REPLACED) 
+                && taskId === task._id)
+            {
                 setIsLoading(false);
                 setIsEditing(false);
             }
         }
 
-        localLoadEventEmitter.on(EventKeysEnum.TASK_ITEM_EDIT, onNewLocalLoadEvent);
+        taskItemEditEventEmitter.on(EventKeysEnum.TASK_ITEM_EDIT, onNewTaskItemEditEvent);
 
         return () => {
-            localLoadEventEmitter.off(EventKeysEnum.TASK_ITEM_EDIT, onNewLocalLoadEvent);
+            taskItemEditEventEmitter.off(EventKeysEnum.TASK_ITEM_EDIT, onNewTaskItemEditEvent);
         }
     }, []);
 
