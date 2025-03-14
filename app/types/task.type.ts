@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { ObjectId } from "mongodb"
-import { FormEventHandler } from "react"
+import { Dispatch, FormEventHandler, SetStateAction } from "react"
 
 export type TaskDto = {
     title: string,
@@ -17,5 +17,8 @@ export type Task = {
 }
 
 export type NewTaskFormProps = {
-    onNewTaskSubmit: FormEventHandler<HTMLFormElement>,
+    onSubmit: FormEventHandler<HTMLFormElement>,
+    mode: 'new' | 'edit',
+    taskToEdit?: Task,
+    setTaskToEdit: Dispatch<SetStateAction<Task | undefined>>
 }

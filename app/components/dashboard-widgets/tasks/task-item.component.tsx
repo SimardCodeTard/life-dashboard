@@ -1,26 +1,51 @@
-import { Task, TaskDto } from "@/app/types/task.type";
+import { Task } from "@/app/types/task.type";
 import TaskCheckbox from "./task-checkbox.component";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { EditNote } from "@mui/icons-material";
+import { EditNote, SetMealOutlined } from "@mui/icons-material";
+import { Cancel } from "@mui/icons-material";
 import { DateTime } from "luxon";
-import ModalComponent from "../../shared/modal.component";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { clientTaskDataService } from "@/app/services/client/tasks-data-client.service";
+import { useEffect, useState } from "react";
 
 import './tasks.scss';
 import Loader from "../../shared/loader/loader.component";
+import EventEmitter from "@/app/lib/event-emitter";
+import { EventKeysEnum, LoadEventsEnum } from "@/app/enums/events.enum";
+import { Logger } from "@/app/services/logger.service";
 
-export default function TaskItem ({task, deleteTask, updateTask}: 
-    {task: Task, deleteTask: (task: TaskDto) => Promise<void>, updateTask: (task: TaskDto, status: boolean) => Promise<void>}
+export default function TaskItem (
+    { 
+        task,
+        deleteTask,
+        updateTask,
+        onTaskEditIconClicked,
+        localLoadEventEmitter}: 
+    { 
+        task: Task,
+        deleteTask: (task: Task) => Promise<void>,
+        updateTask: (task: Task, status: boolean) => Promise<void>,
+        onTaskEditIconClicked: (task: Task) => void, 
+        localLoadEventEmitter: EventEmitter}
 ) {
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
 
-    const formatTaskDateToInput = (date: DateTime) => date.toFormat('yyyy\'-\'MM\'-\'dd');
+    useEffect(() => {
+        const onNewLocalLoadEvent = (value: LoadEventsEnum) => {
+            Logger.debug('TaskItem: onNewLocalLoadEvent ' + value);
+            if(value === LoadEventsEnum.LOCAL_LOAD_START) {
+                setIsLoading(true);
+            } else if (value === LoadEventsEnum.LOCAL_LOAD_END) {
+                setIsLoading(false);
+            }
+        }
 
-    const [editModalOpened, setEditModalOpen] = useState(false);
-    const [taskTitle, setTaskTitle] = useState(task.title);
-    const [taskDeadline, setTaskDeadline] = useState(task.deadline?.isValid ? formatTaskDateToInput(task.deadline as DateTime) : '');
+        localLoadEventEmitter.on(EventKeysEnum.LOCAL_LOAD, onNewLocalLoadEvent);
+
+        return () => {
+            localLoadEventEmitter.off(EventKeysEnum.LOCAL_LOAD, onNewLocalLoadEvent);
+        }
+    }, []);
 
     const deadlineIsPassed = (): boolean => {
         if(!task.deadline) return false;
@@ -37,26 +62,22 @@ export default function TaskItem ({task, deleteTask, updateTask}:
         month = '0' + month
     }
 
-    const onTaskEditFormSubmit = (event: FormEvent) => {
-        event.preventDefault();
-        const newTaskTitle: string = (event.target as any)[0].value;
-        const newTaskDeadline: string = (event.target as any)[1].value;
-        onTaskUpdate({...task, title: newTaskTitle, deadline: newTaskDeadline}, task.completed)
-        setEditModalOpen(false);
+
+    const onTaskDelete = (task: Task) => {
+        setIsLoading(true);
+        deleteTask(task)
+        .then(() => setIsLoading(false));
     }
 
-    const taskTitleInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskTitle(e.currentTarget.value);
-
-    const taskDeadlineInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskDeadline(e.currentTarget.value);
-
-    const onTaskDelete = (task: TaskDto) => {
+    const onTaskUpdate = (task: Task, completed: boolean) => {
         setIsLoading(true);
-        deleteTask(task).then(() => setIsLoading(false));
+        updateTask(task, completed)
+        .then(() => setIsLoading(false));
     }
 
-    const onTaskUpdate = (task: TaskDto, completed: boolean) => {
-        setIsLoading(true);
-        updateTask(task, completed).then(() => setIsLoading(false));
+    const toggleEditMode = () => {
+        setIsEditing(!isEditing);
+        onTaskEditIconClicked(task);
     }
     
     const getTimeDiffInDays = (deadline: DateTime): string => {
@@ -70,26 +91,22 @@ export default function TaskItem ({task, deleteTask, updateTask}:
 
     return(
         <div className={`task-item ${task.completed && 'completed-task'}`}>
-            <div className="task-item-wrapper">
-                <div className="task-item-content">
-                    <TaskCheckbox updateTaskStatus={(status) => onTaskUpdate(clientTaskDataService.mapTaskToTaskDto(task), status)} completed={task.completed}></TaskCheckbox> 
-                    <p>{task.title}</p>
-                    <p className="subtitle task-remaining-time">{task.deadline?.isValid && (deadlineIsPassed() ? `(${getTimeDiffInDays(task.deadline)} late)` : `(${getTimeDiffInDays(task.deadline)} remaining)`)}</p>
-                    <span className="actions-wrapper">
-                        <EditNote onClick={() => setEditModalOpen(true)}></EditNote>
-                        <DeleteIcon onClick={() => onTaskDelete(clientTaskDataService.mapTaskToTaskDto(task))}></DeleteIcon>
-                    </span>
+            <TaskCheckbox updateTaskStatus={(status) => onTaskUpdate(task, status)} completed={task.completed}></TaskCheckbox> 
+            <div className='task-item-content'>
+                <p className="task-item-title">{task.title}</p>
+                <div className={`task-deadline subtitle ${deadlineIsPassed() && 'passed-task-deadline'}`}>
+                    <p>{task.deadline && `Deadline: ${day}/${month}/${year}`} </p>
+                    <p>{task.deadline?.isValid && (deadlineIsPassed() ? `(${getTimeDiffInDays(task.deadline)} late)` : `(${getTimeDiffInDays(task.deadline)} remaining)`)}</p> 
                 </div>
-                <p className={`task-deadline subtitle ${deadlineIsPassed() && 'passed-task-deadline'}`}>{task.deadline && `Deadline: ${day}/${month}/${year}`}</p>
             </div>
+            <span className="actions-wrapper">
+                {isEditing 
+                    ? <Cancel onClick={() => toggleEditMode()}/> 
+                    : <EditNote onClick={() => toggleEditMode()}></EditNote>
+                }
+                <DeleteIcon onClick={() => onTaskDelete(task)}></DeleteIcon>
+            </span>
             {isLoading && <Loader></Loader>}
-            <ModalComponent modalOpened={editModalOpened} setModalOpened={setEditModalOpen}>
-                <form onSubmit={onTaskEditFormSubmit}>
-                    <input autoFocus={true} value={taskTitle} onChange={taskTitleInputChange} type="text" placeholder='Name'></input>
-                    <input type="date" value={taskDeadline} onChange={taskDeadlineInputChange} ></input>
-                    <button>Save</button>
-                </form>
-            </ModalComponent>
         </div>
     )
 }
