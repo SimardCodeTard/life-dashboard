@@ -38,33 +38,13 @@ export default function SearchBar({ }: SearchBarProps) {
     }
     const onBlur = () => setShowOptions(false);
 
-    const onSelectedSearchOptionClick = () => {
-        setShowOptions(!showOptions)
-    };
-
     const onSearchOptionShiftClick = (searchOption: SearchOptionType) => {
         setSelectedSearchOption(searchOption);
         searchBarRef.current?.requestSubmit();
     }
 
-
-
     const [showOptions, setShowOptions] = useState(false);
     const [selectedSearchOption, setSelectedSearchOption] = useState<SearchOptionType | undefined>();
-    const [userShifting, setUserShifting] = useState<boolean>(false);
-
-    let icon: ReactElement = <></>;
-
-    if(selectedSearchOption) {
-        const {Icon, imageData} = selectedSearchOption as SearchOptionType;
-        if(selectedSearchOption && selectedSearchOption.iconType === 'icon' && Icon) {
-            icon = <Icon className='cursor-pointer mx-2 ' onClick={onSelectedSearchOptionClick}/>;
-        } else if (selectedSearchOption && selectedSearchOption.iconType === 'image') {
-            icon = <Image className='cursor-pointer' onClick={onSelectedSearchOptionClick} src={imageData as StaticImageData} height={20} width={20} alt=''/>;
-        }
-    }
-
-
 
     useEffect(() => {
         // Close search options tab on select
@@ -75,7 +55,7 @@ export default function SearchBar({ }: SearchBarProps) {
         <form className='search-bar' onSubmit={onSearchBarSubmit} ref={searchBarRef}>
             <div className='search-bar-container'>
                 <div className="search-bar-input-container">
-                    <span className="actions-wrapper search-input-icon-wrapper">
+                    <span className="search-input-icon-wrapper">
                         <SearchSharpIcon></SearchSharpIcon>
                     </span>
                     <input autoFocus onBlur={onBlur} type='text'

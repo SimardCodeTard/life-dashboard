@@ -11,11 +11,6 @@ import { Logger } from "@/app/services/logger.service";
 function SearchOption({ searchOption, onClick }: SearchOptionPropsType) {
     return (
         <option value={searchOption.name} className="action-icon-wrapper" onClick={() => {onClick(searchOption)}}>
-            {/* {
-                searchOption.Icon  */}
-                    {/*? <searchOption.Icon></searchOption.Icon>  */}
-                    {/*: <Image src={searchOption.imageData as StaticImageData} alt={searchOption.name} width={20} height={20} ></Image> */}
-            {/* } */}
             {searchOption.name}
         </option>
     );
