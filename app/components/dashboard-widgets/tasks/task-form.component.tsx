@@ -47,7 +47,7 @@ export default function TaskForm({ onSubmit, mode, taskToEdit }: NewTaskFormProp
     const formatTaskDateToInput = (date: DateTime) => date.toFormat('yyyy\'-\'MM\'-\'dd');
 
     return <form className="new-task-form" onSubmit={onSubmitWrapper}>
-        <input className="task-name-field" type="text" placeholder="Edit task title..." value={task?.title} onChange={onTaskTitleChange}></input>
+        <input className="task-name-field" type="text" placeholder={mode === 'new' ? 'Create new task...' : "Edit task..."} value={task?.title} onChange={onTaskTitleChange}></input>
         <input type="date" value={(task?.deadline && task.deadline.isValid ? formatTaskDateToInput(task.deadline) : '')} onChange={onTaskDeadlineChange}></input>
         <button type="submit">{mode === 'new' ? <Add/> : <Save/>}</button>
     </form>
