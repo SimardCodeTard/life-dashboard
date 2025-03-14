@@ -3,7 +3,6 @@
 .favorites-bar {
     display: flex;
     justify-content: center;
-    overflow: scroll;
     
     .favorite-item:not(:last-child) {
         margin-left: .2rem;
