@@ -43,7 +43,6 @@ jobs:
           BLOCK_OPEN_AI_API_CALLS: {{ secrets.BLOCK_OPEN_AI_API_CALLS }}
           APP_PASSWORD: {{ secrets.APP_PASSWORD }}
           JWT_SECRET: {{ secrets.JWT_SECRET }}
-
         run: |
           npx sonarqube-scanner \
             -Dsonar.organization=simardcodetard \
