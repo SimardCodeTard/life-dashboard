@@ -26,24 +26,25 @@ jobs:
         run: npm install
 
       - name: Build project
-        run: npm run build
-
-      - name: Run SonarCloud Scan
         env:
           NEXT_PUBLIC_API_URL: http://localhost:3000/api/v1/
           NEXT_PUBLIC_LOGGING_LEVEL: 0
           NEXT_PUBLIC_USER_NAME: Simard
 
+        MONGO_DB_URL_LOCAL: ${{ secrets.MONGO_DB_URL_LOCAL }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        OPEN_WEATHER_API_KEY: ${{ secrets.OPEN_WEATHER_API_KEY }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        OPENAI_GPT_MODEL: ${{ secrets.OPENAI_GPT_MODEL }}
+        BLOCK_OPEN_AI_API_CALLS: ${{ secrets.BLOCK_OPEN_AI_API_CALLS }}
+        APP_PASSWORD: ${{ secrets.APP_PASSWORD }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: npm run build
+
+      - name: Run SonarCloud Scan
+        env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          echo "MONGO_DB_URL_LOCAL=${{ secrets.MONGO_DB_URL_LOCAL }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-          echo "OPEN_WEATHER_API_KEY=${{ secrets.OPEN_WEATHER_API_KEY }}" >> .env
-          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
-          echo "OPENAI_GPT_MODEL=${{ secrets.OPENAI_GPT_MODEL }}" >> .env
-          echo "BLOCK_OPEN_AI_API_CALLS=${{ secrets.BLOCK_OPEN_AI_API_CALLS }}" >> .env
-          echo "APP_PASSWORD=${{ secrets.APP_PASSWORD }}" >> .env
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           npx sonarqube-scanner \
             -Dsonar.organization=simardcodetard \
             -Dsonar.projectKey=${{ secrets.SONARCLOUD_PROJECT_KEY }} \
