@@ -48,7 +48,7 @@ jobs:
           npx sonarqube-scanner \
             -Dsonar.organization=simardcodetard \
             -Dsonar.projectKey=${{ secrets.SONARCLOUD_PROJECT_KEY }} \
-            -Dsonar.sources=./src \
+            -Dsonar.sources=./app \
             -Dsonar.exclusions=**/node_modules/**,**/*.test.js,**/*.spec.js \
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             # Fail the step if sonar status is not 'OK'
