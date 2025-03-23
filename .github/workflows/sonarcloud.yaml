@@ -30,7 +30,20 @@ jobs:
 
       - name: Run SonarCloud Scan
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          NEXT_PUBLIC_API_URL: http://localhost:3000/api/v1/
+          NEXT_PUBLIC_LOGGING_LEVEL: 0
+          NEXT_PUBLIC_USER_NAME: Simard
+
+          SONAR_TOKEN: {{ secrets.SONAR_TOKEN }}
+          MONGO_DB_URL_LOCAL: {{ secrets.MONGO_DB_URL_LOCAL }}
+          DB_NAME: {{ secrets.DB_NAME }}
+          OPEN_WEATHER_API_KEY: {{ secrets.OPEN_WEATHER_API_KEY }}   
+          OPENAI_API_KEY: {{ secrets.OPENAI_API_KEY }}
+          OPENAI_GPT_MODEL: {{ secrets.OPENAI_GPT_MODEL }}
+          BLOCK_OPEN_AI_API_CALLS: {{ secrets.BLOCK_OPEN_AI_API_CALLS }}
+          APP_PASSWORD: {{ secrets.APP_PASSWORD }}
+          JWT_SECRET: {{ secrets.JWT_SECRET }}
+
         run: |
           npx sonarqube-scanner \
             -Dsonar.organization=simardcodetard \
