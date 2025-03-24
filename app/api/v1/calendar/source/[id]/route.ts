@@ -14,10 +14,10 @@ export const dynamic = 'force-dynamic';
  */
 export const GET = async (
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> => {
     try {
-        const source = await serverCalendarDataService.findCalendarSourceById(new ObjectId(params.id));
+        const source = await serverCalendarDataService.findCalendarSourceById(new ObjectId((await params).id));
         if (!source) {
             throw new APIBadRequestError('Calendar source not found');
         }
@@ -37,10 +37,10 @@ export const GET = async (
  */
 export const DELETE = async (
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> => {
     try {
-        const result = await serverCalendarDataService.deleteCalendarSourceById(new ObjectId(params.id));
+        const result = await serverCalendarDataService.deleteCalendarSourceById(new ObjectId((await params).id));
         return Response.json(result);
     } catch (error) {
         return handleAPIError(error as Error);
