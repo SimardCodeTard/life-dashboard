@@ -28,7 +28,7 @@
         }
 
         .clock-card {
-            grid-row: 2 / span 1;
+            grid-row: 1 / span 1;
         }
     
         .chat-card {
@@ -52,11 +52,11 @@
 
         .weather-card {
             grid-column: auto / span 2;
-            grid-row: 3 / span 1;
+            grid-row: 2 / span 1;
         }
 
         .clock-card {
-            grid-row: 3 / span 1;
+            grid-row: 2 / span 1;
         }
 
         .calendar-card {
@@ -68,7 +68,7 @@
         }
 
         .tasks-card {
-            grid-row: 2 / span 1;
+            grid-row: 1 / span 1;
         }
     }
 }
@@ -82,7 +82,7 @@
         }
 
         .weather-card {
-            grid-row: 3 / span 1;
+            grid-row: 2 / span 1;
             grid-column: 2 / span 1;
         }
 
