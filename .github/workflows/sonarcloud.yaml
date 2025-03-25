@@ -54,6 +54,9 @@ jobs:
             
             # Fail the step if sonar status is not 'OK'
             STATUS=$(curl -s -u "${{ secrets.SONAR_TOKEN }}:" "https://sonarcloud.io/api/qualitygates/project_status?projectKey=${{ secrets.SONARCLOUD_PROJECT_KEY }}" | jq -r .projectStatus.status)
+            
+            echo "➡️ This check's status is : $STATUS "
+            
             if [ "$STATUS" != "OK" ]; then
               echo "Quality Gate failed: $STATUS"
               exit 1
