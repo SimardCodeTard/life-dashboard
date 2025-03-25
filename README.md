@@ -8,9 +8,9 @@ Create a .env or .local.env file and define the following environment variables:
 - NEXT_PULIC_LOGGING_LEVEL: The logging level to use (0:DEBUG / 1:DEBUG / 2:WARN / 3: ERROR)
 
 - APP_PASSWORD: Password to access the application
-- JWT_SECRETY: Secret used when generating access tokens
+- JWT_SECRET: Secret used when generating access tokens
 
-- MONGO_DB_URL_LOCAL of in local OR MONGO_DB_URI if deployed: URI to your mongoDB instance
+- MONGO_DB_URL_LOCAL in local OR MONGO_DB_URI if deployed: URI to your mongoDB instance
 - DB_NAME: Name of the mongoDB Database to use for persistence
 
 - BLOCK_OPEN_AI_API_CALLS: True if the calls to OpenAI's API should be blocked, should be true when testing
