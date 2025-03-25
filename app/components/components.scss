@@ -1,0 +1,115 @@
+@import '/app/shared/variables.scss';
+
+.card {
+    border: $border;
+    border-radius: $card-border-radius;
+    background-color: $background-lighter;
+    position: relative;
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+
+        h2 {
+            font-weight: 500 !important;
+            margin: 0;
+        }
+    }
+
+    .card-content-wrapper {
+        .card-content {
+            display: flex;
+
+            .card-side-panel {
+                box-shadow: $shadow-sm;
+                padding: 1rem;
+                border-right: $border;
+                transition: width ease .25s;
+                width: 15rem;
+                text-overflow: ellipsis;
+                .deploy-icon {
+                    color: $foreground;
+                    cursor: pointer;
+                    transition: transform ease .25s;
+                    transform: rotate(180deg);
+                    width: 1.5rem;
+
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 1rem;
+                    margin-left: auto;
+
+                    &:hover {
+                        scale: 1.1;
+                    }
+                }
+
+                &.card-side-panel-collapsed {
+                    transition: width ease .25s;
+                    width: 4rem;
+
+                    .deploy-icon {
+                        transform: rotate(0deg);
+                        margin-right: auto;
+                    }
+                    
+                    > :not(.deploy-icon) {
+                        display: none;
+                    }
+                }
+            }
+
+            .card-main-panel {
+                padding: 1rem;
+                flex: 1;
+                .card-header {
+                    display: flex;
+                    
+                }
+            }
+        }
+    }
+}
+
+.modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .modal-body {
+        background-color: $background-lighter;
+        padding: 1rem;
+        border-radius: 1rem;
+        border: $border;
+
+        .actions-wrapper {
+            margin-bottom: .5rem;
+        }
+
+        form {
+            border: none;
+        }
+    }
+}
+
+.clock {
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+
+        p {
+            margin: 0;
+        }
+
+        .clock-time {
+            font-weight: 500;
+            font-size: 2rem;
+
+            .subtitle {
+                font-size: 1rem;
+            }
+        }
+    }
+}

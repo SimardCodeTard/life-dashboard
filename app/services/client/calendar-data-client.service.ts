@@ -1,19 +1,31 @@
-import { CalendarEventType, CalendarEventTypeDTO, CalendarSourceType } from "@/app/types/calendar.type";
-import { Logger } from "../logger.service";
-import moment, { Moment } from "moment";
+import { CalendarEventType, CalendarEventTypeDTO, CalendarSourceEventsFakeMapType, CalendarSourceType } from "@/app/types/calendar.type";
 import { ObjectId } from "mongodb";
 import { axiosClientService } from "./axios.client.service";
+import { DateTime } from "luxon";
+import { Logger } from "../logger.service";
 
 export namespace clientCalendarDataService {
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     /**
-     * Formats a date string into a Moment object.
-     * @param dateStr - The date string to format.
-     * @returns A Moment object representing the date.
+     * Converts a DateTime object to a grouped event key.
+     * @param dt The DateTime object to convert.
+     * @returns The grouped event key, formetted to dd-MM-yyyy.
      */
-    const formatDate = (dateStr: string): Moment => moment.parseZone(dateStr);
+    export const fromDateTimeToGroupedEventKey = (dt: DateTime): string => {
+        return dt.toFormat('dd-MM-yyyy');
+    };
+
+
+    /**
+     * Converts a grouped event key to DateTime object.
+     * @param key The key to convert.
+     * @returns The converted DateTime object.
+     */
+    export const fromGroupedEventKeyToDateTime = (key: string): DateTime => {
+        return DateTime.fromFormat(key, 'dd-MM-yyyy');
+    }
 
     /**
      * Maps a CalendarEventTypeDTO to a CalendarEventType.
@@ -23,8 +35,8 @@ export namespace clientCalendarDataService {
     export const mapCalendarEventDTOtoDO = (calendarEventDto: CalendarEventTypeDTO): CalendarEventType => {
         return {
             ...calendarEventDto,
-            dtStart: formatDate(calendarEventDto.dtStart),
-            dtEnd: formatDate(calendarEventDto.dtEnd),
+            dtStart: DateTime.fromISO(calendarEventDto.dtStart),
+            dtEnd: DateTime.fromISO(calendarEventDto.dtEnd),
         };
     };
 
@@ -38,58 +50,12 @@ export namespace clientCalendarDataService {
     };
 
     /**
-     * Converts a Moment object to a string key for grouping events.
-     * @param date - The Moment object to convert.
-     * @returns The string key representing the date.
-     */
-    export const fromMomentToGroupedEventMapKey = (date: Moment): string => {
-        return date.format('DD-MM-YYYY');
-    };
-
-    /**
-     * Converts a grouped event key to a Moment object.
-     * @param groupedEventKey - The string key to convert.
-     * @returns The Moment object representing the date.
-     */
-    export const fromGroupedEventKeyToMoment = (groupedEventKey: string): Moment => {
-        const [date, month, year] = groupedEventKey.split('-');
-        return moment().year(parseInt(year)).month(parseInt(month) - 1).date(parseInt(date));
-    };
-
-    /**
      * Sorts a list of CalendarEventTypes by their start time.
      * @param events - The list of events to sort.
      * @returns The sorted list of events.
      */
-    const sortEvents = (events: CalendarEventType[]): CalendarEventType[] => {
-        return events.sort((a, b) => {
-            return (a.dtStart.hour() * 60 + a.dtStart.minute()) - (b.dtStart.hour() * 60 + b.dtStart.minute());
-        });
-    };
-
-    /**
-     * Groups a list of CalendarEventTypes by their start date.
-     * @param events - The list of events to group.
-     * @returns A map of grouped events by date.
-     */
-    const groupCalEventsByDate = (events: CalendarEventType[]): Map<string, CalendarEventType[]> => {
-        const groupedEvents = new Map<string, CalendarEventType[]>();
-
-        for (let event of events) {
-            const key = fromMomentToGroupedEventMapKey(event.dtStart);
-            const eventsToGroupWith = groupedEvents.get(key);
-            if (eventsToGroupWith) {
-                groupedEvents.set(key, [...eventsToGroupWith, event]);
-            } else {
-                groupedEvents.set(key, [event]);
-            }
-        }
-
-        groupedEvents.forEach((values, key) => {
-            groupedEvents.set(key, sortEvents(values));
-        });
-
-        return groupedEvents;
+    const sortEvents = (a: CalendarEventType, b: CalendarEventType): number => {
+        return (a.dtStart.toSeconds()) - (b.dtStart.toSeconds());
     };
 
     /**
@@ -100,25 +66,89 @@ export namespace clientCalendarDataService {
         return axiosClientService.GET<CalendarSourceType[]>(`${API_URL}/calendar/source`).then(res => res.data);
     };
 
+    export const groupEventsByDateAndSource = (
+        calendarSourceEventsMap: Map<CalendarSourceType, CalendarEventType[]>
+        , groupedMappedEvents = new Map<string, CalendarSourceEventsFakeMapType[]>()
+    ): Map<string, CalendarSourceEventsFakeMapType[]> => {
+        for (const [source, events] of Array.from(calendarSourceEventsMap.entries())) {
+            for (const event of events) {
+                const dateKey = fromDateTimeToGroupedEventKey(event.dtStart);
+
+                if (!groupedMappedEvents.has(dateKey)) {
+                    groupedMappedEvents.set(dateKey, []);
+                }
+
+                const fakeMaps = groupedMappedEvents.get(dateKey)!;
+                let fakeMapForCurrentSource = fakeMaps.find(fakeMap => fakeMap.source?._id === source._id);
+
+                if (!fakeMapForCurrentSource) {
+                    fakeMapForCurrentSource = { source, events: [] };
+                    fakeMaps.push(fakeMapForCurrentSource);
+                }
+
+                fakeMapForCurrentSource.events.push(event);
+                fakeMapForCurrentSource.events.sort(sortEvents);
+            }
+        }
+
+        return groupedMappedEvents;
+    }
+
     /**
-     * Fetches and groups calendar events by source ID.
-     * @param sourceId - The ID of the source to fetch events for.
-     * @returns A promise that resolves to a map of grouped events by date.
+     * Fetches and groups calendar events by source IDs.
+     * Groups by date and by source.
+     * @param sourceIds - The IDs of the sources to fetch events for.
+     * @returns A promise that resolves to a map of grouped events by source and date.
      */
-    export const fetchAndGroupCalendarEventsBySourceId = async (sourceId: ObjectId): Promise<Map<string, CalendarEventType[]>> => {
-        const response = await axiosClientService.GET<CalendarEventTypeDTO[]>(`${API_URL}/calendar/source/${sourceId.toString()}`);
-        const events = mapCalendarEventDTOListToDO(response.data);
-        return groupCalEventsByDate(events);
+    export const fetchAndGroupCalendarEventsBySourceIds = async (sourceIds: ObjectId[]): Promise<Map<string, CalendarSourceEventsFakeMapType[]>> => {
+        try {
+            // Fetch events from API
+            const response = await axiosClientService.GET<Map<CalendarSourceType, CalendarEventTypeDTO[]>>(
+                `${API_URL}/calendar/events?ids=${sourceIds.join(',')}`
+            );
+
+            // Convert DTOs to domain objects
+            const mappedEvents = new Map<CalendarSourceType, CalendarEventType[]>(
+                Object.entries(response.data).map(([source, events]) => [
+                    JSON.parse(source) as CalendarSourceType,
+                    mapCalendarEventDTOListToDO(events),
+                ])
+            );
+
+            // Group by date and source
+            return groupEventsByDateAndSource(mappedEvents);
+        } catch (error) {
+            Logger.error(error as Error);
+            return new Map();
+        }
     };
 
     /**
+     * Fetches calendar events by source ID.
+     * @param sourceId - The ID of the source to fetch events for.
+     * @returns A promise that resolves to a list of CalendarEventTypes.
+     */
+    export const fetchCalendarEventsBySourceId = async (sourceId: ObjectId): Promise<CalendarEventType[]> => {
+        return axiosClientService.GET<CalendarEventTypeDTO[]>(`${API_URL}/calendar/source/${sourceId.toString()}/events/`).then(res => res.data.map(mapCalendarEventDTOtoDO));
+    }
+
+    /**
      * Posts a new calendar source to the API.
-     * @param calendarEvent - The calendar event to post.
+     * @param source - The calendar event to post.
      * @returns A promise that resolves to the created CalendarSourceType.
      */
-    export const postCalendarSource = async (calendarEvent: any): Promise<CalendarSourceType> => {
-        return axiosClientService.POST<CalendarSourceType>(`${API_URL}/calendar/source/new/`, calendarEvent).then(res => res.data);
+    export const createNewCalendarSource = async (source: CalendarSourceType): Promise<CalendarSourceType> => {
+        return axiosClientService.POST<CalendarSourceType>(`${API_URL}/calendar/source/new/`, source).then(res => res.data);
     };
+
+    /**
+     * Updates a calendar source by ID.
+     * @param source - The source to update.
+     * @returns A promise that resolves to the updated CalendarSourceType.
+     */
+    export const updateCalendarSource = async (source: CalendarSourceType): Promise<CalendarSourceType> => {
+        return axiosClientService.PUT<CalendarSourceType>(`${API_URL}/calendar/source/${source._id}/`, source).then(res => res.data);
+    }
 
     /**
      * Deletes a calendar source by ID.

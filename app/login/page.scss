@@ -1,0 +1,10 @@
+.login-page {
+    display: flex;
+    justify-content: center;
+    height: 100dvh;
+    width: 100vw;
+    .pwd-form {
+        margin-top: 5rem;
+        height: fit-content;
+    }
+}

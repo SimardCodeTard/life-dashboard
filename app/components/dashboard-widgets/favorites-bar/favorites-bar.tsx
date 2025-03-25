@@ -6,9 +6,9 @@ import AddFavorite from './add-favorite';
 import { useEffect, useState } from 'react';
 import { clientFavoritesDataService } from '@/app/services/client/favorites-data.client.service';
 
-import './favorites.css'
+import './favorites.scss';
 
-export default function FavoritesBar() {
+export default function FavoritesBar({setIsLoading}: {setIsLoading?: (isLoading: boolean) => void}) {
 
     const [favorites, setFavorites] = useState<FavoriteItemType[]>([]);
 
@@ -26,7 +26,8 @@ export default function FavoritesBar() {
 
     const updateFavoritesList = () => {
         clientFavoritesDataService.findAllFavoriteItems()
-        .then(setFavorites);
+        .then(setFavorites)
+        .finally(() => setIsLoading && setIsLoading(false)).catch(console.error);
     }
 
     useEffect(() => {
@@ -34,10 +35,12 @@ export default function FavoritesBar() {
     }, [setFavorites]);
 
     return (
-        <div className='favorites-bar actions-wrapper'>
-            {favorites.map((item: FavoriteItemType, key: number) => <FavoriteItem key={key} item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onFavoriteItemDelete}
-            ></FavoriteItem>)}
-            <AddFavorite updateFavoritesList={updateFavoritesList}></AddFavorite>
+        <div className="card-content">
+            <div className='card-main-panel favorites-bar actions-wrapper'>
+                {favorites.map((item: FavoriteItemType, key: number) => <FavoriteItem setIsLoading={setIsLoading || (() => false)} key={`$favorite-item-{key}`} item={item} onFavoriteItemEdit={onFavoriteItemEdit} onFavoriteItemDelete={onFavoriteItemDelete}
+                ></FavoriteItem>)}
+                <AddFavorite setIsLoading={setIsLoading || (() => false)} updateFavoritesList={updateFavoritesList}></AddFavorite>
+            </div>
         </div>
     );
 }

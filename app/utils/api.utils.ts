@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import { APIBadRequestError, APIError } from "../errors/api.error";
 import { NextRequest } from "next/server";
 import { Logger } from "../services/logger.service";
+import { APIResponseStatuses } from "../enums/api-response-statuses.enum";
 
 /**
  * Parse the body of a request as JSON.
@@ -72,7 +73,7 @@ export const handleAPIError = (error: Error): Response => {
  */
 export const handleAxiosError = (err: AxiosError): void => {
     Logger.error(err);
-    throw new APIError(err.response?.statusText ?? 'Unknown Error', err.response?.status ?? 500);
+    throw new APIError(err.response?.statusText ?? 'Unknown Error', APIResponseStatuses.INTERNAL_SERVER_ERROR ?? 500);
 }
 
 /**
