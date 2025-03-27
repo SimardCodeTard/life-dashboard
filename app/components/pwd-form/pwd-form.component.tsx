@@ -1,7 +1,6 @@
 'use client';;
 import { clientLoginService } from "@/app/services/client/login.client.service";
 import { ChangeEvent, FormEvent, ReactNode, useEffect, useState } from "react";
-import { Logger } from "@/app/services/logger.service";
 import { Person, PersonAdd } from "@mui/icons-material";
 
 import './pwd-form.scss';
@@ -78,7 +77,7 @@ export default function PWDForm() {
         if(modeIsLogin) {
             return clientLoginService.login({mail: formState.mail, password: formState.password, keepLoggedIn});
         } else {
-            return clientLoginService.register(formState);
+            return clientLoginService.register({user: formState, keepLoggedIn});
         }
     }
 
@@ -311,10 +310,10 @@ export default function PWDForm() {
                 </>
             }
 
-            {modeIsLogin && <span className="keep-signed-in-check">
+            <span className="keep-signed-in-check">
                 <Checkbox name="keep-me-signed-in" onChange={(() => setKeepLoggedIn(!keepLoggedIn))} checked={keepLoggedIn}></Checkbox>
                 <label htmlFor="keep-me-signed-in">Keep me signed in.</label>
-            </span>}
+            </span>
             
             <button type="submit" disabled={isLoading}>{
                 modeIsLogin 

@@ -11,4 +11,10 @@ import { handleAPIError } from "@/app/utils/api.utils";
 
 const getHandler = (): Promise<ChatNewResponseType> => serverOpenAIService.startNewConversation();
 
-export const GET = async (_: Request): Promise<Response> => Response.json(await getHandler().catch(handleAPIError));
+export const GET = async (_: Request): Promise<Response> => {
+    try {
+        return Response.json(await getHandler());
+    } catch (err) {
+        return handleAPIError(err);
+    }
+}

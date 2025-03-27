@@ -23,4 +23,10 @@ const getHandler = async (params: Promise<{id: string}>): Promise<TaskTypeDto | 
     return task;
 }
 
-export const GET = async (_: Request, {params}: {params: Promise<{id: string}>}): Promise<Response> => Response.json(await getHandler(params).catch(handleAPIError));
+export const GET = async (_: Request, {params}: {params: Promise<{id: string}>}): Promise<Response> => {
+    try {
+        return Response.json(await getHandler(params));
+    } catch (err) { 
+        return handleAPIError(err);
+    }
+}

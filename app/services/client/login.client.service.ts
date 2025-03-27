@@ -3,9 +3,10 @@ import axios from "axios";
 import { Logger } from "../logger.service";
 import Cookies from 'js-cookie';
 import { UserTypeClient, UserTypeServer } from "@/app/types/user.type";
-import { AuthLoginRequestBodyType, AuthLoginResponseType, AuthRegisterResponseType, AuthValidateRequestBodyType, AuthValidateResponseType } from "@/app/types/api.type";
+import { AuthLoginRequestBodyType, AuthLoginResponseType, AuthRegisterRequestBodyType, AuthRegisterResponseType, AuthValidateRequestBodyType, AuthValidateResponseType } from "@/app/types/api.type";
 import { removeUserFromLocalStorage, setUserInLocalStorage } from "@/app/utils/localstorage.utils";
 import { CookieNamesEnum } from "@/app/enums/cookies.enum";
+import { axiosClientService } from "./axios.client.service";
 
 export namespace clientLoginService {
 
@@ -36,7 +37,7 @@ export namespace clientLoginService {
         }
 
         // Call to auth/validate
-        const {valid, token: newToken, user} = (await axios.post<AuthValidateResponseType>(apiUrl + '/validate', body)).data;
+        const {valid, token: newToken, user} = (await axiosClientService.POST<AuthValidateResponseType, AuthValidateRequestBodyType>(apiUrl + '/validate', body)).data;
 
         if (valid === true && typeof newToken !== 'string') {
             // If the token was valid
@@ -76,15 +77,15 @@ export namespace clientLoginService {
      */
     export const login = async (body: AuthLoginRequestBodyType): Promise<UserTypeClient> => {
         // Post to /auth/login
-        const res = await axios.post<AuthLoginResponseType>(apiUrl + '/login', body, { headers: { 'Content-Type': 'application/json' } });
+        const res = await axiosClientService.POST<AuthLoginResponseType, AuthLoginRequestBodyType>(apiUrl + '/login', body, { headers: { 'Content-Type': 'application/json' } });
         saveLoginResults(res.data.token, res.data.user, res.data.refreshToken);
 
         return res.data.user;
     };
 
-    export const register = async (body: UserTypeServer): Promise<UserTypeClient> => {
+    export const register = async (body: AuthRegisterRequestBodyType): Promise<UserTypeClient> => {
         // Post to /auth/regiser
-        const res = await axios.post<AuthRegisterResponseType>(apiUrl + '/register', body);
+        const res = await axiosClientService.POST<AuthRegisterResponseType, AuthRegisterRequestBodyType>(apiUrl + '/register', body);
         saveLoginResults(res.data.token, res.data.user, res.data.refreshToken);
 
         return res.data.user;

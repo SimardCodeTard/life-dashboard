@@ -58,7 +58,7 @@ export namespace serverUserDataService {
         user.role = 'user';
 
         // Check that mail is unique, TODO: configure db to perform this check automatically
-        const foundUser = await findUserByMail(user.mail) !== null;
+        const foundUser = await findUserByMail(user.mail.toLowerCase()) !== null;
 
         if(foundUser) {
             Logger.debug(`A user already uses the email address: ${user.mail}`)
@@ -69,7 +69,7 @@ export namespace serverUserDataService {
         user.password = await encrypt(user.password);
 
         collection = await getCollection();
-        return serverMongoDataService.insertOne(collection, user);
+        return serverMongoDataService.insertOne(collection, {...user, mail: user.mail.toLowerCase()});
     }
 
     export const mapServerUserToClientUser = (user: UserTypeServer): UserTypeClient => ({

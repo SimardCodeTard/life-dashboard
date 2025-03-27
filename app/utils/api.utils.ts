@@ -45,7 +45,7 @@ export async function parseBody<T = unknown>(req: Request): Promise<T> {
  * @param error 
  * @returns an appropriate Response
  */
-export const handleAPIError = (error: Error): Response => {
+export const handleAPIError = (error: any): Response => {
     Logger.error(error);
 
     // If the error was not properly handled, it will not be an APIError

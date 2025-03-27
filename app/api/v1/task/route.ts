@@ -32,4 +32,10 @@ const getHandler = async (req: NextRequest): Promise<TaskResponseType> => {
     return tasks;
 }
 
-export const GET = async (req: NextRequest): Promise<Response> => Response.json(await getHandler(req).catch(handleAPIError));
+export const GET = async (req: NextRequest): Promise<Response> => {
+    try {
+      return Response.json(await getHandler(req));
+    } catch (err) {
+      return handleAPIError(err);
+    }
+}

@@ -1,3 +1,4 @@
+import { APIBadRequestError } from "@/app/errors/api.error";
 import { serverLoginService } from "@/app/services/server/login.server.service";
 import { AuthLoginRequestBodyType, AuthLoginResponseType } from "@/app/types/api.type";
 import { handleAPIError, parseBody } from "@/app/utils/api.utils";
@@ -11,7 +12,17 @@ import { handleAPIError, parseBody } from "@/app/utils/api.utils";
 const postHandler = async (req: Request): Promise<AuthLoginResponseType> => {
     const body = await parseBody<AuthLoginRequestBodyType>(req);
 
+    if(!body.mail || !body.password || typeof body.keepLoggedIn !== 'boolean') {
+        throw new APIBadRequestError('Invalid login body');
+    }
+
     return await serverLoginService.login(body);
 }
 
-export const POST = async (req: Request): Promise<Response> => Response.json(await postHandler(req).catch(handleAPIError));
+export const POST = async (req: Request): Promise<Response> => {
+    try {
+        return Response.json(await postHandler(req));
+    } catch (err) {
+        return handleAPIError(err);
+    }
+}

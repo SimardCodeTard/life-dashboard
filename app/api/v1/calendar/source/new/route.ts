@@ -21,4 +21,10 @@ const postHandler = async (req: Request): Promise<CalendarSourceNewResponseType>
     return serverCalendarDataService.saveNewCalendarSource(source);
 }
 
-export const POST = async (req: Request): Promise<Response> => Response.json(await postHandler(req).catch(handleAPIError));
+export const POST = async (req: Request): Promise<Response> => {
+    try {
+        return Response.json(await postHandler(req));
+    } catch (err) {
+        return handleAPIError(err);
+    }
+}

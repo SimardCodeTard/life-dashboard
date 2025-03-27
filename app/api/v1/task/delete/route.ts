@@ -20,4 +20,10 @@ const deleteHandler = (req: NextRequest): Promise<FavoritesDeleteResponseType> =
     return serverTasksDataService.deleteTaskById(taskId);
 }
 
-export const DELETE = async (req: NextRequest): Promise<Response> => Response.json(await deleteHandler(req).catch(handleAPIError));
+export const DELETE = async (req: NextRequest): Promise<Response> => {
+    try {
+        return Response.json(deleteHandler(req));
+    } catch (err) {
+        return handleAPIError(err);
+    }
+}

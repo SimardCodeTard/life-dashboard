@@ -18,4 +18,10 @@ const putHandler = async (req: Request): Promise<FavoritesUpdateResponseType> =>
   return serverFavoritesDataService.updateFavorite(favoriteItem);
 }
 
-export const PUT = async (req: Request): Promise<Response> => Response.json(await putHandler(req).catch(handleAPIError));
+export const PUT = async (req: Request): Promise<Response> => {
+  try {
+    return Response.json(await putHandler(req));
+  } catch (err) {
+    return handleAPIError(err);
+  }
+}
