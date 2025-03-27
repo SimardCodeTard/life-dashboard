@@ -1,4 +1,4 @@
-"use client";
+"use client";;
 import { useEffect, useState } from "react";
 
 import './weather.scss';
@@ -7,17 +7,16 @@ import { WeatherData } from "@/app/types/weather.type";
 import CurrentWeather from "./current-weather/current-weather.component";
 import FiveDaysForecast from "./five-days-forecast/five-days-forcast.component";
 import Loader from "../../shared/loader/loader.component";
-import axios from "axios";
 import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat';
 import { DateTime } from "luxon";
+import { weatherClientService } from "@/app/services/client/weather.client.service";
 
-export default function Weather({setIsLoading}: {setIsLoading?: (isLoading: boolean) => void}) {
+export default function Weather({setIsLoading}: Readonly<{setIsLoading?: (isLoading: boolean) => void}>) {
 
     const [weatherData, setWeatherData] = useState<WeatherData| null>(null);
     
     const fetchWeatherData = (latitude: number, longitude: number)=> {
-        const url = process.env.NEXT_PUBLIC_API_URL + `/weather?latitude=${latitude}&longitude=${longitude}&startTime=${DateTime.now().toMillis()}`;
-        return fetch(url);
+        return weatherClientService.fetchWeatherData(latitude, longitude, DateTime.now());
     }
 
     useEffect(() => {
@@ -26,11 +25,6 @@ export default function Weather({setIsLoading}: {setIsLoading?: (isLoading: bool
         navigator.geolocation.getCurrentPosition((userLocation: GeolocationPosition) => {
             if(userLocation.coords.latitude && userLocation.coords.longitude) {
                 fetchWeatherData(userLocation.coords.latitude, userLocation.coords.longitude)
-                .then((res) => res.json() as Promise<WeatherData>)
-                .then(data => {
-                    console.log('Weather: weather data,', data)
-                    return data;
-                })
                 .then(data => setWeatherData(data))
                 .finally(() => setIsLoading?.(false))
                 .catch((error) => {

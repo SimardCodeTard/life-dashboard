@@ -1,6 +1,7 @@
 export enum EventKeysEnum {
     TASK_ITEM_EDIT= 'task-item-edit',
     CALENDAR_SOURCE_EDIT = 'calendar-source-edit',
+    USER_UPDATE = 'user-update'
 }
 
 export enum TaskEditEventsEnum {

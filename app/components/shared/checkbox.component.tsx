@@ -5,8 +5,8 @@ import { useState } from "react";
 
 
 export default function Checkbox (
-    { onChange, checked, disabled = false }: 
-    { onChange: () => void, checked: boolean; disabled: boolean }
+    { onChange, checked, disabled = false, name }: 
+    Readonly<{ onChange: () => void, checked: boolean; disabled?: boolean, name?: string }>
 ) {
 
     const [isChecked, setIsChecked] = useState(checked)
@@ -17,7 +17,7 @@ export default function Checkbox (
         onChange();
     }
     return (
-        <button disabled={disabled} role="checkbox" aria-checked={isChecked} onClick={() => onClick()}>
+        <button disabled={disabled} name={name} role="checkbox" type="button" aria-checked={isChecked} onClick={() => onClick()}>
             {isChecked ? <Check className="check-icon"/> : ''}
         </button>
     )

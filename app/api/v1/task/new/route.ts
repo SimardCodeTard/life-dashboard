@@ -1,5 +1,6 @@
 import { serverTasksDataService } from "@/app/services/server/tasks-data.server.service";
-import { Task } from "@/app/types/task.type";
+import { TaskNewRequestBodyType, TaskNewResponseType } from "@/app/types/api.type";
+import { TaskTypeDto } from "@/app/types/task.type";
 import { handleAPIError, parseBody } from "@/app/utils/api.utils";
 import { NextRequest } from "next/server";
 
@@ -9,18 +10,13 @@ import { NextRequest } from "next/server";
  * @param req - The incoming request object
  * @returns A promise that resolves to a Response object
  */
-export const POST = async (req: NextRequest): Promise<Response> => {
-  try {
+
+const postHandler = async (req: NextRequest): Promise<TaskNewResponseType> => {
     // Parse the request body to get the task data
-    const task: Task = await parseBody<Task>(req);
-    
+    const task: TaskTypeDto = await parseBody<TaskNewRequestBodyType>(req);
+      
     // Save the task using the serverTasksDataService
-    await serverTasksDataService.saveTask(task);
-    
-    // Return a success response
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
-  } catch (error) {
-    // Handle any errors that occur during the process
-    return handleAPIError(error as Error);
-  }
-};
+    return serverTasksDataService.saveTask(task);
+}
+
+export const POST = async (req: NextRequest): Promise<Response> => Response.json(await postHandler(req).catch(handleAPIError));

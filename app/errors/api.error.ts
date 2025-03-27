@@ -24,6 +24,12 @@ export class APIForbiddenError extends APIError {
     }
 }
 
+export class APIConflictError extends APIError {
+    constructor(message: string) {
+        super(message, APIResponseStatuses.CONFLICT);
+    }
+}
+
 export class APINotFoundError extends APIError {
     constructor(message: string) {
         super(message, APIResponseStatuses.NOT_FOUND);

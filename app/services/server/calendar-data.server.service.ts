@@ -4,7 +4,7 @@ import { handleAxiosError } from "@/app/utils/api.utils";
 import ICAL from 'ical.js';
 import { Collection, DeleteResult, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import { serverMongoDataService } from "./mongod-data.server.service";
-import { RemoveCircleOutlineRounded } from "@mui/icons-material";
+import { Logger } from "../logger.service";
 
 export namespace serverCalendarDataService {
     const collectionName = "calendar";
@@ -25,8 +25,10 @@ export namespace serverCalendarDataService {
      */
     export const fetchAndParseCalendarEvents = async (calendarSource: CalendarSourceType): Promise<CalendarEventTypeDTO[]> => {
 
-        const iCalData = await serverCalendarDataService.fetchIcalData(calendarSource.url as string);
+        const iCalData = await serverCalendarDataService.fetchIcalData(calendarSource.url);
         const calendarEvents = await serverCalendarDataService.parseEventsFromIcal(iCalData);
+
+        Logger.debug(`Fetched ${calendarEvents.length} events from source ${calendarSource.name}`)
 
         return calendarEvents;
     }
@@ -80,8 +82,8 @@ export namespace serverCalendarDataService {
      * Finds all calendar sources in the database.
      * @returns A promise that resolves to an array of CalendarSourceType.
      */
-    export const findAllCalendarSources = async (): Promise<CalendarSourceType[]> => {
-        return serverMongoDataService.findAll<CalendarSourceType>(await getCollection());
+    export const findAllCalendarSources = async (userId: string): Promise<CalendarSourceType[]> => {
+        return serverMongoDataService.findAll<CalendarSourceType>(await getCollection(), userId);
     }
 
     /**

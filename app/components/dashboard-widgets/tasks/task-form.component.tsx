@@ -1,22 +1,20 @@
-import { NewTaskFormProps, Task } from "@/app/types/task.type";
-import { Save } from "@mui/icons-material";
-import { AddTask } from "@mui/icons-material";
+import { NewTaskFormProps, TaskType } from "@/app/types/task.type";
+import { Save, AddTask } from "@mui/icons-material";
 
 import './tasks.scss';
 import { DateTime } from "luxon";
 import { FormEvent, useEffect, useState } from "react";
-import { get } from "http";
-import { Logger } from "@/app/services/logger.service";
 
-export default function TaskForm({ onSubmit, mode, taskToEdit }: NewTaskFormProps) {
+export default function TaskForm({ userId, onSubmit, mode, taskToEdit }: Readonly<NewTaskFormProps>) {
 
-    const getDefaultTask = () => ({
+    const getDefaultTask = (): TaskType => ({
         title: '',
         completed: false,
-        deadline: undefined
+        deadline: undefined,
+        userId: userId
     });
 
-    const [task, setTask] =  useState<Task>(getDefaultTask());
+    const [task, setTask] =  useState<TaskType>(getDefaultTask());
 
     useEffect(() => {
         if(mode === 'edit' && taskToEdit) {

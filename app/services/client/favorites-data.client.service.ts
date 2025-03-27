@@ -2,6 +2,7 @@ import { FavoriteItemType } from "@/app/types/favorites.type";
 import assert from "assert";
 import { ObjectId } from "mongodb";
 import { axiosClientService } from "./axios.client.service";
+import { FavoritesDeleteResponseType, FavoritesNewRequestBodyType, FavoritesNewResponseType, FavoritesResponseType, FavoritesUpdateRequestBodyType, FavoritesUpdateResponseType } from "@/app/types/api.type";
 
 export namespace clientFavoritesDataService {
 
@@ -23,8 +24,8 @@ export namespace clientFavoritesDataService {
      * @param item - The favorite item to save.
      * @returns A promise that resolves to the success status of the operation.
      */
-    export const saveNewFavoriteItem = (item: FavoriteItemType) => {
-        return axiosClientService.POST<{ success: boolean; }>(`${url}/new`, item).then(res => res.data);
+    export const saveNewFavoriteItem = (item: FavoritesNewRequestBodyType) => {
+        return axiosClientService.POST<FavoritesNewResponseType, FavoritesNewRequestBodyType>(`${url}/new`, item).then(res => res.data);
     };
 
     /**
@@ -32,8 +33,8 @@ export namespace clientFavoritesDataService {
      * @param item - The favorite item to update.
      * @returns A promise that resolves to the success status of the operation.
      */
-    export const updateFavoriteItem = (item: FavoriteItemType) => {
-        return axiosClientService.POST<{ success: boolean; }>(`${url}/update`, item).then(res => res.data);
+    export const updateFavoriteItem = (item: FavoritesUpdateRequestBodyType) => {
+        return axiosClientService.PUT<FavoritesUpdateResponseType, FavoritesUpdateRequestBodyType>(`${url}/update`, item).then(res => res.data);
     };
 
     /**
@@ -42,14 +43,14 @@ export namespace clientFavoritesDataService {
      * @returns A promise that resolves to the success status of the operation.
      */
     export const deleteFavoriteItem = (id: ObjectId) => {
-        return axiosClientService.DELETE<{ success: boolean; }>(`${url}/delete?id=${id.toString()}`).then(res => res.data);
+        return axiosClientService.DELETE<FavoritesDeleteResponseType>(`${url}/delete?id=${id.toString()}`).then(res => res.data);
     };
 
     /**
      * Retrieves all favorite items.
      * @returns A promise that resolves to an array of favorite items.
      */
-    export const findAllFavoriteItems = () => {
-        return axiosClientService.GET<FavoriteItemType[]>(url).then(res => res.data.length > 0 ? res.data : []);
+    export const findAllFavoriteItems = (userId: ObjectId) => {
+        return axiosClientService.GET<FavoritesResponseType>(`${url}?userId=${userId.toString()}`).then(res => res.data.length > 0 ? res.data : []);
     };
 }

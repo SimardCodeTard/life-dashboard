@@ -60,6 +60,10 @@ h6 {
     font-size: .75rem;
 }
 
+b {
+    color: $accent;
+}
+
 .subtitle {
     font-weight: 400;
     color: $foreground-light;
@@ -116,6 +120,10 @@ button {
         color: $background-lighter;
         cursor: not-allowed;
     }
+
+    &.delete-button {
+        background-color: $error;
+    }
 }
 
 select {
@@ -137,7 +145,7 @@ button[role="checkbox"] {
     height: 1.5rem;
     padding: 0;
     background-color: transparent;
-    outline: $border-checkbox;
+    border: $border-checkbox;
     border-radius: .25rem;
     vertical-align: middle;
     display: flex;
@@ -166,7 +174,7 @@ form {
     border-radius: .5rem;
     padding: .5rem;
     
-    input, button, textarea {
+    input, button:not(button[role="checkbox"]), textarea {
         margin: 0;
         min-height: 2rem;
         width: 100% ;
@@ -174,6 +182,10 @@ form {
 
     input {
         height: 3rem;
+
+        &.error {
+            outline: $error-outline;
+        }
     }
 
 
@@ -224,4 +236,8 @@ form {
 
 .loader > * {
     pointer-events: auto;
+}
+
+.error-text {
+    color: $error;
 }

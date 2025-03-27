@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb"
 
 export type CalendarSourceType = {
     _id?: ObjectId,
+    userId: ObjectId,
     name: string,
     url: string,
     color: string,

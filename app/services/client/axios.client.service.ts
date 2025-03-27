@@ -23,7 +23,7 @@ export namespace axiosClientService {
    * @returns A promise that resolves to the Axios response.
    */
   export const GET = <T = unknown>(url: string, headers?: Partial<AxiosHeaders>): Promise<AxiosResponse<T>> => {
-    return axios.get<T>(url, getHeadersWithAuthToken(headers));
+    return axios.get<T, AxiosResponse<T>>(url, getHeadersWithAuthToken(headers));
   };
 
   /**
@@ -33,8 +33,8 @@ export namespace axiosClientService {
    * @param headers Optional additional headers.
    * @returns A promise that resolves to the Axios response.
    */
-  export const PUT = <T = unknown>(url: string, body: unknown, headers?: Partial<AxiosHeaders>): Promise<AxiosResponse<T>> => {
-    return axios.put<T>(url, body, getHeadersWithAuthToken(headers));
+  export const PUT = <T = unknown, H = unknown>(url: string, body: H, headers?: Partial<AxiosHeaders>): Promise<AxiosResponse<T>> => {
+    return axios.put<T, AxiosResponse<T>, H>(url, body, getHeadersWithAuthToken(headers));
   };
 
   /**
@@ -44,8 +44,8 @@ export namespace axiosClientService {
    * @param headers Optional additional headers.
    * @returns A promise that resolves to the Axios response.
    */
-  export const POST = <T = unknown>(url: string, body: unknown, headers?: Partial<AxiosHeaders>): Promise<AxiosResponse<T>> => {
-    return axios.post<T>(url, body, getHeadersWithAuthToken(headers));
+  export const POST = <T = unknown, H = unknown>(url: string, body: H, headers?: Partial<AxiosHeaders>): Promise<AxiosResponse<T>> => {
+    return axios.post<T, AxiosResponse<T>, H>(url, body, getHeadersWithAuthToken(headers));
   };
 
   /**
@@ -55,6 +55,6 @@ export namespace axiosClientService {
    * @returns A promise that resolves to the Axios response.
    */
   export const DELETE = <T = unknown>(url: string, headers?: Partial<AxiosHeaders>): Promise<AxiosResponse<T>> => {
-    return axios.delete<T>(url, getHeadersWithAuthToken(headers));
+    return axios.delete<T, AxiosResponse<T>>(url, getHeadersWithAuthToken(headers));
   };
 }

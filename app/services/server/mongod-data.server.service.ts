@@ -64,6 +64,7 @@ export namespace serverMongoDataService {
      */
     const getClient = async (): Promise<MongoClient> => {
         if (!client) {
+            Logger.debug("Opening client.")
             client = new MongoClient(mongoUrl as string, productionMongoClientOptions);
             await client.connect();
         }
@@ -90,11 +91,25 @@ export namespace serverMongoDataService {
     };
 
     /**
+         * Finds a document in a collection based on a query.
+         * @param collection - The collection to search in.
+         * @param query - The query to filter documents.
+         * @returns An the document matching the query.
+     */
+    export const findOne = async <T extends MongodItemType>(collection: Collection, query: object): Promise<T | null> => {
+        Logger.debug("finding in collection " + collection.collectionName + " with query " + JSON.stringify(query));
+        return withPendingRequests(async () => {
+            return await collection.findOne(query) as T | null;
+        });
+    };
+
+    /**
      * Finds all documents in a collection.
      * @param collection - The collection to search in.
      * @returns An array of all documents in the collection.
      */
-    export const findAll = async <T extends MongodItemType>(collection: Collection): Promise<T[]> => find<T>(collection, {});
+    export const findAll = async <T extends MongodItemType>(collection: Collection, userId: string): Promise<T[]> => 
+        find<T>(collection, { userId: userId })
 
     /**
      * Finds a document by its ID.
@@ -103,7 +118,7 @@ export namespace serverMongoDataService {
      * @returns The document with the specified ID, or null if not found.
      */
     export const findById = async <T extends MongodItemType>(collection: Collection, id: ObjectId): Promise<T | null> => 
-        find(collection, { _id: new ObjectId(id) }).then((result: MongodItemType[]) => result[0] as T);
+        findOne(collection, { _id: new ObjectId(id) }).then((result: MongodItemType | null) => result as T | null);
 
     /**
      * Finds documents by their IDs.
@@ -114,7 +129,7 @@ export namespace serverMongoDataService {
     export const findByIds = async <T extends MongodItemType>(collection: Collection, ids: ObjectId[]): Promise<T[]> => {
         return find(collection, { _id: { $in: ids } });
     };
-
+    
     /**
      * Deletes a document by its ID.
      * @param collection - The collection to delete from.

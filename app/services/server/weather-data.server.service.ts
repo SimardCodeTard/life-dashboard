@@ -1,3 +1,4 @@
+import { CurrentWeatherApiResponse, ForecastWeatherApiResponse } from "@/app/types/weather.type";
 import { handleAxiosError } from "@/app/utils/api.utils";
 import axios, { AxiosError } from "axios";
 import { DateTime } from "luxon";
@@ -12,10 +13,10 @@ export namespace serverWeatherDataService {
      * @param latitude - The latitude of the location.
      * @returns The constructed URL string.
      */
-    const currentWeatherUrl = (longitude: string, latitude: string): string => 
+    const getCurrentWeatherUrl = (longitude: string, latitude: string): string => 
         `https://api.openweathermap.org/data/3.0/onecall?lat=${latitude}&lon=${longitude}&appid=${process.env.OPEN_WEATHER_API_KEY}&units=metric`;
 
-    const forecastWeatherUrl = (longitude: string, latitude: string, timeStamp: number): string =>
+    const getForecastWeatherUrl = (longitude: string, latitude: string, timeStamp: number): string =>
         `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${latitude}&lon=${longitude}&dt=${timeStamp}&appid=${process.env.OPEN_WEATHER_API_KEY}&units=metric`;
 
     /**
@@ -24,13 +25,16 @@ export namespace serverWeatherDataService {
      * @param latitude - The latitude of the location.
      * @returns A promise that resolves to the weather data.
      */
-    export const fetchCurrentWeatherData = async (longitude: string, latitude: string): Promise<any> => {
+    export const fetchCurrentWeatherData = async (longitude: string, latitude: string): Promise<CurrentWeatherApiResponse | undefined> => {
+        let weatherData: CurrentWeatherApiResponse | undefined;
+        
         try {
-            const response = await axios.get(currentWeatherUrl(longitude, latitude));
-            return response.data;
+            weatherData = await axios.get<CurrentWeatherApiResponse>(getCurrentWeatherUrl(longitude, latitude)).then(res => res.data);
         } catch (error) {
             handleAxiosError(error as AxiosError);
         }
+
+        return weatherData;
     };
 
     /**
@@ -40,7 +44,7 @@ export namespace serverWeatherDataService {
      * @returns A promise that resolves to the weather data for the next 5 days.
      */
 
-    export const fetch5DaysForecastWeatherData = async (longitude: string, latitude: string, startTime: number): Promise<any> => {
+    export const fetch5DaysForecastWeatherData = async (longitude: string, latitude: string, startTime: number): Promise<(ForecastWeatherApiResponse | undefined) []> => {
 
         const dateTimes: number[] = [];
 
@@ -51,13 +55,12 @@ export namespace serverWeatherDataService {
 
         const forecasts = await Promise.all(dateTimes.map(async (timeStamp) => {
             try {
-                const response = await axios.get(forecastWeatherUrl(longitude, latitude, timeStamp));
+                const response = await axios.get<ForecastWeatherApiResponse>(getForecastWeatherUrl(longitude, latitude, timeStamp));
                 return response.data;
             } catch(error) {
                 handleAxiosError(error as AxiosError);
             }
-        }
-        ));
+        }));
 
         return forecasts;
     }

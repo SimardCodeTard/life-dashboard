@@ -3,6 +3,7 @@ import { ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
 import { Logger } from "../logger.service";
 import { axiosClientService } from "./axios.client.service";
 import { ChatMessageType } from "@/app/types/chat.type";
+import { ChatNewResponseType, ChatRequestBodyType, ChatResponseType } from "@/app/types/api.type";
 
 export namespace clientOpenAIService {
     // Ensure the API URL is defined
@@ -20,7 +21,7 @@ export namespace clientOpenAIService {
      * @returns {Promise<ChatMessageType[]>} A promise that resolves to an array of chat messages.
      */
     export const startNewConversation = (): Promise<ChatMessageType[]> => {
-        return axiosClientService.GET<ChatMessageType[]>(`${url}/new`).then(res => res.data);
+        return axiosClientService.GET<ChatNewResponseType>(`${url}/new`).then(res => res.data);
     };
 
     /**
@@ -28,7 +29,7 @@ export namespace clientOpenAIService {
      * @param {ChatCompletionUserMessageParam} message - The message to send.
      * @returns {Promise<ChatMessageType[]>} A promise that resolves to an array of chat messages.
      */
-    export const sendMessage = (message: ChatCompletionUserMessageParam): Promise<ChatMessageType[]> => {
-        return axiosClientService.POST<ChatMessageType[]>(url, { role: 'user', content: message }).then(res => res.data);
+    export const sendMessage = (message: ChatRequestBodyType): Promise<ChatMessageType[]> => {
+        return axiosClientService.POST<ChatResponseType>(url, message).then(res => res.data);
     };
 }

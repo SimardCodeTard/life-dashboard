@@ -6,10 +6,10 @@ import '../components.scss';
 import { AccessTime } from "@mui/icons-material";
 import { capitalize } from "@/app/utils/string.util";
 
-export default function Clock({ setIsLoading }: { setIsLoading?: (isLoading: boolean) => void }) {
+export default function Clock({ setIsLoading }: Readonly<{ setIsLoading?: (isLoading: boolean) => void }>) {
 
-    const getSecondsString = (now: DateTime = DateTime.now()): string => `:${ now.second < 10 ? `0${ now.second }`: now.second }`;
-    const getHourString = (now: DateTime = DateTime.now()): string => `${ now.hour < 10 ? `0${ now.hour }`: now.hour }:${ now.minute < 10 ? `0${ now.minute }` : now.minute }`;
+    const getSecondsString = (now: DateTime = DateTime.now()): string => `:${ now.second.toString().padStart(2, '0') }`;
+    const getHourString = (now: DateTime = DateTime.now()): string => `${ now.hour.toString().padStart(2, '0')  }`;
     const getDateString = (now: DateTime = DateTime.now()): string => `${capitalize(now.weekdayLong as string)} ${now.day} ${now.monthShort} ${now.year}`;
 
     const [dateDisplay, setDateDisplay] = useState('');
