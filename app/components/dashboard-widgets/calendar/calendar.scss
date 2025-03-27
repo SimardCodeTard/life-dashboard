@@ -115,8 +115,8 @@
 
                             .color-badge {
                                 $size: 10px;
-                                height: $size !important;
-                                width: $size !important;
+                                height: $size;
+                                width: $size;
                                 border: $border;
                             }
                         }   
@@ -150,16 +150,24 @@
                             display: flex;
                             flex-direction: column;
                             gap: .1rem;
+                            overflow: hidden;
 
                             .location {
                                 all: unset;
+                                box-sizing: border-box;
                                 display: flex;
                                 align-items: center;
                                 font-size: .75rem;
+
                                 svg {
                                     height: .75rem;
                                     width: fit-content;
                                 }
+
+                                span {
+                                    margin: 0;
+                                }
+
                                 cursor: pointer;
 
                                 &:hover {
@@ -186,7 +194,6 @@
                                 margin-left: auto;
                             }
                         }
-
                     }
                 }
             }
@@ -214,5 +221,59 @@
                 }
             }
         }
+    }
+}
+
+@media screen and (max-width: 600px) {
+
+    span {
+        font-size: .75rem;
+        margin-bottom: .5rem;
+    }
+
+    .calendar-day {
+        $size: 2rem;
+        padding: .25rem 0 !important;
+        height: $size !important;
+        width: $size !important;
+        .calendar-day-content {
+            height: $size !important;
+            width: $size !important;
+        }
+
+        .calendar-events-badge-wrapper {
+            gap: 0 !important;
+            max-width: calc($size);
+            padding: 0 2px;
+        }
+
+        .color-badge {
+            $size: 3px;
+            width: auto;
+            height: $size !important;
+            border: none !important;
+            
+            border-radius: 0;
+
+            &:first-child {
+                border-radius: .1rem 0 0 .1rem;
+            }
+
+            &:last-child {
+                border-radius: 0 .1rem .1rem 0
+            }
+        }
+    }
+
+    .location {
+        width: clamp(6rem, 10rem, 50vw) !important;
+        overflow: hidden !important;
+        span {
+            max-width: 90% !important;
+            text-wrap-style: pretty;
+            text-overflow: ellipsis !important;
+            overflow: hidden !important;
+            white-space: nowrap !important;
+        }   
     }
 }

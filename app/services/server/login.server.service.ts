@@ -100,7 +100,7 @@ export namespace serverLoginService {
     export const login = async (
         login: { mail: string; password: string; keepLoggedIn: boolean },
     ): Promise<{ token: string; refreshToken?: string, user: UserTypeClient }> => {
-        const user = await serverUserDataService.findUserByMail(login.mail);
+        const user = await serverUserDataService.findUserByMail(login.mail.toLowerCase());
 
         if (!user) {
             throw new APINotFoundError('User not found');

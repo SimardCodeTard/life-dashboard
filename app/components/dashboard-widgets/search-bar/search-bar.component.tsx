@@ -32,15 +32,12 @@ export default function SearchBar({ setIsLoading }: Readonly<{setIsLoading?: (is
             <form className='search-bar card-main-panel' onSubmit={onSearchBarSubmit}>
                 <div className='search-bar-container'>
                     <div className="search-bar-input-container">
-                        <span className="search-input-icon-wrapper">
-                            <SearchSharpIcon></SearchSharpIcon>
-                        </span>
                         <input autoFocus={true} type='text'
                             className='search-input'
                             placeholder='Search the web...'>
                         </input>
                     </div>
-                    <button>Search</button>
+                    <button><SearchSharpIcon></SearchSharpIcon></button>
                 </div>
             </form>
         </div>

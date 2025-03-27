@@ -113,3 +113,19 @@
         }
     }
 }
+
+@media screen and (max-width: 600px) {
+    .card-content:has(.card-side-panel) {
+        position: relative;
+        .card-side-panel {
+            position: absolute;
+            z-index: 10;
+            background-color: $background-lighter;
+            height: 100%;
+        }
+
+        .card-main-panel {
+            margin-left: 4rem;
+        }
+    }
+}

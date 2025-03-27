@@ -29,6 +29,9 @@ export default function DashboardPage() {
             </Card>
 
             <div className="dashboard-widgets-grid">
+                <Card className="calendar-card">
+                    <Calendar></Calendar>
+                </Card>
                 <Card className="tasks-card">
                     <Tasks></Tasks>
                 </Card>
@@ -37,9 +40,6 @@ export default function DashboardPage() {
                 </Card>
                 <Card className="clock-card">
                     <Clock></Clock>
-                </Card>
-                <Card className="calendar-card">
-                    <Calendar></Calendar>
                 </Card>
             </div>
 

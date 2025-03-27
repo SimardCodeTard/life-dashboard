@@ -17,11 +17,6 @@ export namespace serverUserDataService {
 
     const encrypt = async (value: string): Promise<string> => bcrypt.hash(value, await bcrypt.genSalt(SALT_ROUND_COUNT));
 
-    const getCollection = async (): Promise<Collection> => {
-        const db = await serverMongoDataService.getDb();
-        return db.collection(collectionName);
-    }
-
     /**
      * Find a user by their id
      * @param _id - The id of the user
@@ -29,8 +24,7 @@ export namespace serverUserDataService {
      */
 
     export const findUserById = async (userId: ObjectId): Promise<UserTypeServer | null> => {
-        const collection = await getCollection();
-        return serverMongoDataService.findById(collection, userId);
+        return serverMongoDataService.findById(collectionName, userId);
     }
 
     /**
@@ -39,8 +33,7 @@ export namespace serverUserDataService {
      * @returns The user
      */
     export const findUserByMail = async (mail: string): Promise<UserTypeServer | null> => {
-        const collection = await getCollection();
-        return serverMongoDataService.findOne<UserTypeServer>(collection, {mail: mail})
+        return serverMongoDataService.findOne<UserTypeServer>(collectionName, {mail: mail})
     }
 
     /**
@@ -49,8 +42,6 @@ export namespace serverUserDataService {
      * @returns - The result of the insert one operation
      */
     export const saveUser = async (user: UserTypeServer): Promise<InsertOneResult> => {
-        let collection = await getCollection();
-
         if(!user?.firstName || !user?.lastName || !user?.mail || !user?.password) {
             throw new APIBadRequestError('Missing or invalid data');
         }
@@ -58,7 +49,7 @@ export namespace serverUserDataService {
         user.role = 'user';
 
         // Check that mail is unique, TODO: configure db to perform this check automatically
-        const foundUser = await findUserByMail(user.mail) !== null;
+        const foundUser = await findUserByMail(user.mail.toLowerCase()) !== null;
 
         if(foundUser) {
             Logger.debug(`A user already uses the email address: ${user.mail}`)
@@ -68,8 +59,7 @@ export namespace serverUserDataService {
         // Encrypt password
         user.password = await encrypt(user.password);
 
-        collection = await getCollection();
-        return serverMongoDataService.insertOne(collection, user);
+        return serverMongoDataService.insertOne(collectionName, {...user, mail: user.mail.toLowerCase()});
     }
 
     export const mapServerUserToClientUser = (user: UserTypeServer): UserTypeClient => ({

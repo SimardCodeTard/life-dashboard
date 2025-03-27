@@ -81,7 +81,7 @@ export default function TaskItem (
         .then(() => setIsLoading(false));
     }
 
-    const getTimeDiffInDays = (a: DateTime, b: DateTime): number => b.set({hour: a.hour, minute: a.minute, second: a.second, millisecond: a.millisecond}).diff(b).as('days')
+    const getTimeDiffInDays = (a: DateTime, b: DateTime): number => b.set({hour: a.hour, minute: a.minute, second: a.second, millisecond: a.millisecond}).diff(a).as('days')
 
     const getTimeDiffLabel = (deadline: DateTime): string => {
         const now = DateTime.now();
@@ -122,7 +122,7 @@ export default function TaskItem (
         return `(${getTimeDiffLabel(task.deadline)} remaining)`;
     }
     return(
-        <div className={`task-item ${task.completed && 'completed-task'}`}>
+        <div className={`task-item ${task.completed && 'completed-task'} ${isEditing && 'editing-task'}`}>
             <TaskCheckbox disabled={isLoading || isEditing} updateTaskStatus={(status) => onTaskUpdate(task, status)} completed={task.completed}></TaskCheckbox> 
             <div className='task-item-content'>
                 <p className="task-item-title">{task.title}</p>

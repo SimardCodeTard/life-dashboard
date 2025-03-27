@@ -42,7 +42,7 @@ export default function Calendar({setIsLoading}: Readonly<{setIsLoading?: (isLoa
     
     const [sourceFormState, setSourceFormState] = useState<CalendarSourceType>(getDefaultSourceFormState());
     
-    const [sidePanelOpened, setSidePanelOpened] = useState(true);
+    const [sidePanelOpened, setSidePanelOpened] = useState(false);
     const [formInEditMode, setFormInEditMode] = useState(false);
     
     const [sidePanelLoading, setSidePanelLoading] = useState(false);

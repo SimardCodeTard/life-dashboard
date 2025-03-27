@@ -1,5 +1,5 @@
-import { Collection, DeleteResult, InsertOneResult, ObjectId, UpdateResult } from 'mongodb';
-import { TaskType, TaskTypeDto } from '../../types/task.type';
+import { DeleteResult, InsertOneResult, ObjectId, UpdateResult } from 'mongodb';
+import { TaskTypeDto } from '../../types/task.type';
 import { serverMongoDataService } from './mongod-data.server.service';
 
 /**
@@ -8,18 +8,8 @@ import { serverMongoDataService } from './mongod-data.server.service';
 export namespace serverTasksDataService {
     const collectionName = 'tasks';
 
-    /**
-     * Gets the collection from the database.
-     * @returns {Promise<Collection>} The tasks collection.
-     */
-    const getCollection = async (): Promise<Collection> => {
-        const db = await serverMongoDataService.getDb();
-        return db.collection(collectionName);
-    };
-
     export const findTaskById = async (taskId: ObjectId): Promise<TaskTypeDto | null> => {
-        const collection = await getCollection();
-        return serverMongoDataService.findById(collection, taskId);
+        return serverMongoDataService.findById(collectionName, taskId);
     }
 
     /**
@@ -27,8 +17,7 @@ export namespace serverTasksDataService {
      * @returns {Promise<TaskType[]>} A promise that resolves to an array of tasks.
      */
     export const findAllTasks = async (userId: string): Promise<TaskTypeDto[]> => {
-        const collection = await getCollection();
-        return serverMongoDataService.findAll<TaskTypeDto>(collection, userId);
+        return serverMongoDataService.findAll<TaskTypeDto>(collectionName, userId);
     };
 
     /**
@@ -37,8 +26,7 @@ export namespace serverTasksDataService {
      * @returns {Promise<InsertOneResult>} A promise that resolves to the result of the insert operation.
      */
     export const saveTask = async (task: TaskTypeDto): Promise<InsertOneResult> => {
-        const collection = await getCollection();
-        return serverMongoDataService.insertOne<TaskTypeDto>(collection, task);
+        return serverMongoDataService.insertOne<TaskTypeDto>(collectionName, task);
     };
 
     /**
@@ -47,8 +35,7 @@ export namespace serverTasksDataService {
      * @returns {Promise<DeleteResult>} A promise that resolves to the result of the delete operation.
      */
     export const deleteTaskById = async (id: ObjectId): Promise<DeleteResult> => {
-        const collection = await getCollection();
-        return serverMongoDataService.deleteById(collection, id);
+        return serverMongoDataService.deleteById(collectionName, id);
     };
 
     /**
@@ -57,7 +44,6 @@ export namespace serverTasksDataService {
      * @returns {Promise<null | UpdateResult>} A promise that resolves to the result of the update operation, or null if the task does not exist.
      */
     export const updateTask = async (task: TaskTypeDto): Promise<null | UpdateResult> => {
-        const collection = await getCollection();
-        return serverMongoDataService.updateOne<TaskTypeDto>(collection, task);
+        return serverMongoDataService.updateOne<TaskTypeDto>(collectionName, task);
     };
 }

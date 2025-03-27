@@ -58,6 +58,17 @@
                 }
             }
 
+            &.editing-task {
+                border: $border-lighter;
+                p {
+                    opacity: 50%;
+                }
+
+                button {
+                    opacity: 50%;
+                }
+            }
+
             .task-item-content {
                 display: flex;
                 flex-direction: column;
@@ -92,5 +103,19 @@
 
     b {
         color: $foreground;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .new-task-form {
+        flex-direction: column !important;
+        input, button {
+            width: 100% !important;
+        }
+    }
+
+    .task-deadline {
+        flex-direction: column;
+        align-items: flex-start !important;
     }
 }

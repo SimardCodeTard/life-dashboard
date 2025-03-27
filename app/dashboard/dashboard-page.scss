@@ -1,7 +1,7 @@
 @import '/app/shared/variables.scss';
 
 .dashboard-page {
-    max-width: 120rem;
+    max-width: 100rem;
     width: 100%;
 
     display: flex;
@@ -9,7 +9,7 @@
     align-items: center;
     gap: 1rem;
 
-    &>* {
+    & > * {
         width: 100%;
     }
 
@@ -17,13 +17,18 @@
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         grid-gap: 1rem;
-    
-        .tasks-card {
-            grid-column: auto / span 3;
-        }
-    
+
         .calendar-card {
-            grid-column: auto / span 3;
+            grid-column: auto / span 4;
+        }
+
+        .tasks-card {
+            grid-column: 2 / span 3;
+            grid-row: auto / span 2;
+        }
+
+        .clock-card {
+            grid-row: 2 / span 1;
         }
     
         .chat-card {
@@ -47,6 +52,11 @@
 
         .weather-card {
             grid-column: auto / span 2;
+            grid-row: 3 / span 1;
+        }
+
+        .clock-card {
+            grid-row: 3 / span 1;
         }
 
         .calendar-card {
@@ -56,15 +66,39 @@
         .chat-card {
             grid-column: auto / span 3;
         }
+
+        .tasks-card {
+            grid-row: 2 / span 1;
+        }
     }
 }
 
 @media screen and (max-width: 800px) {
     .dashboard-page .dashboard-widgets-grid {
+        grid-template-columns: 1fr 1fr;
+
+        .card {
+            grid-column: 1 / span 2;
+        }
+
+        .weather-card {
+            grid-row: 3 / span 1;
+            grid-column: 2 / span 1;
+        }
+
+        .clock-card {
+            grid-column: 1 / span 1;
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .dashboard-page .dashboard-widgets-grid {
         grid-template-columns: 1fr;
 
         .card {
-            grid-column: 1 / 1;
+            grid-column: 1 / span 1;
+            grid-row: auto
         }
     }
 }

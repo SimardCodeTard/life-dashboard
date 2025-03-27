@@ -174,14 +174,14 @@ export default function Tasks({setIsLoading}: Readonly<{setIsLoading?: (isLoadin
                 </div>
                 <TaskForm userId={user?._id as ObjectId} onSubmit={onTaskFormSubmit} mode={isEditingTask ? 'edit' : 'new'} taskToEdit={taskToEdit}></TaskForm>
                 <div className="task-items-wrapper">
-                    {tasks.map((task: TaskType, key: number) => {
+                    {tasks.map((task: TaskType, _: number) => {
                         return <TaskItem taskItemEditEventEmitter={taskItemEditEventEmitter} deleteTask={deleteTask} updateTask={updateTask} task={task} key={`task-item-${task._id?.toString()}`} onTaskEditIconClicked={onTaskEditIconClicked}></TaskItem>
                     })}
                 </div>
                 {
                     tasks.length > 0 
-                    ?<p className="completed-tasks-count subtitle">{`${completedTasksCount} of ${tasks.length} tasks complete ${tasks.length === completedTasksCount ? ', good job !' : ''}`}</p>
-                    : <b>You have no tasks to do for now, add one to get started !</b>
+                    ? <p className="completed-tasks-count subtitle">{`${completedTasksCount} of ${tasks.length} tasks complete ${tasks.length === completedTasksCount ? ', good job !' : ''}`}</p>
+                    : <b>You&apos;re all clear for now !</b>
                 }
             </div>
         </div>

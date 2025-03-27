@@ -9,7 +9,7 @@ import { capitalize } from "@/app/utils/string.util";
 export default function Clock({ setIsLoading }: Readonly<{ setIsLoading?: (isLoading: boolean) => void }>) {
 
     const getSecondsString = (now: DateTime = DateTime.now()): string => `:${ now.second.toString().padStart(2, '0') }`;
-    const getHourString = (now: DateTime = DateTime.now()): string => `${ now.hour.toString().padStart(2, '0')  }`;
+    const getHourString = (now: DateTime = DateTime.now()): string => `${ now.hour.toString().padStart(2, '0') }:${now.minute.toString().padStart(2, '0')}`;
     const getDateString = (now: DateTime = DateTime.now()): string => `${capitalize(now.weekdayLong as string)} ${now.day} ${now.monthShort} ${now.year}`;
 
     const [dateDisplay, setDateDisplay] = useState('');

@@ -19,4 +19,10 @@ const postHandler = async (req: NextRequest): Promise<TaskNewResponseType> => {
     return serverTasksDataService.saveTask(task);
 }
 
-export const POST = async (req: NextRequest): Promise<Response> => Response.json(await postHandler(req).catch(handleAPIError));
+export const POST = async (req: NextRequest): Promise<Response> => {
+    try {
+        return Response.json(await postHandler(req));
+    } catch (err) {
+        return handleAPIError(err);
+    }
+}

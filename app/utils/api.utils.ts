@@ -45,7 +45,7 @@ export async function parseBody<T = unknown>(req: Request): Promise<T> {
  * @param error 
  * @returns an appropriate Response
  */
-export const handleAPIError = (error: Error): Response => {
+export const handleAPIError = (error: any): Response => {
     Logger.error(error);
 
     // If the error was not properly handled, it will not be an APIError
@@ -92,3 +92,10 @@ export const getUrlParam = (req: NextRequest, paramName: string): string => {
     if(param === null) throw new APIBadRequestError(`${paramName} is required`);
     return param;
 }
+
+export function sleep(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+  

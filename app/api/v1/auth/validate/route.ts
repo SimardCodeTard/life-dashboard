@@ -11,10 +11,10 @@ import { handleAPIError, parseBody } from "@/app/utils/api.utils";
  * @returns {Promise<Response>} - The response object.
  */
 
-const postHandler = async (request: Request): Promise<AuthValidateResponseType> => {
+const postHandler = async (req: Request): Promise<AuthValidateResponseType> => {
     // Parse the request body to extract the email, token and refreshToken
-    const { mail, token, refreshToken } = await parseBody<AuthValidateRequestBodyType>(request);
-            
+    const { mail, token, refreshToken } = await parseBody<AuthValidateRequestBodyType>(req);
+                    
     // Fetch the user data from mail
     const user = await serverUserDataService.findUserByMail(mail);
 
@@ -28,4 +28,10 @@ const postHandler = async (request: Request): Promise<AuthValidateResponseType> 
     return {...validationResult, user};
 }
 
-export const POST = async (req: Request): Promise<Response> => Response.json(await postHandler(req).catch(handleAPIError));
+export const POST = async (req: Request): Promise<Response> => {
+    try {
+        return Response.json(await postHandler(req));
+    } catch (err) {
+        return handleAPIError(err);
+    }
+}

@@ -13,7 +13,7 @@ export default function CalendarItem({event, color}: Readonly<{event: CalendarEv
             <span className="color-badge calendar-item-color-badge" style={{backgroundColor: color}}></span>
             <div className="calendar-item-content">
                 {event.summary}
-                {event.location && <button onClick={onLocationClick} className="subtitle location"><LocationOn></LocationOn> {event.location}</button>}
+                {event.location && <button onClick={onLocationClick} className="subtitle location"><LocationOn></LocationOn><span>{event.location}</span></button>}
             </div>
             <p className="subtitle">{`${event.dtStart.toFormat('HH:mm')}`}</p> 
         </div>

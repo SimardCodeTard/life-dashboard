@@ -36,17 +36,25 @@
             }
 
             input {
-                padding-left: 2.2rem;
-                padding-top: 1rem;
-                padding-bottom: 1rem;
+                padding: .5rem;
                 width: 100%;
-                font-size: 1.5rem;
+                font-size: 1.25rem;
             }
 
         }
 
         button {
+            padding: 0;
+            height: 3rem;
             width: auto;
+            aspect-ratio: 1/1;
         }
     }
+}
+
+@media screen and (max-width: 800px) {
+    .search-bar-input-container {
+        margin-right: .5rem !important;
+    }
+
 }

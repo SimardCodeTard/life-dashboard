@@ -18,4 +18,10 @@ const postHandler = async (req: Request): Promise<FavoritesNewResponseType> => {
   return serverFavoritesDataService.insertNewFavoriteItem(favoriteItem);
 }
 
-export const POST = async (req: Request): Promise<Response> => Response.json(await postHandler(req).catch(handleAPIError));
+export const POST = async (req: Request): Promise<Response> => {
+  try {
+    return Response.json(await postHandler(req));
+  } catch (err) {
+    return handleAPIError(err);
+  }
+}
