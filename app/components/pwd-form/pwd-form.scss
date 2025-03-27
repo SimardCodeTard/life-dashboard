@@ -1,0 +1,62 @@
+@import '/app/shared/variables.scss';
+
+.pwd-form {
+    align-items: flex-start;
+    h1, h2 {
+        margin: 0;
+    }
+
+    padding: 2rem;
+    background-color: $background-lighter;
+    box-shadow: $shadow-lg;
+
+    .keep-signed-in-check {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+
+        button[role="checkbox"] {
+            $checkboxSize: 1rem;
+            box-sizing: unset;
+            height: $checkboxSize !important;
+            width: $checkboxSize !important;
+        }
+    }
+
+    button[type="submit"] {
+        margin-top: 1rem;
+    }
+
+    .toggle-form-mode {
+        all: unset;
+        width: 100%;
+        text-align: center;
+        text-decoration: underline;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+
+    .error-text {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .25rem;
+        a {
+            font-weight: normal;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .toggle-form-mode {
+            width: fit-content;
+            margin-bottom: 1rem;
+            color: $foreground;
+        }
+    }
+
+    p.missing-field-error {
+        margin: 0;
+        justify-content: flex-start;
+    }
+}

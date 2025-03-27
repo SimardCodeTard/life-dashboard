@@ -1,14 +1,18 @@
-'use client'
-import { APIResponseStatuses } from "@/app/enums/api-response-statuses.enum";
-import axios, { AxiosResponse } from "axios";
+'use client';;
+import axios from "axios";
 import { Logger } from "../logger.service";
 import Cookies from 'js-cookie';
+import { UserTypeClient, UserTypeServer } from "@/app/types/user.type";
+import { AuthLoginRequestBodyType, AuthLoginResponseType, AuthRegisterRequestBodyType, AuthRegisterResponseType, AuthValidateRequestBodyType, AuthValidateResponseType } from "@/app/types/api.type";
+import { removeUserFromLocalStorage, setUserInLocalStorage } from "@/app/utils/localstorage.utils";
+import { CookieNamesEnum } from "@/app/enums/cookies.enum";
+import { axiosClientService } from "./axios.client.service";
 
 export namespace clientLoginService {
 
-    export let authToken: string;
-
     const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/auth';
+
+    export let authToken: string;
 
     /**
      * Checks if a token is valid (not null or undefined).
@@ -25,34 +29,44 @@ export namespace clientLoginService {
      * @param refreshToken - The refresh token to validate.
      * @returns {Promise<boolean>} - True if tokens are valid, otherwise false.
      */
-    const validateTokens = async (token: string | null | undefined, refreshToken: string | null | undefined): Promise<boolean> => {
-        if (!checkToken(token) && !checkToken(refreshToken)) {
-            return false;
+    const validateTokens = async (body: AuthValidateRequestBodyType): Promise<{result: boolean, user?: UserTypeClient}> => {
+        // Check if token or refreshToken is defined
+        if (!checkToken(body.token) && !checkToken(body.refreshToken)) {
+            // None are defined, no need to call the API
+            return {result: false};
         }
 
-        const validateRes = await axios.post(apiUrl + '/validate', { token, refreshToken });
+        // Call to auth/validate
+        const {valid, token: newToken, user} = (await axiosClientService.POST<AuthValidateResponseType, AuthValidateRequestBodyType>(apiUrl + '/validate', body)).data;
 
-        if (validateRes.data === true) {
+        if (valid === true && typeof newToken !== 'string') {
             // If the token was valid
-            return true;
-        } else if (typeof validateRes.data.token === 'string') {
+            return {result: true, user: user};
+        } else if (valid && typeof newToken === 'string') {
             // If the token was invalid but the refresh token was valid
-            saveToken(validateRes.data.token);
-            return true;
+            // Save the new token
+            saveToken(newToken);
+            return {result: true, user: user};
         }
 
         // If none of the tokens were valid
-        return false;
+        return {result: false};
     };
 
     /**
-     * Checks if a password is valid (not empty, null, or undefined).
-     * @param password - The password to check.
-     * @returns {Promise<boolean>} - True if the password is valid, otherwise false.
+     * Save the token and refresh token (if defined) in cookies, save the user to local sotrage
+     * @param token The auth token
+     * @param user The user object
+     * @param refreshToken The auth refresh token
      */
-    const checkPassword = async (password?: string | null): Promise<boolean> => {
-        return password !== '' && password !== undefined && password !== null;
-    };
+    const saveLoginResults = (token: string, user: UserTypeClient, refreshToken?: string): void => {
+        // Save the token as a cookie
+        saveToken(token);
+        // Save the refresh token as a cookie if defined
+        refreshToken && saveRefreshToken(refreshToken);
+        // Save ther user in session storage
+        setUserInLocalStorage(user);
+    }
 
     /**
      * Logs in the user using the provided password and tokens.
@@ -61,72 +75,55 @@ export namespace clientLoginService {
      * @param refreshToken - The user's refresh token.
      * @returns {Promise<{token: string, refreshToken: string}>} - The new tokens.
      */
-    export const login = async (password: string, token: string | undefined, refreshToken: string | undefined): Promise<{ token: string, refreshToken: string }> => {
-        if (await validateTokens(token, refreshToken)) {
-            if (!token) token = Cookies.get('token');
-            return {
-                token: token as string,
-                refreshToken: refreshToken as string
-            };
-        } else {
-            if (!await checkPassword(password)) {
-                throw new Error('Invalid password');
-            }
-            return getTokens(password);
-        }
+    export const login = async (body: AuthLoginRequestBodyType): Promise<UserTypeClient> => {
+        // Post to /auth/login
+        const res = await axiosClientService.POST<AuthLoginResponseType, AuthLoginRequestBodyType>(apiUrl + '/login', body, { headers: { 'Content-Type': 'application/json' } });
+        saveLoginResults(res.data.token, res.data.user, res.data.refreshToken);
+
+        return res.data.user;
     };
 
-    /**
-     * Retrieves new tokens from the server using the provided password.
-     * @param password - The user's password.
-     * @returns {Promise<{token: string, refreshToken: string}>} - The new tokens.
-     */
-    const getTokens = (password: string): Promise<{ token: string, refreshToken: string }> => {
-        return axios.post<{ token: string, refreshToken: string }>(apiUrl, { password }, { headers: { 'Content-Type': 'application/json' } })
-            .then((res: AxiosResponse) => {
-                if (res.status === APIResponseStatuses.FORBIDDEN) {
-                    throw new Error('Invalid password');
-                } else {
-                    return {
-                        token: res.data.token,
-                        refreshToken: res.data.refreshToken
-                    };
-                }
-            });
-    };
+    export const register = async (body: AuthRegisterRequestBodyType): Promise<UserTypeClient> => {
+        // Post to /auth/regiser
+        const res = await axiosClientService.POST<AuthRegisterResponseType, AuthRegisterRequestBodyType>(apiUrl + '/register', body);
+        saveLoginResults(res.data.token, res.data.user, res.data.refreshToken);
+
+        return res.data.user;
+    }
 
     /**
      * Automatically authenticate the user using stored tokens.
      * @returns {Promise<boolean>} - Returns true if authentication is successful, otherwise false.
      */
-    export const autoAuth = async (): Promise<boolean> => {
+    export const autoAuth = async (user: UserTypeClient): Promise<{result: boolean, user?: UserTypeClient}> => {
         try {
             // Retrieve tokens from cookies
-            const token = Cookies.get('token');
-            const refreshToken = Cookies.get('refresh-token');
+            const token = Cookies.get(CookieNamesEnum.TOKEN);
+            const refreshToken = Cookies.get(CookieNamesEnum.REFRESH_TOKEN);
 
             // Attempt to login using the retrieved tokens
-            const res = await login('', token, refreshToken);
-
-            Logger.debug(JSON.stringify(res));
-
-            // Check if both tokens are present in the response
-            if (res.token && res.refreshToken) {
-                // Save the new tokens in cookies
-                saveToken(res.token);
-                saveRefreshToken(res.refreshToken);
-                Logger.debug('Automatic login success');
-                return true;
-            } else {
-                Logger.debug('Automatic login failed');
-                return false;
-            }
+            return validateTokens({mail: user.mail, token, refreshToken});
         } catch (e) {
             Logger.debug('Automatic login failed, an error occurred');
             Logger.error(e as Error);
-            return false;
+            return {result: false};
         }
     };
+
+    /**
+     * Logs out the user.
+     * Deletes the tokens cookies and removes the user from local storage.
+     */
+    export const logout = (): void => {
+        // Delete the token cookie
+        deleteTokenCookie();
+        // Delete the refresh token cookie
+        deleteRefreshTokenCookie();
+        // Remove the user from session storage
+        removeUserFromLocalStorage();
+
+        window.location.replace('/login')
+    }
 
     /**
      * Saves the token in cookies.
@@ -134,7 +131,7 @@ export namespace clientLoginService {
      * @param expires - The expiration time in days.
      */
     const saveToken = (token: string, expires: number = 1): void => {
-        Cookies.set('token', token, { expires, secure: true }); // TODO: HTTP ONLY
+        Cookies.set(CookieNamesEnum.TOKEN, token, { expires, secure: true, sameSite: 'strict'});
     };
 
     /**
@@ -143,6 +140,16 @@ export namespace clientLoginService {
      * @param expires - The expiration time in days.
      */
     const saveRefreshToken = (refreshToken: string, expires: number = 90): void => {
-        Cookies.set('refresh-token', refreshToken, { expires, secure: true }); // TODO: HTTP ONLY
+        Cookies.set(CookieNamesEnum.REFRESH_TOKEN, refreshToken, { expires, secure: true, sameSite: 'strict'});
     };
+
+    /**
+     * Deletes the token cookie.
+     */
+    const deleteTokenCookie = (): void => Cookies.remove(CookieNamesEnum.TOKEN, {secure: true, sameSite: 'strict'});
+
+    /**
+     * Deletes the refresh token cookie.
+     */
+    const deleteRefreshTokenCookie = (): void => Cookies.remove(CookieNamesEnum.REFRESH_TOKEN, {secure: true, sameSite: 'strict'});
 }

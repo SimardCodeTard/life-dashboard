@@ -1,39 +1,51 @@
+'use client';
 import Tasks from "../components/dashboard-widgets/tasks/task-list.component";
-import Weather from "../components/dashboard-widgets/weather.component";
 import Calendar from "../components/dashboard-widgets/calendar/calendar.component";
 import Clock from "../components/dashboard-widgets/clock.component";
-import Card from "../components/shared/card.component";
 import SearchBar from "../components/dashboard-widgets/search-bar/search-bar.component";
+import Greeting from "../components/dashboard-widgets/greeting/greeting.component";
 import FavoritesBar from "../components/dashboard-widgets/favorites-bar/favorites-bar";
-import Chat from "../components/dashboard-widgets/chat/chat.component";
+import Card from "../components/shared/card.component";
+import Weather from "../components/dashboard-widgets/weather/weather.component";
+import { redirect } from "next/navigation"
 
-import './dashboard-page.css'
+import './dashboard-page.scss';
+import { useEffect } from "react";
+import { getUserFromLocalStorage } from "../utils/localstorage.utils";
 
 export default function DashboardPage() {
 
+    useEffect(() => {
+        if(!getUserFromLocalStorage()) {
+            redirect('/login');
+        }
+    })
+
     return (
-        <main>
+        <main className="dashboard-page">
+            <Greeting></Greeting>
+            <Card className="search-bar-card">
+                 <SearchBar></SearchBar>
+            </Card>
 
-            <div className="left-section dashboard-section">
-                <Card><Tasks></Tasks></Card>
-                <Card><Weather></Weather></Card>
-            </div>
-
-            <div className="center-col">
-                <div className="top-section dashboard-section">
-                    <SearchBar></SearchBar>
+            <div className="dashboard-widgets-grid">
+                <Card className="calendar-card">
+                    <Calendar></Calendar>
+                </Card>
+                <Card className="tasks-card">
+                    <Tasks></Tasks>
+                </Card>
+                <Card className="weather-card">
+                    <Weather></Weather>
+                </Card>
+                <Card className="clock-card">
                     <Clock></Clock>
-                </div>
-
-                <div className="bottom-section dashboard-section">
-                    <FavoritesBar></FavoritesBar>
-                </div>
+                </Card>
             </div>
 
-            <div className="right-section dashboard-section">
-                    <Card><Calendar></Calendar></Card>
-                    <Card><Chat></Chat></Card>
-            </div>
+            <Card className="favorites-bar-card">
+                <FavoritesBar></FavoritesBar>
+            </Card>
         </main>
     )
 }

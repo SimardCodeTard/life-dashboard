@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import { APIBadRequestError, APIError } from "../errors/api.error";
 import { NextRequest } from "next/server";
 import { Logger } from "../services/logger.service";
+import { APIResponseStatuses } from "../enums/api-response-statuses.enum";
 
 /**
  * Parse the body of a request as JSON.
@@ -44,18 +45,22 @@ export async function parseBody<T = unknown>(req: Request): Promise<T> {
  * @param error 
  * @returns an appropriate Response
  */
-export const handleAPIError = (error: Error): Response => {
+export const handleAPIError = (error: any): Response => {
     Logger.error(error);
 
     // If the error was not properly handled, it will not be an APIError
     // Return a generic 500 error response
-    if(!(error instanceof APIError)) return new Response(JSON.stringify({
-        success: false,
-        error: { status: 500, message: 'Unhandeled internal error: ' + error.message }
-    }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    if(!(error instanceof APIError)) {
+        Logger.debug('Error was not an APIError, returning generic 500 error response');
+        return new Response(JSON.stringify({
+            success: false,
+            error: { status: 500, message: 'Unhandeled internal error: ' + error.message }
+        }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+    Logger.debug('Error was an APIError, returning an appropriate error response with status code ' + error.status);
 
     // The error was properly handled, return an appropriate error response
-    const apiError = error as APIError;
+    const apiError = error;
     return new Response(JSON.stringify({
         success: false,
         error: { status: apiError.status, message: error.message }
@@ -72,7 +77,7 @@ export const handleAPIError = (error: Error): Response => {
  */
 export const handleAxiosError = (err: AxiosError): void => {
     Logger.error(err);
-    throw new APIError(err.response?.statusText ?? 'Unknown Error', err.response?.status ?? 500);
+    throw new APIError(err.response?.statusText ?? 'Unknown Error', APIResponseStatuses.INTERNAL_SERVER_ERROR ?? 500);
 }
 
 /**
@@ -87,3 +92,10 @@ export const getUrlParam = (req: NextRequest, paramName: string): string => {
     if(param === null) throw new APIBadRequestError(`${paramName} is required`);
     return param;
 }
+
+export function sleep(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+  

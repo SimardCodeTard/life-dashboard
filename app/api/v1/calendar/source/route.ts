@@ -1,5 +1,8 @@
+import { APIBadRequestError } from "@/app/errors/api.error";
 import { serverCalendarDataService } from "@/app/services/server/calendar-data.server.service";
+import { CalendarSourceResponseType } from "@/app/types/api.type";
 import { handleAPIError } from "@/app/utils/api.utils";
+import { NextRequest } from "next/server";
 
 // Force dynamic rendering for this route
 export const dynamic = 'force-dynamic';
@@ -13,11 +16,21 @@ export const dynamic = 'force-dynamic';
  * 
  * @returns {Promise<Response>} A promise that resolves to a JSON response containing all calendar sources.
  */
-export const GET = async () => {
-    try {
-        const calendarSources = await serverCalendarDataService.findAllCalendarSources();
-        return Response.json(calendarSources);
-    } catch (error) {
-        return handleAPIError(error as Error);
+
+const getHandler = async (req: NextRequest): Promise<CalendarSourceResponseType> => {
+    const userId = req.nextUrl.searchParams.get('userId');
+
+    if(userId === null) {
+        throw new APIBadRequestError('Missing required query parameters.');
     }
-};
+    
+    return await serverCalendarDataService.findAllCalendarSources(userId);
+}
+
+export const GET = async (req: NextRequest): Promise<Response> => {
+    try {
+        return Response.json(await getHandler(req));
+    } catch (err) {
+        return handleAPIError(err);
+    }
+}

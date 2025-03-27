@@ -1,7 +1,7 @@
 import { serverFavoritesDataService } from "@/app/services/server/favorites-data.server.service";
+import { FavoritesUpdateRequestBodyType, FavoritesUpdateResponseType } from "@/app/types/api.type";
 import { FavoriteItemType } from "@/app/types/favorites.type";
 import { handleAPIError, parseBody } from "@/app/utils/api.utils";
-import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Handles the POST request to update favorite items.
@@ -9,18 +9,19 @@ import { NextRequest, NextResponse } from "next/server";
  * @param req - The incoming request object
  * @returns A promise that resolves to a response object
  */
-export const POST = async (req: NextRequest): Promise<Response> => {
+
+const putHandler = async (req: Request): Promise<FavoritesUpdateResponseType> => {
+  // Parse the request body to get the favorite item data
+  const favoriteItem: FavoriteItemType = await parseBody<FavoritesUpdateRequestBodyType>(req);
+      
+  // Insert the new favorite item into the database
+  return serverFavoritesDataService.updateFavorite(favoriteItem);
+}
+
+export const PUT = async (req: Request): Promise<Response> => {
   try {
-    // Parse the request body to get the favorite item data
-    const favoriteItem: FavoriteItemType = await parseBody<FavoriteItemType>(req);
-    
-    // Insert the new favorite item into the database
-    await serverFavoritesDataService.insertNewFavoriteItem(favoriteItem);
-    
-    // Return a success response
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    // Handle any errors that occur during the process
-    return handleAPIError(error as Error);
+    return Response.json(await putHandler(req));
+  } catch (err) {
+    return handleAPIError(err);
   }
-};
+}

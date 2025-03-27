@@ -1,95 +1,144 @@
-import { Task, TaskDto } from "@/app/types/task.type";
+import { TaskType } from "@/app/types/task.type";
 import TaskCheckbox from "./task-checkbox.component";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { EditNote } from "@mui/icons-material";
+import { EditNote, Cancel } from "@mui/icons-material";
 import { DateTime } from "luxon";
-import ModalComponent from "../../shared/modal.component";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { clientTaskDataService } from "@/app/services/client/tasks-data-client.service";
-
-import './tasks.css';
+import { useEffect, useState } from "react";
 import Loader from "../../shared/loader/loader.component";
+import EventEmitter from "@/app/lib/event-emitter";
+import { EventKeysEnum, TaskEditEventsEnum } from "@/app/enums/events.enum";
+import { Logger } from "@/app/services/logger.service";
+import { ObjectId } from "mongodb";
 
-export default function TaskItem ({task, deleteTask, updateTask}: 
-    {task: Task, deleteTask: (task: TaskDto) => Promise<void>, updateTask: (task: TaskDto, status: boolean) => Promise<void>}
+import './tasks.scss';
+
+export default function TaskItem (
+    { 
+        task,
+        deleteTask,
+        updateTask,
+        onTaskEditIconClicked,
+        taskItemEditEventEmitter}: 
+    Readonly<{ 
+        task: TaskType,
+        deleteTask: (task: TaskType) => Promise<void>,
+        updateTask: (task: TaskType, status: boolean) => Promise<void>,
+        onTaskEditIconClicked: (task: TaskType) => void, 
+        taskItemEditEventEmitter: EventEmitter}>
 ) {
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
 
-    const formatTaskDateToInput = (date: DateTime) => date.toFormat('yyyy\'-\'MM\'-\'dd');
+    useEffect(() => {
+        const onNewTaskItemEditEvent = (value: TaskEditEventsEnum, taskId: ObjectId) => {
+            Logger.debug('TaskItem: onNewLocalLoadEvent ' + value);
+            if(value === TaskEditEventsEnum.TASK_ITEM_EDIT_START && taskId === task._id) {
+                setIsLoading(true);
+                setIsEditing(true);
+            } else if (
+                (value === TaskEditEventsEnum.TASK_ITEM_EDIT_END 
+                || value === TaskEditEventsEnum.TASK_ITEM_EDIT_TASK_REPLACED) 
+                && taskId === task._id)
+            {
+                setIsLoading(false);
+                setIsEditing(false);
+            }
+        }
 
-    const [editModalOpened, setEditModalOpen] = useState(false);
-    const [taskTitle, setTaskTitle] = useState(task.title);
-    const [taskDeadline, setTaskDeadline] = useState(task.deadline?.isValid ? formatTaskDateToInput(task.deadline as DateTime) : '');
+        taskItemEditEventEmitter.on(EventKeysEnum.TASK_ITEM_EDIT, onNewTaskItemEditEvent);
+
+        return () => {
+            taskItemEditEventEmitter.off(EventKeysEnum.TASK_ITEM_EDIT, onNewTaskItemEditEvent);
+        }
+    }, []);
 
     const deadlineIsPassed = (): boolean => {
         if(!task.deadline) return false;
-        return DateTime.now().toMillis() > task.deadline.toMillis();
+        const now = DateTime.now();
+        const diff = getTimeDiffInDays(now, task.deadline);
+        console.log('deadlineIsPassed', diff < 0)
+        return diff < 0;
     }
 
     let [day, month, year]: string[] | undefined[] = task.deadline
         ? [task.deadline.day.toString(), task.deadline.month.toString(), task.deadline.year.toString()] 
         : [undefined, undefined, undefined];
         
-    if (Number(day) < 10) {
-        day = '0' + day;
-    } if(Number(month) < 10) {
-        month = '0' + month
-    }
+    day = day?.padStart(2, "0")
+    month = month?.padStart(2, "0")
 
-    const onTaskEditFormSubmit = (event: FormEvent) => {
-        event.preventDefault();
-        const newTaskTitle: string = (event.target as any)[0].value;
-        const newTaskDeadline: string = (event.target as any)[1].value;
-        onTaskUpdate({...task, title: newTaskTitle, deadline: newTaskDeadline}, task.completed)
-        setEditModalOpen(false);
-    }
 
-    const taskTitleInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskTitle(e.currentTarget.value);
-
-    const taskDeadlineInputChange = (e: ChangeEvent<HTMLInputElement>) => setTaskDeadline(e.currentTarget.value);
-
-    const onTaskDelete = (task: TaskDto) => {
+    const onTaskDelete = (task: TaskType) => {
         setIsLoading(true);
-        deleteTask(task).then(() => setIsLoading(false));
+        deleteTask(task)
+        .then(() => setIsLoading(false));
     }
 
-    const onTaskUpdate = (task: TaskDto, completed: boolean) => {
+    const onTaskUpdate = (task: TaskType, completed: boolean) => {
         setIsLoading(true);
-        updateTask(task, completed).then(() => setIsLoading(false));
+        updateTask(task, completed)
+        .then(() => setIsLoading(false));
     }
-    
-    const getTimeDiffInDays = (deadline: DateTime): string => {
-        const diff = deadline.diffNow();
-        if(diff.as('days') > 0) {
-            return `${Math.floor(diff.as('days'))} days`;
+
+    const getTimeDiffInDays = (a: DateTime, b: DateTime): number => b.set({hour: a.hour, minute: a.minute, second: a.second, millisecond: a.millisecond}).diff(a).as('days')
+
+    const getTimeDiffLabel = (deadline: DateTime): string => {
+        const now = DateTime.now();
+        const diff = getTimeDiffInDays(now, deadline);
+        console.log(deadline.toISODate(), diff)
+        if(diff >= 0) {
+            if(diff > 1) {
+                return `${Math.floor(diff)} days`;
+            }
+            return `${Math.floor(diff)} day`;
         } else {
-            return `${Math.floor(diff.as('days')) * - 1} days`;
+            if(diff <= - 2) {
+                return `${Math.floor(diff) * - 1} days`;
+            }
+            return `${Math.floor(diff) * - 1} day`;
         }
     }
 
+    const onTaskEditCancel = () => {
+        setIsEditing(false);
+        onTaskEditIconClicked(task);
+    }
+
+    const onTaskEdit = () => {
+        setIsEditing(true);
+        onTaskEditIconClicked(task);
+    }
+
+    const getDeadlineDiff = () => {
+        if(task.completed || !task.deadline?.isValid) {
+            return ''
+        } 
+
+        if(deadlineIsPassed()) {
+            return `(${getTimeDiffLabel(task.deadline)} late)`
+        }
+
+        return `(${getTimeDiffLabel(task.deadline)} remaining)`;
+    }
     return(
-        <div className={`task-item ${task.completed && 'completed-task'}`}>
-            <div className="task-item-wrapper">
-                <div className="task-item-content">
-                    <TaskCheckbox updateTaskStatus={(status) => onTaskUpdate(clientTaskDataService.mapTaskToTaskDto(task), status)} completed={task.completed}></TaskCheckbox> 
-                    <p>{task.title}</p>
-                    <p className="subtitle task-remaining-time">{task.deadline?.isValid && (deadlineIsPassed() ? `(${getTimeDiffInDays(task.deadline)} late)` : `(${getTimeDiffInDays(task.deadline)} remaining)`)}</p>
-                    <span className="actions-wrapper">
-                        <EditNote onClick={() => setEditModalOpen(true)}></EditNote>
-                        <DeleteIcon onClick={() => onTaskDelete(clientTaskDataService.mapTaskToTaskDto(task))}></DeleteIcon>
-                    </span>
+        <div className={`task-item ${task.completed && 'completed-task'} ${isEditing && 'editing-task'}`}>
+            <TaskCheckbox disabled={isLoading || isEditing} updateTaskStatus={(status) => onTaskUpdate(task, status)} completed={task.completed}></TaskCheckbox> 
+            <div className='task-item-content'>
+                <p className="task-item-title">{task.title}</p>
+                <div className={`task-deadline subtitle`}>
+                    <p>{task.deadline && `Deadline: ${day}/${month}/${year}`}</p>
+                    <p className={deadlineIsPassed() ? 'passed-task-deadline' : ''}>{getDeadlineDiff()}</p> 
                 </div>
-                <p className={`task-deadline subtitle ${deadlineIsPassed() && 'passed-task-deadline'}`}>{task.deadline && `Deadline: ${day}/${month}/${year}`}</p>
             </div>
+            <span className="actions-wrapper">
+                {isEditing 
+                    ? <Cancel onClick={() => onTaskEditCancel()}/> 
+                    : <EditNote onClick={() => onTaskEdit()}></EditNote>
+                }
+                <DeleteIcon onClick={() => onTaskDelete(task)}></DeleteIcon>
+            </span>
             {isLoading && <Loader></Loader>}
-            <ModalComponent modalOpened={editModalOpened} setModalOpened={setEditModalOpen}>
-                <form onSubmit={onTaskEditFormSubmit}>
-                    <input autoFocus={true} value={taskTitle} onChange={taskTitleInputChange} type="text" placeholder='Name'></input>
-                    <input type="date" value={taskDeadline} onChange={taskDeadlineInputChange} ></input>
-                    <button>Save</button>
-                </form>
-            </ModalComponent>
         </div>
     )
 }

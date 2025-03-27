@@ -1,4 +1,7 @@
+import { APINotFoundError } from "@/app/errors/api.error";
 import { serverLoginService } from "@/app/services/server/login.server.service";
+import { serverUserDataService } from "@/app/services/server/user-data.server.service";
+import { AuthValidateRequestBodyType, AuthValidateResponseType } from "@/app/types/api.type";
 import { handleAPIError, parseBody } from "@/app/utils/api.utils";
 
 /**
@@ -7,18 +10,28 @@ import { handleAPIError, parseBody } from "@/app/utils/api.utils";
  * @param {Request} request - The incoming request object.
  * @returns {Promise<Response>} - The response object.
  */
-export const POST = async (request: Request): Promise<Response> => {
-    try {
-        // Parse the request body to extract token and refreshToken
-        const { token, refreshToken } = await parseBody<{ token: string, refreshToken: string }>(request);
-        
-        // Validate the token or refresh token using the server login service
-        const validationResult = await serverLoginService.validateTokenOrRefreshToken({ token, refreshToken });
-        
-        // Return the validation result as a JSON response
-        return Response.json(validationResult);
-    } catch (error) {
-        // Handle any errors that occur during the process
-        return handleAPIError(error as Error);
+
+const postHandler = async (req: Request): Promise<AuthValidateResponseType> => {
+    // Parse the request body to extract the email, token and refreshToken
+    const { mail, token, refreshToken } = await parseBody<AuthValidateRequestBodyType>(req);
+                    
+    // Fetch the user data from mail
+    const user = await serverUserDataService.findUserByMail(mail);
+
+    if(user === null) {
+        throw new APINotFoundError('User not found');
     }
-};
+
+    // Validate the token or refresh token using the server login service
+    const validationResult = await serverLoginService.validateTokenOrRefreshToken({ token, refreshToken, user });
+
+    return {...validationResult, user};
+}
+
+export const POST = async (req: Request): Promise<Response> => {
+    try {
+        return Response.json(await postHandler(req));
+    } catch (err) {
+        return handleAPIError(err);
+    }
+}

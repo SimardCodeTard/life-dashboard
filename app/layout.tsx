@@ -1,11 +1,14 @@
 import type { Metadata } from 'next'
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import './globals.css'
+import { Inter } from "next/font/google"
+import './globals.scss'
 
 export const metadata: Metadata = {
   title: 'Life Dashboard',
   description: 'apanyan',
 }
+
+const inter = Inter({ subsets: ["latin"] })
 
 export default function RootLayout({
   children,
@@ -14,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className={inter.className}>
         <SpeedInsights/>
         {children}
       </body>

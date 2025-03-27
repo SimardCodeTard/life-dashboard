@@ -1,4 +1,5 @@
 import { serverOpenAIService } from "@/app/services/server/openai-server.service";
+import { ChatResponseType } from "@/app/types/api.type";
 import { ChatMessageType } from "@/app/types/chat.type";
 import { handleAPIError, parseBody } from "@/app/utils/api.utils";
 import { NextRequest } from "next/server";
@@ -11,18 +12,17 @@ export const dynamic = 'force-dynamic';
  * @param req - The incoming request object.
  * @returns A promise that resolves to a Response object.
  */
-export const POST = async (req: NextRequest): Promise<Response> => {
+
+const postHandler = async (req: Request): Promise<ChatResponseType> => {
+    const chatMessage: ChatMessageType = await parseBody<ChatMessageType>(req);
+
+    return serverOpenAIService.nextMessage(chatMessage);
+}
+
+export const POST = async (req: Request): Promise<Response> => {
     try {
-        // Parse the request body to get the chat message
-        const chatMessage: ChatMessageType = await parseBody<ChatMessageType>(req);
-        
-        // Get the next message from the OpenAI service
-        const responseMessage = await serverOpenAIService.nextMessage(chatMessage);
-        
-        // Return the response as JSON
-        return Response.json(responseMessage);
-    } catch (error) {
-        // Handle any errors that occur during the process
-        return handleAPIError(error as Error);
+        return Response.json(await postHandler(req));
+    } catch (err) {
+        return handleAPIError(err);
     }
-};
+}

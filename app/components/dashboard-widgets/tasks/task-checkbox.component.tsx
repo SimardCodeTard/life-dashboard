@@ -1,19 +1,16 @@
 "use client"
-import { ChangeEvent, useState } from "react";
+import Checkbox from "../../shared/checkbox.component";
 
-export default function TaskCheckbox({completed, updateTaskStatus}: {completed: boolean, updateTaskStatus: (status: boolean) => void}) {
-
-    const [isCompleted, setIsCompleted] = useState(completed);
+export default function TaskCheckbox(
+    { completed, updateTaskStatus, disabled = false}
+    : Readonly<{ completed: boolean, updateTaskStatus: (status: boolean) => void, disabled: boolean}>
+) {
 
     const onStatusChange = (): void => {
-        updateTaskStatus(!isCompleted)
-        setIsCompleted(!isCompleted);
+        updateTaskStatus(!completed)
     }
 
     return (
-        <input className="task-checkbox" 
-            onChange={(_e: ChangeEvent<HTMLInputElement>) => onStatusChange()}
-             checked={isCompleted} type="checkbox">
-        </input>
+        <Checkbox onChange={onStatusChange} disabled={disabled} checked={completed}></Checkbox>
     )
 }

@@ -1,0 +1,243 @@
+@import '/app/shared/variables.scss';
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    max-width: 100vw;
+    overflow-x: hidden;
+    min-height: 100%;
+    min-height: 100dvh; /* I LOVE DVH I WILL GIVE MY LIFE FOR DVH AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH */
+    color: $foreground;
+    background-color: $background;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: Inter 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 1rem;
+    margin: 0;
+}
+
+main {
+    min-height: 100%;
+    min-height: 100dvh;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+// Typography
+
+h1 {
+    font-weight: bold;
+    font-size: 3rem;
+}
+
+h2 {
+    font-weight: medium;
+    font-size: 1.25rem;
+}
+
+h3 {
+    font-weight: medium;
+    font-size: 1rem;
+}
+
+h4 {
+    font-weight: lighter;
+    font-size: 1rem;
+}
+
+h5 {
+    font-weight: lighter;
+    font-size: 1rem;
+}
+
+h6 {
+    font-weight: lighter;
+    font-size: .75rem;
+}
+
+b {
+    color: $accent;
+}
+
+.subtitle {
+    font-weight: 400;
+    color: $foreground-light;
+}
+
+*:focus {
+    outline: $focus-outline;
+    outline-offset: 4px;
+}
+
+input, textarea {
+    $padding-y: .75rem;
+    $padding-x: .5rem;
+
+    background-color: transparent;
+    border: $border;
+    color: $foreground;
+    border-radius: .5rem;
+    padding: $padding-y $padding-x;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    height: calc(3rem - #{$padding-y * 2});
+}
+
+button {
+    $padding-x: 2rem;
+    $padding-y: 0;
+
+    background-color: $accent;
+    color: $foreground;
+    border: $border;
+    padding: $padding-y $padding-x;
+    border-radius: .5rem;
+    font-weight: 500;
+    font-size: 1.25rem;
+    height: calc(3rem - #{$padding-y * 2});
+    cursor: pointer;
+
+    transition: box-shadow ease .5s;
+    box-shadow: $shadow;
+
+    &:hover {
+        transition: box-shadow ease .25s;
+        box-shadow: $shadow-lg;
+    }
+
+    &:active {
+        transition: box-shadow ease .25s;
+        box-shadow: $shadow-inset;
+    }
+
+    &[disabled] {
+        background-color: $foreground-light;
+        color: $background-lighter;
+        cursor: not-allowed;
+    }
+
+    &.delete-button {
+        background-color: $error;
+    }
+}
+
+select {
+    $padding-y: .75rem;
+    $padding-x: 1rem;
+
+    background-color: transparent;
+    border: $border;
+    color: $foreground;
+    border-radius: .5rem;
+    padding: $padding-y $padding-x;
+    font-weight: 500;
+    font-size: 1.25rem;
+    line-height: 1.25rem;
+}
+
+button[role="checkbox"] {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    background-color: transparent;
+    border: $border-checkbox;
+    border-radius: .25rem;
+    vertical-align: middle;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: border-radius ease .25s;
+    color: $foreground;
+
+    .check-icon {
+        font-size: 1rem;
+    }
+}
+
+button[role="checkbox"][aria-checked="true"] {
+    background-color: $accent;
+    outline: none;
+    transition: border-radius ease .25s;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    border: $border;
+    border-radius: .5rem;
+    padding: .5rem;
+    
+    input, button:not(button[role="checkbox"]), textarea {
+        margin: 0;
+        min-height: 2rem;
+        width: 100% ;
+    }
+
+    input {
+        height: 3rem;
+
+        &.error {
+            outline: $error-outline;
+        }
+    }
+
+
+    button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: .2rem;
+    }
+}
+
+.actions-wrapper {
+    cursor: pointer;
+    color: $text-lighter;
+    transition: scale ease .25s;
+    display: flex;
+    gap: .2rem;
+    align-items: center;
+    
+    svg:hover {
+        scale: 1.1;
+        color: $foreground;
+        transition: scale ease .1s;
+    }
+}
+
+.color-badge {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+.loader > * {
+    pointer-events: auto;
+}
+
+.error-text {
+    color: $error;
+}

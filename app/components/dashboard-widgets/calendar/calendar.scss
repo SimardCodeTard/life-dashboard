@@ -1,0 +1,279 @@
+@import '/app/shared/variables.scss';
+
+.calendar {
+    .calendar-side-panel {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+
+        .calendar-side-panel-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            .calendar-source-wrapper {
+                display: flex;
+                flex-direction: column;
+                
+                .calendar-source {
+                    margin-bottom: .5rem;
+                    padding-bottom: .5rem;
+
+                    .calendar-source-content-wrapper {
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                        position: relative;
+                        border-radius: .5rem;
+
+                        p {
+                            text-wrap: nowrap;
+                            text-overflow: ellipsis;
+                            overflow: scroll;
+                            white-space: nowrap;
+                        }
+            
+                        .calendar-source-actions {
+                            margin-left: auto;
+                            display: flex;
+                            gap: .5rem;
+                            
+                            & > * {
+                                height: 1.5rem;
+                                width: 1.5rem;
+                                cursor: pointer;
+                            }
+                        }
+                    }
+
+                    &:not(:last-child) {
+                        border-bottom: $border;
+                    }
+                }
+            }
+    
+        }
+    }
+
+    .card-body {
+
+        display: flex;
+    
+        .calendar-main-panel {
+            flex-grow: 1;
+            position: relative;
+
+            .calendar-render {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                margin-bottom: 1rem;
+                justify-items: center;
+
+                > span {
+                    text-align: center;
+                    width: 100%;
+                }
+
+                .calendar-day {
+                    all: unset;
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;	
+                    padding: .25rem;
+
+                    &:focus {
+                        outline: $focus-outline;
+                        outline-offset: -4px;
+                    }
+
+                    .calendar-day-content {
+                        background-color: $background;
+                        border-radius: .25rem;
+                        width: calc(100% - .5rem);
+                        height: 4rem;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        position: relative;
+                        cursor: pointer;
+            
+                        &.selected-calendar-day {
+                            background-color: $accent;
+                            color: $foreground;
+                        }
+            
+                        &.today-calendar-day {
+                            border: $border;
+                        }
+            
+                        .calendar-events-badge-wrapper {
+                            position: absolute;
+                            transform: translate(0px, 20px);
+                            display: flex;
+                            gap: .25rem;
+
+                            .color-badge {
+                                $size: 10px;
+                                height: $size;
+                                width: $size;
+                                border: $border;
+                            }
+                        }   
+                    }
+                }
+            }
+        
+            .calendar-events-wrapper {
+                display: flex;
+                flex-direction: column;
+
+                .calendar-source-wrapper {
+                    display: flex;
+                    flex-direction: column;
+                    gap: .5rem;
+
+                    border-bottom: $border;
+                    margin-bottom: 1rem;
+                    padding-bottom: 1rem;
+
+                    &:first-child {
+                        border-top: $border;
+                        padding-top: 1rem;
+                    }
+
+                    .calendar-item {
+                        display: flex;
+                        align-items: center;
+
+                        .calendar-item-content {
+                            display: flex;
+                            flex-direction: column;
+                            gap: .1rem;
+                            overflow: hidden;
+
+                            .location {
+                                all: unset;
+                                box-sizing: border-box;
+                                display: flex;
+                                align-items: center;
+                                font-size: .75rem;
+
+                                svg {
+                                    height: .75rem;
+                                    width: fit-content;
+                                }
+
+                                span {
+                                    margin: 0;
+                                }
+
+                                cursor: pointer;
+
+                                &:hover {
+                                    text-decoration: underline;
+                                }
+                            }
+                        }
+
+                        .calendar-item-color-badge {
+                            $size : .75rem;                            
+                            margin-right: .5rem;
+                            width: $size;
+                            height: $size;
+                        }
+                        
+                        p {
+                            margin: 0;
+            
+                            &:first-child {
+                                font-weight: bold;
+                            }
+            
+                            &:last-child {
+                                margin-left: auto;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            .calendar-month-select {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1rem;
+
+                button {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: $background;
+                    width: 3rem;
+                    height: 3rem;
+                    padding: 0;
+                    box-shadow: none;
+                    color: $foreground;
+                    svg {
+                        height: 2rem;
+                        width: 2rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+
+    span {
+        font-size: .75rem;
+        margin-bottom: .5rem;
+    }
+
+    .calendar-day {
+        $size: 2rem;
+        padding: .25rem 0 !important;
+        height: $size !important;
+        width: $size !important;
+        .calendar-day-content {
+            height: $size !important;
+            width: $size !important;
+        }
+
+        .calendar-events-badge-wrapper {
+            gap: 0 !important;
+            max-width: calc($size);
+            padding: 0 2px;
+        }
+
+        .color-badge {
+            $size: 3px;
+            width: auto;
+            height: $size !important;
+            border: none !important;
+            
+            border-radius: 0;
+
+            &:first-child {
+                border-radius: .1rem 0 0 .1rem;
+            }
+
+            &:last-child {
+                border-radius: 0 .1rem .1rem 0
+            }
+        }
+    }
+
+    .location {
+        width: clamp(6rem, 10rem, 50vw) !important;
+        overflow: hidden !important;
+        span {
+            max-width: 90% !important;
+            text-wrap-style: pretty;
+            text-overflow: ellipsis !important;
+            overflow: hidden !important;
+            white-space: nowrap !important;
+        }   
+    }
+}

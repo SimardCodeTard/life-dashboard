@@ -8,45 +8,34 @@ import { ChatMessageType } from '@/app/types/chat.type';
 import Loader from '../../shared/loader/loader.component';
 
 
-import './chat.css';
+import './chat.scss';
 
-export default function Chat() {
+export default function Chat({setIsLoading}: Readonly<{setIsLoading?: (isLoading: boolean) => boolean}>) {
 
     const [messages, setMessages] = useState<ChatMessageType[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     
     useEffect(() => {
-        setIsLoading(true);
-        clientOpenAIService.startNewConversation().then(setMessages).then(() => setIsLoading(false)).catch(Logger.error)
+        clientOpenAIService.startNewConversation().then(setMessages).then(() => setIsLoading?.(false)).catch(Logger.error)
     }, [])
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }
 
     const sendMessage = (event: FormEvent) => {
         event.preventDefault();
-        setIsLoading(true);
+        setIsLoading?.(true);
 
         const message = (event.target as any)[0].value;
         (event.target as any)[0].value = "";
 
         clientOpenAIService.sendMessage(message).then((messages: ChatMessageType[]) => {
             setMessages(messages);
-        }).then(() => setIsLoading(false)).catch(Logger.error);
+        }).then(() => setIsLoading?.(false)).catch(Logger.error);
     }
 
     return (
         <div className='chat'>
             <div className='chat-messages'>
                 {messages.map((message: ChatMessageType, key: number) => <ChatMessage key={key} message={message}></ChatMessage>)}
-                {isLoading && <Loader></Loader>}
                 <div ref={messagesEndRef}></div>
             </div>
             <form onSubmit={sendMessage} className='chat-form'>

@@ -1,9 +1,9 @@
-import { AxiosResponse } from 'axios';
-import { Task, TaskDto } from "../../types/task.type";
+import { TaskType } from "../../types/task.type";
 import { ObjectId } from "bson";
-import { Logger } from "../logger.service";
-import { DateTime } from "luxon";
 import { axiosClientService } from './axios.client.service';
+import { TaskDeleteResponseType, TaskIdResponseType, TaskNewRequestBodyType, TaskNewResponseType, TaskResponseType, TaskUpdateRequestBodyType, TaskUpdateResponseType } from '@/app/types/api.type';
+import { mapTaskDtoToTask, mapTaskDtoToTaskList, mapTaskToTaskDto } from "@/app/mappers/task.mapper";
+import axios from "axios";
 
 // Namespace for client-side services to interact with the tasks API.
 export namespace clientTaskDataService {
@@ -12,109 +12,49 @@ export namespace clientTaskDataService {
 
     /**
      * Fetches all tasks using a GET request.
-     * @returns {Promise<TaskDto[]>} - A promise that resolves to an array of TaskDto.
+     * @returns {Promise<TaskTypeDto[]>} - A promise that resolves to an array of TaskDto.
      */
-    export const fetchAllTasks = (): Promise<TaskDto[]> => {
-        Logger.debug('Fetching all tasks (in TasksDataClientService)');
-        return axiosClientService.GET<TaskDto[]>(apiUrl, {
-            'cache-control': 'no-cache'
-        }).then(response => sortTaskDtoByMostUrgent(response.data));
-    }
+    export const fetchAllTasks = (userId: ObjectId): Promise<TaskType[]> => axiosClientService.GET<TaskResponseType>(`${apiUrl}?userId=${userId.toString()}`).then(res => res.data).then(mapTaskDtoToTaskList).then(tasks => sortTaskByMostUrgent(tasks));
+
+    /**
+     * Fetch a task by its id
+     * @param taskId The id of the task
+     * @returns The task
+     */
+    export const fetchTaskById = (taskId: ObjectId): Promise<TaskType> => axios.get<TaskIdResponseType>(`${apiUrl}/${taskId.toString()}`).then(res => res.data).then(mapTaskDtoToTask);
 
     /**
      * Saves a task using a POST request.
-     * @param {TaskDto} task - The task to be saved.
+     * @param {TaskTypeDto} task - The task to be saved.
      * @returns {Promise<AxiosResponse<{success: boolean}>>} - A promise that resolves to the response of the POST request.
      */
-    export const saveTask = (task: TaskDto): Promise<AxiosResponse<{ success: boolean }>> => {
-        Logger.debug('Saving new task (in TasksDataClientService)');
-        const url = `${apiUrl}/new`;
-        return axiosClientService.POST<{ success: boolean }>(url, task, {
-            'Content-Type': 'application/json'
-        });
-    }
+    export const saveTask = (task: TaskType): Promise<TaskNewResponseType> => axiosClientService.POST<TaskNewResponseType, TaskNewRequestBodyType>(`${apiUrl}/new`, mapTaskToTaskDto(task)).then(res => res.data);
 
     /**
      * Deletes a task by ID using a DELETE request.
      * @param {ObjectId} taskId - The ID of the task to be deleted.
      * @returns {Promise<AxiosResponse<{ success: boolean }>>} - A promise that resolves to the response of the DELETE request.
      */
-    export const deleteTaskById = (taskId: ObjectId): Promise<AxiosResponse<{ success: boolean }>> => {
-        Logger.debug('Deleting task (in TasksDataClientService) with id: ' + taskId);
-        const url = `${apiUrl}/delete?id=${taskId.toString()}`;
-        return axiosClientService.DELETE<{ success: boolean }>(url);
-    }
+    export const deleteTaskById = (taskId: ObjectId): Promise<TaskDeleteResponseType> => axiosClientService.DELETE<TaskDeleteResponseType>(`${apiUrl}/delete?id=${taskId.toString()}`).then(res => res.data);
 
     /**
      * Updates a task using a PUT request.
-     * @param {TaskDto} task - The task to be updated.
+     * @param {TaskTypeDto} task - The task to be updated.
      * @returns {Promise<AxiosResponse<{ success: boolean }>>} - A promise that resolves to the response of the PUT request.
      */
-    export const updateTask = (task: TaskDto): Promise<AxiosResponse<{ success: boolean }>> => {
-        Logger.debug('Updating task (in TasksDataClientService)');
-        const url = `${apiUrl}/update`;
-        return axiosClientService.PUT<{ success: boolean }>(url, task);
-    }
-
-    /**
-     * Formats a date string to a DateTime object.
-     * @param {string} date - The date string to be formatted.
-     * @returns {DateTime} - The formatted DateTime object.
-     */
-    export const formatTaskDate = (date: string): DateTime => DateTime.fromFormat(date, 'yyyy\'-\'MM\'-\'dd');
-
-    /**
-     * Formats a DateTime object to a date string.
-     * @param {DateTime} date - The DateTime object to be formatted.
-     * @returns {string} - The formatted date string.
-     */
-    const formatTaskDateToInput = (date: DateTime): string => date.toFormat('yyyy\'-\'MM\'-\'dd');
-
-    /**
-     * Maps a Task object to a TaskDto object.
-     * @param {Task} task - The Task object to be mapped.
-     * @returns {TaskDto} - The mapped TaskDto object.
-     */
-    export const mapTaskToTaskDto = (task: Task): TaskDto => ({
-        ...task,
-        deadline: task.deadline ? formatTaskDateToInput(task.deadline) : undefined
-    });
-
-    /**
-     * Maps an array of Task objects to an array of TaskDto objects.
-     * @param {Task[]} tasks - The array of Task objects to be mapped.
-     * @returns {TaskDto[]} - The array of mapped TaskDto objects.
-     */
-    export const mapTaskToTaskDtoList = (tasks: Task[]): TaskDto[] => tasks.map(mapTaskToTaskDto);
-
-    /**
-     * Maps a TaskDto object to a Task object.
-     * @param {TaskDto} taskDto - The TaskDto object to be mapped.
-     * @returns {Task} - The mapped Task object.
-     */
-    export const mapTaskDtoToTask = (taskDto: TaskDto): Task => ({
-        ...taskDto,
-        deadline: taskDto.deadline ? formatTaskDate(taskDto.deadline) : undefined
-    });
-
-    /**
-     * Maps an array of TaskDto objects to an array of Task objects.
-     * @param {TaskDto[]} tasksDto - The array of TaskDto objects to be mapped.
-     * @returns {Task[]} - The array of mapped Task objects.
-     */
-    export const mapTaskDtoToTaskList = (tasksDto: TaskDto[]): Task[] => tasksDto.map(mapTaskDtoToTask);
+    export const updateTask = (task: TaskType): Promise<TaskUpdateResponseType> =>axiosClientService.PUT<TaskUpdateResponseType, TaskUpdateRequestBodyType>(`${apiUrl}/update`, mapTaskToTaskDto(task)).then(res => res.data);
 
     /**
      * Sorts an array of TaskDto objects by the most urgent deadline.
-     * @param {TaskDto[]} tasks - The array of TaskDto objects to be sorted.
-     * @returns {TaskDto[]} - The sorted array of TaskDto objects.
+     * @param {TaskTypeDto[]} tasks - The array of TaskDto objects to be sorted.
+     * @returns {TaskTypeDto[]} - The sorted array of TaskDto objects.
      */
-    export const sortTaskDtoByMostUrgent = (tasks: TaskDto[]): TaskDto[] =>
-        tasks.toSorted((taskA: TaskDto, taskB: TaskDto) => {
-            if (!taskA.deadline) return 1;
-            else if (!taskB.deadline) return -1;
-            const deadlineA = formatTaskDate(taskA.deadline);
-            const deadlineB = formatTaskDate(taskB.deadline);
+    export const sortTaskByMostUrgent = (tasks: TaskType[]): TaskType[] =>
+        tasks.toSorted((taskA: TaskType, taskB: TaskType) => {
+            if (!taskA.deadline?.isValid) return 1;
+            else if (!taskB.deadline?.isValid) return -1;
+            const deadlineA = taskA.deadline;
+            const deadlineB = taskB.deadline;
             return deadlineA.toMillis() - deadlineB.toMillis();
         });
 }

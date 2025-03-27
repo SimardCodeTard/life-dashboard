@@ -20,7 +20,6 @@ export default function ModalComponent ({children, modalOpened, setModalOpened}:
                 </span>
                 {children}
             </div>
-
         </Modal>
     )
 }
