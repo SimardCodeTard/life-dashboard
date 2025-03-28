@@ -54,6 +54,7 @@ export namespace serverLoginService {
         refreshToken,
         user
     }: { token?: string; refreshToken?: string; user: UserTypeServer }): Promise<{ valid: boolean; token?: string }> => {
+        // TODO; check if user still exsists (token has a userId in payload)
         try {
             if (!token) throw new Error('No token provided');
             await jwtVerify(token, new TextEncoder().encode(JWT_SECRET)); // Verifies token with JWT Secret

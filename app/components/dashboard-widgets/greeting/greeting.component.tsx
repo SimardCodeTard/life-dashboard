@@ -6,12 +6,14 @@ import './greeting.scss'
 import { UserTypeClient } from "@/app/types/user.type";
 import { getUserFromLocalStorage, userEventEmitter } from "@/app/utils/localstorage.utils";
 import { EventKeysEnum } from "@/app/enums/events.enum";
+import { DateTime } from "luxon";
 
 export default function Greeting() {
   const [greeting, setGreeting] = useState("");
-  const [time, setTime] = useState<string | null>(null);
+  const [time, setTime] = useState<DateTime | undefined>();
 
   const [user, setUser] = useState<UserTypeClient>()
+  const [displayName, setDisplayName] = useState('User');
 
   useEffect(() => {
     setUser(getUserFromLocalStorage());
@@ -22,46 +24,75 @@ export default function Greeting() {
 
     userEventEmitter.on(EventKeysEnum.USER_UPDATE, onUserUpdate);
 
+    return () => {
+      userEventEmitter.off(EventKeysEnum.USER_UPDATE, onUserUpdate);
+    };
+  }, []) 
+
+  useEffect(() => {
     const updateTime = () => {
-      const now = new Date();
-      setTime(now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+      const now = DateTime.now();;
+      setTime(now);
       updateGreeting(now);
     };
 
     updateTime();
-     const timer = setInterval(updateTime, 60000); // Update every minute
-
+    const timer = setInterval(updateTime, 600000); // Update every 10 minutes
     return () => {
-      clearInterval(timer)
-      userEventEmitter.off(EventKeysEnum.USER_UPDATE, onUserUpdate);
-    };
-  }, []);
+      clearInterval(timer);
+    }
 
-  const updateGreeting = (date: Date) => {
-    const hour = date.getHours();
-    if (hour < 12) {
-      setGreeting("Good morning");
-    } else if (hour < 18) {
-      setGreeting("Good afternoon");
-    } else {
-      setGreeting("Good evening");
+  }, [user]);
+
+  const updateGreeting = (date: DateTime) => {
+    const hour = date.hour;
+
+    if(user) {
+      if(user.isMom) {
+        setDisplayName('Maman ❤️');
+        setGreeting("Coucou");
+      } else if (user.isDad) {
+        setDisplayName('LE PEEERE ❤️');
+        setGreeting('UUUEEEEEEHHH');
+      } else if (user.isSister) {
+        setDisplayName('le frèr');
+        setGreeting('Wesh');
+      } else if (user.isMe) {
+        setDisplayName('bg');
+        setGreeting('Wesh');
+      } else if (user.isSasha) {
+        setDisplayName('LE S 💯')
+        setGreeting('WE')
+      } else if (user.isClement) {
+        setDisplayName('le K');
+        setGreeting('Wesh');
+      } else if (user.isAlizee) {
+        setDisplayName('ALISSEWWWW');
+        setGreeting('BONJOU');
+      } else if (user.isHippolyte) {
+        setDisplayName('LE KHO');
+        setGreeting('WE');
+      } else {
+        setDisplayName(user.firstName);
+        if(hour < 12) {
+          setGreeting('Good morning,');
+        } else if (hour < 18) {
+          setGreeting('Good afternoon,');
+        } else {
+          setGreeting('Good evening,');
+        }
+      }
     }
   };
 
-  let name = 'User';
-
-  if(user) {
-    name = user.firstName;
-  }
 
   return (
     <div className="greeting">
-
         {time ? <>
             <h1>
-                {greeting}, <b>{name}</b>
+                {greeting} <b>{displayName}</b>
             </h1>
-            <p className="subtitle">{time}</p>
+            <p className="subtitle">{`${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}`}</p>
         </> : <Loader></Loader>
         }
     </div>  

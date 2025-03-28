@@ -14,6 +14,7 @@ export namespace serverUserDataService {
     }
 
     const SALT_ROUND_COUNT = Number(process.env.BCRYPT_SALT_ROUNDS);
+    const MOMS_NAME = process.env.MOMS_NAME;
 
     const encrypt = async (value: string): Promise<string> => bcrypt.hash(value, await bcrypt.genSalt(SALT_ROUND_COUNT));
 
@@ -46,6 +47,24 @@ export namespace serverUserDataService {
             throw new APIBadRequestError('Missing or invalid data');
         }
 
+        if(user.mail.toLowerCase() === process.env.MOMS_MAIL) {
+            user.isMom = true;
+        } else if (user.mail.toLowerCase() === process.env.DADS_MAIL) {
+            user.isDad = true
+        } else if (user.mail.toLowerCase() === process.env.SISTERS_MAIL) {
+            user.isSister = true;
+        } else if (user.mail.toLowerCase() === process.env.MY_MAIL) {
+            user.isMe = true;
+        } else if (user.mail.toLocaleLowerCase() === process.env.SASHAS_MAIL) {
+            user.isSasha = true;
+        } else if (user.mail.toLocaleLowerCase() === process.env.CLEMENTS_MAIL) {
+            user.isClement = true;
+        } else if (user.mail.toLocaleLowerCase() === process.env.ALIZEES_MAIL) {
+            user.isAlizee = true;
+        } else if (user.mail.toLocaleLowerCase() === process.env.HIPPOLYTES_MAIL) {
+            user.isHippolyte = true;
+        }
+
         user.role = 'user';
 
         // Check that mail is unique, TODO: configure db to perform this check automatically
@@ -67,6 +86,14 @@ export namespace serverUserDataService {
         firstName: user.firstName,
         lastName: user.lastName,
         mail: user.mail,
-        role: user.role
+        role: user.role,
+        isMom: user.isMom,
+        isDad: user.isDad,
+        isSister: user.isSister,
+        isMe: user.isMe,
+        isSasha: user.isSasha,
+        isClement: user.isClement,
+        isAlizee: user.isAlizee,
+        isHippolyte: user.isHippolyte
     });
 }
