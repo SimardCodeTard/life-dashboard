@@ -74,7 +74,7 @@ export default function Greeting() {
         setGreeting('WE');
       } else {
         setDisplayName(user.firstName);
-        if(hour < 12) {
+        if(hour > 4 && hour < 12) {
           setGreeting('Good morning,');
         } else if (hour < 18) {
           setGreeting('Good afternoon,');
