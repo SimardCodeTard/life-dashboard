@@ -125,9 +125,17 @@ export interface Weather {
     icon: string;
 }
 
+export type LocationApiResponse = Array<{
+    name: string;
+    local_names: Record<string, string>;
+    lat: number;
+    lon: number;
+    country: string;
+}>;
 
 
 export interface WeatherData {
     current: CurrentWeatherApiResponse;
     forecast: ForecastWeatherApiResponse[];
+    location: LocationApiResponse;
 }

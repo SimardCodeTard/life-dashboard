@@ -53,7 +53,7 @@ export default function Weather({setIsLoading}: Readonly<{setIsLoading?: (isLoad
                     weatherData?.current === null || weatherData?.forecast === null
                     ? <Loader></Loader>
                     : <>
-                        {weatherData?.current && <CurrentWeather currentWeatherData={weatherData.current}></CurrentWeather>}
+                        {weatherData?.current && <CurrentWeather locationData={weatherData.location} currentWeatherData={weatherData.current}></CurrentWeather>}
                         {weatherData?.forecast && <FiveDaysForecast weatherForecastsData={weatherData.forecast}></FiveDaysForecast>}
                     </> 
                 }</div> 

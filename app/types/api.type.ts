@@ -4,7 +4,7 @@ import { UserTypeClient, UserTypeServer } from "./user.type";
 import { FavoriteItemType } from "./favorites.type";
 import { TaskType, TaskTypeDto } from "./task.type";
 import { ChatMessageType } from "./chat.type";
-import { CurrentWeatherApiResponse, ForecastWeatherApiResponse } from "./weather.type";
+import { CurrentWeatherApiResponse, ForecastWeatherApiResponse, LocationApiResponse } from "./weather.type";
 
 /* ========================================== AUTH API ========================================== */
 
@@ -92,4 +92,4 @@ import { CurrentWeatherApiResponse, ForecastWeatherApiResponse } from "./weather
 
 /* ========================================== TASK API ========================================== */
     // ------------- / -------------
-        export type WeatherResponseType = {current: CurrentWeatherApiResponse, forecast: ForecastWeatherApiResponse[]};
+        export type WeatherResponseType = {current: CurrentWeatherApiResponse, forecast: ForecastWeatherApiResponse[], location: LocationApiResponse};

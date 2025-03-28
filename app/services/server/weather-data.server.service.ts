@@ -1,4 +1,4 @@
-import { CurrentWeatherApiResponse, ForecastWeatherApiResponse } from "@/app/types/weather.type";
+import { CurrentWeatherApiResponse, ForecastWeatherApiResponse, LocationApiResponse } from "@/app/types/weather.type";
 import { handleAxiosError } from "@/app/utils/api.utils";
 import axios, { AxiosError } from "axios";
 import { DateTime } from "luxon";
@@ -18,6 +18,9 @@ export namespace serverWeatherDataService {
 
     const getForecastWeatherUrl = (longitude: string, latitude: string, timeStamp: number): string =>
         `https://api.openweathermap.org/data/3.0/onecall/timemachine?lat=${latitude}&lon=${longitude}&dt=${timeStamp}&appid=${process.env.OPEN_WEATHER_API_KEY}&units=metric`;
+
+    const getLocationUrl = (latitude: string, longitude: string): string =>
+        `http://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${process.env.OPEN_WEATHER_API_KEY}`;
 
     /**
      * Fetches weather data from the API.
@@ -63,5 +66,17 @@ export namespace serverWeatherDataService {
         }));
 
         return forecasts;
+    }
+
+    export const fetchLocationData = async (latitude: string, longitude: string): Promise<LocationApiResponse | undefined> => {
+        let locationData: LocationApiResponse | undefined;
+        
+        try {
+            locationData = await axios.get<LocationApiResponse>(getLocationUrl(latitude, longitude)).then(res => res.data);
+        } catch (err) {
+            handleAxiosError(err as AxiosError);
+        }
+
+        return locationData
     }
 }

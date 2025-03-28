@@ -26,12 +26,13 @@ const getHandler = async (req: NextRequest): Promise<WeatherResponseType> => {
     // Fetch weather data using the extracted parameters
     const weatherData = await serverWeatherDataService.fetchCurrentWeatherData(longitude, latitude);
     const forecastData = await serverWeatherDataService.fetch5DaysForecastWeatherData(longitude, latitude, startTime);
+    const locationData = await serverWeatherDataService.fetchLocationData(latitude, longitude);
 
-    if(!weatherData || !forecastData || forecastData.includes(undefined)) {
+    if(!weatherData || !forecastData || forecastData.includes(undefined) || !locationData) {
         throw new APIInternalServerError('Failed to fetch weather data');
     }
 
-    return {current: weatherData, forecast: forecastData as ForecastWeatherApiResponse[]};
+    return {current: weatherData, forecast: forecastData as ForecastWeatherApiResponse[], location: locationData};
 }
 
 export const GET = async (req: NextRequest): Promise<Response> => {
