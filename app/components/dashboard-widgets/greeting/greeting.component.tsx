@@ -61,8 +61,8 @@ export default function Greeting() {
         setDisplayName('bg');
         setGreeting('Wesh');
       } else if (user.isSasha) {
-        setDisplayName('LE S 💯')
-        setGreeting('WE')
+        setDisplayName('Bebou :333333')
+        setGreeting('Coucou')
       } else if (user.isClement) {
         setDisplayName('le K');
         setGreeting('Wesh');
@@ -70,7 +70,7 @@ export default function Greeting() {
         setDisplayName('ALISSEWWWW');
         setGreeting('BONJOU');
       } else if (user.isHippolyte) {
-        setDisplayName('LE KHO');
+        setDisplayName('LE KHO BENDEJO');
         setGreeting('WE');
       } else {
         setDisplayName(user.firstName);
