@@ -47,7 +47,7 @@ export namespace serverLoginService {
         return await tokenDataService.deleteRefreshToken(token);
     };
 
-    export const generateJWTToken = (userId: string, role: string, lifetime = 60 * 60 * 24): Promise<string> => {
+    export const generateJWTToken = (userId: string, role: string, lifetime = 60 * 60 /* 1 hour */): Promise<string> => {
         const iat = Math.floor(DateTime.now().toSeconds());
         const exp = iat + lifetime;
         const jti = crypto.randomUUID();
@@ -103,7 +103,7 @@ export namespace serverLoginService {
             }
 
             const newToken = await generateJWTToken((user._id as ObjectId).toString(), user.role);
-            const newRefreshToken = await generateJWTToken((user._id as ObjectId).toString(), user.role, 60 * 60 * 24 * 30);
+            const newRefreshToken = await generateJWTToken((user._id as ObjectId).toString(), user.role, 60 * 60 * 24 * 30 /* 1 month */);
             
             await saveRefreshToken((user._id as ObjectId).toString(), newRefreshToken, userIp);
             
@@ -128,7 +128,7 @@ export namespace serverLoginService {
         let refreshToken: string | undefined;
 
         if (keepLoggedIn) {
-            refreshToken = await generateJWTToken((user._id as ObjectId).toString(), user.role, 60 * 60 * 24 * 30);
+            refreshToken = await generateJWTToken((user._id as ObjectId).toString(), user.role, 60 * 60 * 24 * 30 /* 1 month */);
             if(!(await saveRefreshToken((user._id as ObjectId).toString(), refreshToken, userIp)).acknowledged) {
                 throw new APIInternalServerError('Failed to save new refresh token');
             }
