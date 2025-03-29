@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = req.cookies.get(CookieNamesEnum.TOKEN)?.value;
+  const token = req.cookies.get(CookieNamesEnum.AUTH_TOKEN)?.value;
 
   if (!token || !(await serverLoginService.isLoggedIn(token))
   ) {

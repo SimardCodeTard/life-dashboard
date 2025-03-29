@@ -6,7 +6,7 @@ import { Person, PersonAdd } from "@mui/icons-material";
 import './pwd-form.scss';
 import { UserTypeClient, UserTypeServer } from "@/app/types/user.type";
 import Checkbox from "../shared/checkbox.component";
-import { getUserFromLocalStorage } from "@/app/utils/localstorage.utils";
+import { getUserFromLocalStorage, setUserInLocalStorage } from "@/app/utils/localstorage.utils";
 import { APIResponseStatuses } from "@/app/enums/api-response-statuses.enum";
 import Loader from "../shared/loader/loader.component";
 
@@ -36,7 +36,7 @@ export default function PWDForm() {
 
 
     const [user, setUser] = useState<UserTypeClient | undefined>(undefined);
-    const [firstNameLabel, setFirstNameLabel] = useState<ReactNode>(<></>);
+    const [firstNameLabel, setFirstNameLabel] = useState<ReactNode>();
 
     const [isLoading, setIsLoading] = useState(true);
 
@@ -127,24 +127,23 @@ export default function PWDForm() {
     }
 
     useEffect(() => {
-        const getUserAndTryAutoAuth = async () => {
-            const user = getUserFromLocalStorage();
+        const userInLocalStorage = getUserFromLocalStorage();
 
-            if(user === undefined) {
-                setIsLoading(false)
-                return;
+        if(userInLocalStorage) {
+            setUser(userInLocalStorage)
+        }
+
+        clientLoginService.autoAuth().then((autoAuthResult) => {
+            if(autoAuthResult.user) {
+                setUserInLocalStorage(autoAuthResult.user);
             }
 
-            const autoAuthResult = await clientLoginService.autoAuth(user)
-            
             if(autoAuthResult.result === true ) {
                 window.location.replace('/dashboard')
             }
 
-            setUser(user);
-        };
-
-        getUserAndTryAutoAuth();
+            setUser(autoAuthResult.user);
+        }).catch();
     }, [clientLoginService])
 
     useEffect(() => {
@@ -238,15 +237,29 @@ export default function PWDForm() {
         return <Loader></Loader>
     }
 
+    const getFormTitle = (): ReactNode => {
+        if(modeIsLogin) {
+            if(firstNameLabel) {
+                return <>
+                    <h1>{firstNameLabel}</h1>
+                    <h2>Please login to continue</h2>
+                </>
+            } else {
+                return <h1>Please <b>login</b> to continue</h1>
+            }
+        } else {
+            return <>
+                <h1>Welcome to <b>Life Dashboard</b></h1>
+                <h2>Please create an account to continue</h2>
+            </>
+        }
+    }   
+
     return (
         <form className="pwd-form" onSubmit={onSubmit}>
             {isLoading && <Loader></Loader>}
 
-            <h1>{modeIsLogin 
-                ? firstNameLabel
-                : 'Welcome to Life Dashboard'    
-            }</h1>
-            <h2>{modeIsLogin ? 'Please login to continue' : 'Please create an account to continue'}</h2>
+            {getFormTitle()}
 
             {
                 !modeIsLogin && <>

@@ -1,4 +1,4 @@
 export enum CookieNamesEnum {
+    AUTH_TOKEN = '__life-dashboard-auth-token__',
     REFRESH_TOKEN = '__life-dashboard-refresh-token__',
-    TOKEN = '__life-dashboard-token__',
 }

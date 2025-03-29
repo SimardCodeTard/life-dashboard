@@ -12,6 +12,7 @@ import { handleAPIError, parseBody } from "@/app/utils/api.utils";
 const postHandler = async (req: Request): Promise<AuthRegisterResponseType> => {
     // Parse the body
     const { user, keepLoggedIn } = await parseBody<AuthRegisterRequestBodyType>(req);
+    const clientIp = req.headers.get('x-forwarded-for') as string;
 
     if(!user || typeof keepLoggedIn !== 'boolean') {
         throw new APIBadRequestError('Invalid register body.');
@@ -21,7 +22,7 @@ const postHandler = async (req: Request): Promise<AuthRegisterResponseType> => {
     const result = await serverUserDataService.saveUser({...user, mail: user.mail.toLowerCase()});
 
     if(result.insertedId) {
-        return serverLoginService.login({mail: user.mail.toLowerCase(), password: user.password, keepLoggedIn});
+        return serverLoginService.login(user.mail.toLowerCase(), user.password, keepLoggedIn, clientIp);
     } else {
         throw new APIInternalServerError('Failed to register new user');
     }

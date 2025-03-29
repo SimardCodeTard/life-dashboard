@@ -9,7 +9,7 @@ import { CurrentWeatherApiResponse, ForecastWeatherApiResponse, LocationApiRespo
 /* ========================================== AUTH API ========================================== */
 
     // /login
-        export type AuthLoginResponseType = { token: string; refreshToken?: string; user: UserTypeClient; };
+        export type AuthLoginResponseType = { user: UserTypeClient; };
 
         export type AuthLoginRequestBodyType = { mail: string,  password: string,  keepLoggedIn: boolean };
 
@@ -19,9 +19,7 @@ import { CurrentWeatherApiResponse, ForecastWeatherApiResponse, LocationApiRespo
         export type AuthRegisterRequestBodyType = {user: UserTypeServer, keepLoggedIn: boolean};
 
     // ------------- /validate -------------
-        export type AuthValidateResponseType = { valid: boolean, token?: string, user?: UserTypeClient };
-
-        export type AuthValidateRequestBodyType = { mail: string, token?: string, refreshToken?: string };
+        export type AuthValidateResponseType = { user: UserTypeClient };
 
 /* ========================================== CALENDAR API ========================================== */
 
@@ -91,5 +89,11 @@ import { CurrentWeatherApiResponse, ForecastWeatherApiResponse, LocationApiRespo
         export type TaskResponseType = TaskTypeDto[];
 
 /* ========================================== TASK API ========================================== */
+
+    // ------------- / -------------
+        export type UserPutRequestBodyType = UserTypeServer;
+        export type UserPutResponseTye = UpdateResult<UserTypeServer> | null;
+
+/* ========================================== WEATHER API ========================================== */
     // ------------- / -------------
         export type WeatherResponseType = {current: CurrentWeatherApiResponse, forecast: ForecastWeatherApiResponse[], location: LocationApiResponse};

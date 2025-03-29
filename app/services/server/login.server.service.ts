@@ -1,80 +1,23 @@
 import { APIForbiddenError, APIInternalServerError, APINotFoundError, APIUnauthorizedError } from '@/app/errors/api.error';
 import { Logger } from '../logger.service';
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtDecrypt, jwtVerify } from 'jose';
 import { UserTypeClient, UserTypeServer } from '@/app/types/user.type';
 import { ObjectId } from 'mongodb';
 import { serverUserDataService } from './user-data.server.service';
 import bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
+import { tokenDataService } from './tokens-data.server.service';
+import { TokenType } from '@/app/types/token.type';
 
 /**
  * Namespace for server-side services to interact with the login API.
  */
 export namespace serverLoginService {
-    // Ensure required environment variables are defined
     if (!process.env.JWT_SECRET) {
         throw new APIInternalServerError('Server configuration error: Missing JWT secret.');
     }
     
     const JWT_SECRET = process.env.JWT_SECRET;
-
-    /**
-     * Generate a JWT token
-     * @param userId The user ID to include in the token payload
-     * @param role The user's role
-     * @param lifetime The token lifetime in seconds (default: 1 day)
-     * @returns A promise that resolves to the generated JWT token
-     */
-    export const generateJWTToken = (
-        userId: string,
-        role: string,
-        lifetime = 60 * 60 * 24 // one day
-    ): Promise<string> => {
-        const iat = Math.floor(DateTime.now().toSeconds()); // Issued at time
-        const exp = iat + lifetime;
-        const jti = crypto.randomUUID(); // Unique identifier for token
-
-        return new SignJWT({ userId, role, jti })
-            .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
-            .setExpirationTime(exp)
-            .setIssuedAt(iat)
-            .setNotBefore(iat)
-            .sign(new TextEncoder().encode(JWT_SECRET));
-    }
-
-    /**
-     * Validate a token or refresh it if invalid
-     * @param token The JWT token
-     * @param refreshToken The refresh token
-     * @param user The authenticated user object
-     * @returns A promise resolving to an object indicating if the token is valid and optionally returning a new token
-     */
-    export const validateTokenOrRefreshToken = async ({
-        token,
-        refreshToken,
-        user
-    }: { token?: string; refreshToken?: string; user: UserTypeServer }): Promise<{ valid: boolean; token?: string }> => {
-        // TODO; check if user still exsists (token has a userId in payload)
-        try {
-            if (!token) throw new Error('No token provided');
-            await jwtVerify(token, new TextEncoder().encode(JWT_SECRET)); // Verifies token with JWT Secret
-        } catch (e) {
-            Logger.debug('Invalid JWT token: ' + token);
-            Logger.error(e as Error);
-
-            try {
-                if (!refreshToken) throw new APIUnauthorizedError('No token or refresh token provided');
-                await jwtVerify(refreshToken, new TextEncoder().encode(JWT_SECRET));
-                const newToken = await generateJWTToken((user._id as ObjectId).toString(), user.role);
-                return { valid: false, token: newToken };
-            } catch (e) {
-                Logger.debug('Invalid refresh token: ' + refreshToken);
-                Logger.error(e as Error);
-                throw new APIUnauthorizedError('Provided an invalid refresh token');
-            }
-        }
-        return { valid: true };
-    };
 
     /**
      * Check if a JWT token is valid
@@ -92,34 +35,110 @@ export namespace serverLoginService {
         return true;
     };
 
-    /**
-     * Login with a password
-     * @param login The email and password of the user
-     * @param generateRefreshToken Whether to generate a refresh token
-     * @returns A promise resolving to an object containing the access and refresh tokens
-     */
-    export const login = async (
-        login: { mail: string; password: string; keepLoggedIn: boolean },
-    ): Promise<{ token: string; refreshToken?: string, user: UserTypeClient }> => {
-        const user = await serverUserDataService.findUserByMail(login.mail.toLowerCase());
+    const saveRefreshToken = async (userId: string, token: string, userIp: string) => {
+        return await tokenDataService.saveRefreshToken(userId, token, userIp);
+    };
 
-        if (!user) {
-            throw new APINotFoundError('User not found');
+    const isRefreshTokenValid = async (token: string): Promise<TokenType | null> => {
+        return await tokenDataService.findRefreshToken(token);
+    };
+
+    const revokeRefreshToken = async (token: string) => {
+        return await tokenDataService.deleteRefreshToken(token);
+    };
+
+    export const generateJWTToken = (userId: string, role: string, lifetime = 60 * 60 * 24): Promise<string> => {
+        const iat = Math.floor(DateTime.now().toSeconds());
+        const exp = iat + lifetime;
+        const jti = crypto.randomUUID();
+
+        return new SignJWT({ userId, role, jti })
+            .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+            .setExpirationTime(exp)
+            .setIssuedAt(iat)
+            .setNotBefore(iat)
+            .sign(new TextEncoder().encode(JWT_SECRET));
+    };
+
+    export const validateTokenOrRefreshToken = async (token:string, userIp: string, clientIp: string, refreshToken?: string) => {
+        let user: UserTypeServer;
+        try {
+            if (!token) throw new Error('No token provided');
+
+            const userId = (await jwtVerify(token, new TextEncoder().encode(JWT_SECRET))).payload.userId as string;
+            const found = await serverUserDataService.findUserById(new ObjectId(userId));
+            
+            if(found === null) {
+                throw new APINotFoundError('User not found');
+            }
+            
+            user = found;
+        } catch (e) {
+            Logger.debug('Invalid JWT token');
+            
+            if (!refreshToken) {
+                throw new APIUnauthorizedError('No token or refresh token provided');
+            }
+
+            const refreshTokenFound = await isRefreshTokenValid(refreshToken);
+
+            if(!refreshTokenFound || refreshTokenFound.userId !== clientIp) {
+                throw new APIUnauthorizedError('Invalid refresh token');
+            }
+
+            let userId: string;
+            try {
+                userId = (await jwtVerify(refreshToken, new TextEncoder().encode(JWT_SECRET))).payload.userId as string;
+            } catch (err) {
+                Logger.error(err as Error);
+                throw new APIUnauthorizedError('Invalid refresh token')
+            }
+
+            await revokeRefreshToken(refreshToken);
+
+            const user = await serverUserDataService.findUserById(new ObjectId(userId));
+
+            if(user === null) {
+                throw new APINotFoundError('User not found')
+            }
+
+            const newToken = await generateJWTToken((user._id as ObjectId).toString(), user.role);
+            const newRefreshToken = await generateJWTToken((user._id as ObjectId).toString(), user.role, 60 * 60 * 24 * 30);
+            
+            await saveRefreshToken((user._id as ObjectId).toString(), newRefreshToken, userIp);
+            
+            return { valid: false, token: newToken, refreshToken: newRefreshToken, user: serverUserDataService.mapServerUserToClientUser(user) };
+        }
+        return { valid: true, user };
+    };
+
+    export const login = async (mail: string, password: string, keepLoggedIn: boolean, userIp: string) => {
+        const user = await serverUserDataService.findUserByMail(mail.toLowerCase());
+
+        if(!user) {
+            throw new APINotFoundError('User not found.')
         }
 
-        if (!bcrypt.compareSync(login.password, user.password)) {
+        if (!bcrypt.compareSync(password, user.password)) {
             throw new APIForbiddenError('Invalid credentials.');
         }
-
+        
         const clientUser: UserTypeClient = serverUserDataService.mapServerUserToClientUser(user);
-
         const token = await generateJWTToken((user._id as ObjectId).toString(), user.role);
         let refreshToken: string | undefined;
 
-        if (login.keepLoggedIn) {
-            refreshToken = await generateJWTToken((user._id as ObjectId).toString(), user.role, 60 * 60 * 24 * 30); // 1 month
+        if (keepLoggedIn) {
+            refreshToken = await generateJWTToken((user._id as ObjectId).toString(), user.role, 60 * 60 * 24 * 30);
+            if(!(await saveRefreshToken((user._id as ObjectId).toString(), refreshToken, userIp)).acknowledged) {
+                throw new APIInternalServerError('Failed to save new refresh token');
+            }
         }
-
+        
         return { token, refreshToken, user: clientUser };
     };
+
+    const decryptToken = async (token: string) => {
+        return await jwtDecrypt(token, new TextEncoder().encode(JWT_SECRET));
+    }
+
 }

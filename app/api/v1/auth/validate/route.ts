@@ -1,8 +1,9 @@
-import { APINotFoundError } from "@/app/errors/api.error";
+import { CookieNamesEnum } from "@/app/enums/cookies.enum";
 import { serverLoginService } from "@/app/services/server/login.server.service";
-import { serverUserDataService } from "@/app/services/server/user-data.server.service";
-import { AuthValidateRequestBodyType, AuthValidateResponseType } from "@/app/types/api.type";
-import { handleAPIError, parseBody } from "@/app/utils/api.utils";
+import { AuthValidateResponseType } from "@/app/types/api.type";
+import { handleAPIError } from "@/app/utils/api.utils";
+import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
 
 /**
  * Handles the POST request to validate a token or refresh token.
@@ -11,26 +12,40 @@ import { handleAPIError, parseBody } from "@/app/utils/api.utils";
  * @returns {Promise<Response>} - The response object.
  */
 
-const postHandler = async (req: Request): Promise<AuthValidateResponseType> => {
-    // Parse the request body to extract the email, token and refreshToken
-    const { mail, token, refreshToken } = await parseBody<AuthValidateRequestBodyType>(req);
-                    
-    // Fetch the user data from mail
-    const user = await serverUserDataService.findUserByMail(mail);
-
-    if(user === null) {
-        throw new APINotFoundError('User not found');
-    }
+const getHandler = async (req: NextRequest): Promise<AuthValidateResponseType> => {
+    const token = req.cookies.get(CookieNamesEnum.AUTH_TOKEN)?.value as string;
+    const refreshToken = req.cookies.get(CookieNamesEnum.REFRESH_TOKEN)?.value;
+    const clientIp = req.headers.get('x-forwarded-for') as string;
 
     // Validate the token or refresh token using the server login service
-    const validationResult = await serverLoginService.validateTokenOrRefreshToken({ token, refreshToken, user });
+    const {user, token: newToken, refreshToken: newRefreshToken} = await serverLoginService.validateTokenOrRefreshToken(token, clientIp, clientIp, refreshToken);
 
-    return {...validationResult, user};
+    if(newToken) {
+        (await cookies()).set(CookieNamesEnum.AUTH_TOKEN, newToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Secure in production
+            sameSite: "strict",
+            path: "/",
+            maxAge: 60 * 60 * 24, // 1 day
+        });
+    }
+
+    if (newRefreshToken) {
+        (await cookies()).set(CookieNamesEnum.REFRESH_TOKEN, newRefreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Secure in production
+            sameSite: "strict",
+            path: "/",
+            maxAge: 60 * 60 * 24 * 30, // 1 month
+        });
+    }
+
+    return {user};
 }
 
-export const POST = async (req: Request): Promise<Response> => {
+export const GET = async (req: NextRequest): Promise<Response> => {
     try {
-        return Response.json(await postHandler(req));
+        return Response.json(await getHandler(req));
     } catch (err) {
         return handleAPIError(err);
     }

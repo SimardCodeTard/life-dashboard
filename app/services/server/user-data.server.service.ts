@@ -1,4 +1,4 @@
-import { Collection, InsertOneResult, ObjectId } from "mongodb";
+import { Collection, InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import { serverMongoDataService } from "./mongod-data.server.service";
 import { UserTypeClient, UserTypeServer } from "@/app/types/user.type";
 import { APIBadRequestError, APIConflictError, APIInternalServerError } from "@/app/errors/api.error";
@@ -79,6 +79,10 @@ export namespace serverUserDataService {
         user.password = await encrypt(user.password);
 
         return serverMongoDataService.insertOne(collectionName, {...user, mail: user.mail.toLowerCase()});
+    }
+
+    export const updateUser = async (user: UserTypeServer): Promise<UpdateResult<UserTypeServer> | null> => {
+        return await serverMongoDataService.updateOne('user', user);
     }
 
     export const mapServerUserToClientUser = (user: UserTypeServer): UserTypeClient => ({

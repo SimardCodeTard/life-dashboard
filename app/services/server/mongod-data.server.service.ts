@@ -1,7 +1,17 @@
 import { MongodItemType } from "@/app/types/mongod.type";
-import { Collection, Db, DeleteResult, InsertManyResult, InsertOneResult, MongoClient, ObjectId, ServerApiVersion, UpdateResult } from "mongodb";
+import {
+    Collection,
+    Db,
+    DeleteResult,
+    InsertManyResult,
+    InsertOneResult,
+    MongoClient,
+    ObjectId,
+    ServerApiVersion,
+    UpdateResult,
+} from "mongodb";
 import { Logger } from "../logger.service";
-import { APIInternalServerError } from "@/app/errors/api.error";
+import { APIBadRequestError } from "@/app/errors/api.error";
 
 export namespace serverMongoDataService {
     
@@ -150,6 +160,14 @@ export namespace serverMongoDataService {
         });
     };
 
+    export const deleteByQuery = async (collectionName: string, query: object): Promise<DeleteResult> => {
+        Logger.debug('Calling withPendingRequests prior to deleting item with query ' + JSON.stringify(query) + ' in collection ' + collectionName);
+        return withPendingRequests(collectionName, async (collection) => {
+            Logger.debug('Deleting item with query ' + JSON.stringify(query) + ' in collection ' + collectionName);
+            return await collection.deleteOne(query);
+        });
+    }
+
     /**
      * Inserts a document into a collection.
      * @param collection - The collection to insert into.
@@ -188,7 +206,7 @@ export namespace serverMongoDataService {
         const { _id, ...updateData } = item; // Destructure to separate _id from the rest of the data
         
         if (!_id) {
-            return null;
+            throw new APIBadRequestError('Missing _id in request body');
         }
 
         Logger.debug("Calling withPendingRequest prior to updating item " + JSON.stringify(item) + " in collection " + collectionName);
