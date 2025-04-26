@@ -1,10 +1,10 @@
-import { CookieNamesEnum } from "@/app/enums/cookies.enum";
 import { APIBadRequestError } from "@/app/errors/api.error";
 import { serverLoginService } from "@/app/services/server/login.server.service";
-import { AuthLoginRequestBodyType, AuthLoginResponseType } from "@/app/types/api.type";
+import { serverUserDataService } from "@/app/services/server/user-data.server.service";
+import { AuthLoginRequestBodyType } from "@/app/types/api.type";
 import { UserTypeClient } from "@/app/types/user.type";
 import { handleAPIError, parseBody } from "@/app/utils/api.utils";
-import { cookies } from "next/headers";
+import { setAuthRefreshTokenCookie, setAuthTokenCookie } from "@/app/utils/cookies.utils";
 
 /**
  * Post handler to login
@@ -28,22 +28,10 @@ export const POST = async (req: Request): Promise<Response> => {
         const { user, token, refreshToken } = await postHandler(req);
 
         // Set the authentication token in an HttpOnly, Secure cookie
-        (await cookies()).set(CookieNamesEnum.AUTH_TOKEN, token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Secure in production
-            sameSite: "strict",
-            path: "/",
-            maxAge: 60 * 60 * 24, // 1 day
-        });
+        await setAuthTokenCookie(token);
 
         if (refreshToken) {
-            (await cookies()).set(CookieNamesEnum.REFRESH_TOKEN, refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production", // Secure in production
-                sameSite: "strict",
-                path: "/",
-                maxAge: 60 * 60 * 24 * 30, // 1 month
-            });
+            await setAuthRefreshTokenCookie(refreshToken);
         }
 
         // Return only user data, no tokens

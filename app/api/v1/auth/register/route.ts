@@ -3,6 +3,7 @@ import { serverLoginService } from "@/app/services/server/login.server.service";
 import { serverUserDataService } from "@/app/services/server/user-data.server.service";
 import { AuthRegisterRequestBodyType, AuthRegisterResponseType } from "@/app/types/api.type";
 import { handleAPIError, parseBody } from "@/app/utils/api.utils";
+import { setAuthRefreshTokenCookie, setAuthTokenCookie } from "@/app/utils/cookies.utils";
 
 /**
  * Post handler to register
@@ -11,18 +12,26 @@ import { handleAPIError, parseBody } from "@/app/utils/api.utils";
  */
 const postHandler = async (req: Request): Promise<AuthRegisterResponseType> => {
     // Parse the body
-    const { user, keepLoggedIn } = await parseBody<AuthRegisterRequestBodyType>(req);
+    const { user: newUser, keepLoggedIn } = await parseBody<AuthRegisterRequestBodyType>(req);
     const clientIp = req.headers.get('x-forwarded-for') as string;
 
-    if(!user || typeof keepLoggedIn !== 'boolean') {
+    if(!newUser || typeof keepLoggedIn !== 'boolean') {
         throw new APIBadRequestError('Invalid register body.');
     }
 
     // save the new user to the DB
-    const result = await serverUserDataService.saveUser({...user, mail: user.mail.toLowerCase()});
+    const result = await serverUserDataService.saveUser({...newUser, mail: newUser.mail.toLowerCase()});
 
     if(result.insertedId) {
-        return serverLoginService.login(user.mail.toLowerCase(), user.password, keepLoggedIn, clientIp);
+        const {user, token, refreshToken} = await serverLoginService.login(newUser.mail.toLowerCase(), newUser.password, keepLoggedIn, clientIp);
+
+        setAuthTokenCookie(token)
+
+        if (refreshToken) {
+            setAuthRefreshTokenCookie(refreshToken);
+        }
+
+        return {user};
     } else {
         throw new APIInternalServerError('Failed to register new user');
     }

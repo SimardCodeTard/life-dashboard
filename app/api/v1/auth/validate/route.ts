@@ -2,7 +2,7 @@ import { CookieNamesEnum } from "@/app/enums/cookies.enum";
 import { serverLoginService } from "@/app/services/server/login.server.service";
 import { AuthValidateResponseType } from "@/app/types/api.type";
 import { handleAPIError } from "@/app/utils/api.utils";
-import { cookies } from "next/headers";
+import { setAuthRefreshTokenCookie, setAuthTokenCookie } from "@/app/utils/cookies.utils";
 import { NextRequest } from "next/server";
 
 /**
@@ -18,26 +18,14 @@ const getHandler = async (req: NextRequest): Promise<AuthValidateResponseType> =
     const clientIp = req.headers.get('x-forwarded-for') as string;
 
     // Validate the token or refresh token using the server login service
-    const {user, token: newToken, refreshToken: newRefreshToken} = await serverLoginService.validateTokenOrRefreshToken(token, clientIp, clientIp, refreshToken);
+    const {user, token: newToken, refreshToken: newRefreshToken} = await serverLoginService.validateTokenOrRefreshToken(token, clientIp, refreshToken);
 
     if(newToken) {
-        (await cookies()).set(CookieNamesEnum.AUTH_TOKEN, newToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Secure in production
-            sameSite: "strict",
-            path: "/",
-            maxAge: 60 * 60 * 24, // 1 day
-        });
+        setAuthTokenCookie(newToken);
     }
 
     if (newRefreshToken) {
-        (await cookies()).set(CookieNamesEnum.REFRESH_TOKEN, newRefreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Secure in production
-            sameSite: "strict",
-            path: "/",
-            maxAge: 60 * 60 * 24 * 30, // 1 month
-        });
+        setAuthRefreshTokenCookie(newRefreshToken);
     }
 
     return {user};
@@ -49,4 +37,4 @@ export const GET = async (req: NextRequest): Promise<Response> => {
     } catch (err) {
         return handleAPIError(err);
     }
-}
+} 
