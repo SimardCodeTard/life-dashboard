@@ -10,8 +10,9 @@ import EventEmitter from "@/app/lib/event-emitter";
 import { EventKeysEnum, TaskEditEventsEnum } from "@/app/enums/events.enum";
 import { TaskAlt } from "@mui/icons-material";
 import { UserTypeClient } from "@/app/types/user.type";
-import { getUserFromLocalStorage } from "@/app/utils/localstorage.utils";
 import { ObjectId } from "mongodb";
+import { getActiveSession } from "@/app/utils/indexed-db.utils";
+import { userEventEmitter } from "@/app/utils/localstorage.utils";
 
 export default function Tasks({setIsLoading}: Readonly<{setIsLoading?: (isLoading: boolean) => void}>) {
 
@@ -25,8 +26,22 @@ export default function Tasks({setIsLoading}: Readonly<{setIsLoading?: (isLoadin
 
 
     useEffect(() => {
-        setUser(getUserFromLocalStorage());
-    }, [])
+        getActiveSession().then(activeSession => {
+            setUser(activeSession);
+        });
+
+        const onUserUpdate = (user: UserTypeClient) => {
+            if(user) {
+                setUser(user);
+            }
+        }
+
+        userEventEmitter.on(EventKeysEnum.USER_UPDATE, onUserUpdate);
+
+        return () => {
+            userEventEmitter.off(EventKeysEnum.USER_UPDATE, onUserUpdate);
+        }
+    }, []);
 
     useEffect(() => {
         if(user) {

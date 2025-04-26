@@ -5,12 +5,15 @@ import AddIcon from '@mui/icons-material/Add';
 import { FormEvent, useEffect, useState } from 'react';
 import ModalComponent from '../../shared/modal.component';
 import { Logger } from '@/app/services/logger.service';
-import { getUserFromLocalStorage } from '@/app/utils/localstorage.utils';
+
 import { UserTypeClient } from '@/app/types/user.type';
 import { ObjectId } from 'mongodb';
 import { SaveAlt } from '@mui/icons-material';
 
 import './favorites.scss';
+import { EventKeysEnum } from '@/app/enums/events.enum';
+import { getActiveSession } from '@/app/utils/indexed-db.utils';
+import { userEventEmitter } from '@/app/utils/localstorage.utils';
 
 export default function AddFavorite({updateFavoritesList, setIsLoading}: Readonly<AddFavoritePropsType>) {
 
@@ -18,7 +21,21 @@ export default function AddFavorite({updateFavoritesList, setIsLoading}: Readonl
     const [user, setUser] = useState<UserTypeClient>();
 
     useEffect(() => {
-        setUser(getUserFromLocalStorage() as UserTypeClient)
+        getActiveSession().then(activeSession => {
+            setUser(activeSession);
+        });
+
+        const onUserUpdate = (user: UserTypeClient) => {
+            if(user) {
+                setUser(user);
+            }
+        }
+
+        userEventEmitter.on(EventKeysEnum.USER_UPDATE, onUserUpdate);
+
+        return () => {
+            userEventEmitter.off(EventKeysEnum.USER_UPDATE, onUserUpdate);
+        }
     }, [])
 
     const openModal = () => {

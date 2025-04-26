@@ -8,6 +8,7 @@ import bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
 import { tokenDataService } from './tokens-data.server.service';
 import { TokenType } from '@/app/types/token.type';
+import { AUTH_REFRESH_TOKEN_LIFETIME, AUTH_TOKEN_LIFETIME } from '@/app/utils/cookies.utils';
 
 /**
  * Namespace for server-side services to interact with the login API.
@@ -47,7 +48,7 @@ export namespace serverLoginService {
         return await tokenDataService.deleteRefreshToken(token);
     };
 
-    export const generateJWTToken = (userId: string, role: string, lifetime = 60 * 60 /* 1 hour */): Promise<string> => {
+    export const generateJWTToken = (userId: string, role: string, lifetime = AUTH_TOKEN_LIFETIME): Promise<string> => {
         const iat = Math.floor(DateTime.now().toSeconds());
         const exp = iat + lifetime;
         const jti = crypto.randomUUID();
@@ -60,39 +61,50 @@ export namespace serverLoginService {
             .sign(new TextEncoder().encode(JWT_SECRET));
     };
 
-    export const validateTokenOrRefreshToken = async (token:string, userIp: string, clientIp: string, refreshToken?: string) => {
+    export const validateToken = async (token: string) => {
+        if (!token) throw new Error('No token provided');
+
+        const userId = (await jwtVerify(token, new TextEncoder().encode(JWT_SECRET))).payload.userId as string;
+        const found = await serverUserDataService.findUserById(new ObjectId(userId));
+        
+        if(found === null) {
+            throw new APINotFoundError('User not found');
+        }
+        
+        return found;
+    }
+
+    export const validateRefreshToken = async (refreshToken: string, clientIp: string) => {
+        Logger.debug('Invalid JWT token');
+            
+        const refreshTokenFound = await isRefreshTokenValid(refreshToken);
+
+        if(!refreshTokenFound) {
+            throw new APIUnauthorizedError('Invalid refresh token');
+        } else if (refreshTokenFound.userIp !== clientIp) {
+            throw new APIUnauthorizedError('Invalid refresh token: client IP did not match');
+        }
+
+        try {
+            return (await jwtVerify(refreshToken, new TextEncoder().encode(JWT_SECRET))).payload.userId as string;
+        } catch (err) {
+            Logger.error(err as Error);
+            throw new APIUnauthorizedError('Invalid refresh token')
+        }
+    }
+
+    export const validateTokenOrRefreshToken = async (token:string, clientIp: string = '', refreshToken?: string) => {
         let user: UserTypeServer;
         try {
-            if (!token) throw new Error('No token provided');
-
-            const userId = (await jwtVerify(token, new TextEncoder().encode(JWT_SECRET))).payload.userId as string;
-            const found = await serverUserDataService.findUserById(new ObjectId(userId));
-            
-            if(found === null) {
-                throw new APINotFoundError('User not found');
-            }
-            
-            user = found;
+            user = await validateToken(token);
         } catch (e) {
             Logger.debug('Invalid JWT token');
-            
+
             if (!refreshToken) {
                 throw new APIUnauthorizedError('No token or refresh token provided');
             }
-
-            const refreshTokenFound = await isRefreshTokenValid(refreshToken);
-
-            if(!refreshTokenFound || refreshTokenFound.userId !== clientIp) {
-                throw new APIUnauthorizedError('Invalid refresh token');
-            }
-
-            let userId: string;
-            try {
-                userId = (await jwtVerify(refreshToken, new TextEncoder().encode(JWT_SECRET))).payload.userId as string;
-            } catch (err) {
-                Logger.error(err as Error);
-                throw new APIUnauthorizedError('Invalid refresh token')
-            }
+        
+            const userId = await validateRefreshToken(refreshToken, clientIp)
 
             await revokeRefreshToken(refreshToken);
 
@@ -102,10 +114,10 @@ export namespace serverLoginService {
                 throw new APINotFoundError('User not found')
             }
 
-            const newToken = await generateJWTToken((user._id as ObjectId).toString(), user.role);
-            const newRefreshToken = await generateJWTToken((user._id as ObjectId).toString(), user.role, 60 * 60 * 24 * 30 /* 1 month */);
+            const newToken = await generateJWTToken((user._id).toString(), user.role);
+            const newRefreshToken = await generateJWTToken((user._id).toString(), user.role, AUTH_REFRESH_TOKEN_LIFETIME);
             
-            await saveRefreshToken((user._id as ObjectId).toString(), newRefreshToken, userIp);
+            await saveRefreshToken((user._id).toString(), newRefreshToken, clientIp);
             
             return { valid: false, token: newToken, refreshToken: newRefreshToken, user: serverUserDataService.mapServerUserToClientUser(user) };
         }
@@ -124,12 +136,12 @@ export namespace serverLoginService {
         }
         
         const clientUser: UserTypeClient = serverUserDataService.mapServerUserToClientUser(user);
-        const token = await generateJWTToken((user._id as ObjectId).toString(), user.role);
+        const token = await generateJWTToken((user._id).toString(), user.role);
         let refreshToken: string | undefined;
 
         if (keepLoggedIn) {
-            refreshToken = await generateJWTToken((user._id as ObjectId).toString(), user.role, 60 * 60 * 24 * 30 /* 1 month */);
-            if(!(await saveRefreshToken((user._id as ObjectId).toString(), refreshToken, userIp)).acknowledged) {
+            refreshToken = await generateJWTToken((user._id).toString(), user.role, AUTH_REFRESH_TOKEN_LIFETIME);
+            if(!(await saveRefreshToken((user._id).toString(), refreshToken, userIp)).acknowledged) {
                 throw new APIInternalServerError('Failed to save new refresh token');
             }
         }

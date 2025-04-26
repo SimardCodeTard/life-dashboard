@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Inter } from "next/font/google"
-import './globals.scss'
+import '../globals.scss'
 
 export const metadata: Metadata = {
   title: 'Life Dashboard',
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const inter = Inter({ subsets: ["latin"] })
 
-export default function RootLayoutWithNavbar({
+export default function RootLayoutNoNavbar({
   children,
 }: Readonly<{
   children: React.ReactNode

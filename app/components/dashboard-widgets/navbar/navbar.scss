@@ -1,0 +1,107 @@
+@import '/app/shared/variables.scss';
+
+.navbar {
+    width: 100%;
+    height: $navbar-height;
+    padding: 1rem;
+    border-bottom: $border;
+    background-color: $background-lighter;
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+
+    .tabs-wrapper {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        .tab {
+            color: $foreground;
+            text-decoration: none;
+        }
+    }
+
+    .user-icon {
+        color: $foreground;
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        padding: .25rem;
+        gap: .5rem;
+        background-color: transparent;
+        box-shadow: none;
+        font-weight: 400;
+
+        &.deployed {
+            transition: transform ease .2s;
+            svg {
+                transform: rotate(180deg);
+            }
+        }
+
+        svg {
+            transition: transform ease .2s;
+        }
+    }
+}
+
+.user-badge {
+    border-radius: 50%;
+    background-color: $accent;
+    aspect-ratio: 1/1;
+    width: auto;
+    height: 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: $border;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+
+    p {
+        margin: 0;
+    }
+
+    .user-infos {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: .5rem;
+        margin-bottom: .5rem;
+        padding-bottom: 1.25rem;
+        border-bottom: $border;
+    }
+
+    > .actions-wrapper, .add-account-wrapper {
+        display: flex;
+        justify-content: center;
+        border-radius: .25rem;
+        padding: .5rem;
+
+        &:hover {
+            background-color: $accent;
+            outline: $border;
+        }
+
+        p {
+            margin-right: auto;
+        }
+    }
+
+    .add-account {
+        padding: .5rem 0;
+        margin: .5rem 0;
+        border-bottom: $border;
+        border-top: $border;
+    }
+    
+    .logout {
+        margin-bottom: .5rem;
+        &:hover {
+            background-color: $error !important;
+        }
+    }
+}

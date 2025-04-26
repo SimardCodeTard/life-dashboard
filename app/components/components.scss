@@ -29,20 +29,7 @@
                 width: 15rem;
                 text-overflow: ellipsis;
                 .deploy-icon {
-                    color: $foreground;
-                    cursor: pointer;
-                    transition: transform ease .25s;
                     transform: rotate(180deg);
-                    width: 1.5rem;
-
-                    display: flex;
-                    justify-content: center;
-                    margin-bottom: 1rem;
-                    margin-left: auto;
-
-                    &:hover {
-                        scale: 1.1;
-                    }
                 }
 
                 &.card-side-panel-collapsed {
@@ -82,12 +69,37 @@
         border-radius: 1rem;
         border: $border;
 
-        .actions-wrapper {
-            margin-bottom: .5rem;
-        }
-
         form {
             border: none;
+        }
+    }
+}
+
+.user-modal {
+    align-items: flex-start;
+    justify-content: flex-end;
+    top: $navbar-height;
+
+    .MuiBackdrop-root {
+        margin-top: $navbar-height !important;
+    }
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+        padding: .5rem;
+
+        &:focus {
+            outline: none;
+        }
+        $margin: .5rem;
+        margin-top: calc($margin);
+        margin-right: $margin;
+
+        .modal-header {
+            svg {
+                display: none;
+            }
         }
     }
 }

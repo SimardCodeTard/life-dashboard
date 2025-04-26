@@ -8,18 +8,33 @@ import { CurrentWeatherApiResponse, ForecastWeatherApiResponse, LocationApiRespo
 
 /* ========================================== AUTH API ========================================== */
 
-    // /login
+    // ------------- /login -------------
         export type AuthLoginResponseType = { user: UserTypeClient; };
 
         export type AuthLoginRequestBodyType = { mail: string,  password: string,  keepLoggedIn: boolean };
+
+    // ------------- /logout -------------
+        export type AuthLogoutResponseType = {success: true};
+
+    // ------------- /logout/all -------------
+        export type AuthLogoutAllResponseType = AuthLogoutResponseType
 
     // ------------- /register -------------
         export type AuthRegisterResponseType = AuthLoginResponseType;
 
         export type AuthRegisterRequestBodyType = {user: UserTypeServer, keepLoggedIn: boolean};
 
+    // ------------- /switch-account -------------
+        export type AuthSwitchAccountResponseType = {success: boolean};
+
+    // ------------- /add-account -------------
+        export type AuthAddAccountResponseType = AuthRegisterResponseType;
+
+        export type AuthAddAccountRequestBodyType = AuthRegisterRequestBodyType;
+
     // ------------- /validate -------------
         export type AuthValidateResponseType = { user: UserTypeClient };
+
 
 /* ========================================== CALENDAR API ========================================== */
 

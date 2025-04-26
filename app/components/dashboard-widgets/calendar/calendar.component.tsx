@@ -13,7 +13,9 @@ import Loader from "../../shared/loader/loader.component";
 import EventEmitter from "@/app/lib/event-emitter";
 import CalendarSource from "./calendar-source/calendar-source.component";
 import { CalendarSourceEditEventsEnum, EventKeysEnum } from "@/app/enums/events.enum";
-import { getUserFromLocalStorage } from "@/app/utils/localstorage.utils";
+import { UserTypeClient } from "@/app/types/user.type";
+import { getActiveSession } from "@/app/utils/indexed-db.utils";
+import { userEventEmitter } from "@/app/utils/localstorage.utils";
 
 export default function Calendar({setIsLoading}: Readonly<{setIsLoading?: (isLoading: boolean) => void}>) {
 
@@ -201,11 +203,21 @@ export default function Calendar({setIsLoading}: Readonly<{setIsLoading?: (isLoa
     }
 
     useEffect(() => {
-        const user = getUserFromLocalStorage();
-        if(!user?._id) {
-            return
+        getActiveSession().then(activeSession => {
+            setUserId(activeSession?._id);
+        });
+
+        const onUserUpdate = (user: UserTypeClient) => {
+            if(user) {
+                setUserId(user._id);
+            }
         }
-        setUserId(getUserFromLocalStorage()?._id as ObjectId);
+
+        userEventEmitter.on(EventKeysEnum.USER_UPDATE, onUserUpdate);
+
+        return () => {
+            userEventEmitter.off(EventKeysEnum.USER_UPDATE, onUserUpdate);
+        }
     }, []);
 
     useEffect(() => {

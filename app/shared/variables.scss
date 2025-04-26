@@ -12,7 +12,7 @@ $card-foreground: linear-gradient(45deg, rgba(82, 48, 121, 0.05), rgba(0, 0, 0, 
 $card-border-radius: .5rem;
 
 $separator: rgb(60, 60, 60);
-$text-lighter: rgb(150, 150, 150);
+$text-lighter: rgb(168, 167, 167);
 $background-navbar: rgba(250, 250, 250, 0.02);
 
 $border: solid 1px rgba(255, 255, 255, 0.2);
@@ -32,6 +32,15 @@ $shadow-lg: 0 0 15px 0 rgba(0, 0, 0, 0.75);
 $shadow-sm: 0 0 5px 0 rgba(0, 0, 0, 0.75);
 $shadow-inset: inset 0 0 5px 0 rgba(0, 0, 0, 0.75);
 
+$shadow-glow-accent: 0 0 10px 0 $accent;
+$shadow-glow-accent-lg: 0 0 15px 0 $accent;
+
+$shadow-glow-error: 0 0 10px 0 $error;
+$shadow-glow-error-lg: 0 0 15px 0 $error;
+
 $focus-outline: solid 1px $accent;
 $focus-outline-white: solid 2px $foreground;
-$error-outline: solid 2px $error
+$error-outline: solid 2px $error;
+
+$navbar-height: 4rem;
+

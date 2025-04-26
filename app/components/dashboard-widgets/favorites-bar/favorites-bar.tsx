@@ -5,9 +5,12 @@ import AddFavorite from './add-favorite';
 import { useEffect, useState } from 'react';
 import { clientFavoritesDataService } from '@/app/services/client/favorites-data.client.service';
 import { ObjectId } from 'mongodb';
-import { getUserFromLocalStorage } from '@/app/utils/localstorage.utils';
 
 import './favorites.scss';
+import { EventKeysEnum } from '@/app/enums/events.enum';
+import { UserTypeClient } from '@/app/types/user.type';
+import { getActiveSession } from '@/app/utils/indexed-db.utils';
+import { userEventEmitter } from '@/app/utils/localstorage.utils';
 
 export default function FavoritesBar({setIsLoading}: Readonly<{setIsLoading?: (isLoading: boolean) => void}>) {
 
@@ -37,7 +40,21 @@ export default function FavoritesBar({setIsLoading}: Readonly<{setIsLoading?: (i
     }, [setFavorites, userId]);
 
     useEffect(() => {
-        setUserId(getUserFromLocalStorage()?._id as ObjectId);
+        getActiveSession().then(activeSession => {
+            setUserId(activeSession?._id);
+        });
+
+        const onUserUpdate = (user: UserTypeClient) => {
+            if(user) {
+                setUserId(user._id);
+            }
+        }
+
+        userEventEmitter.on(EventKeysEnum.USER_UPDATE, onUserUpdate);
+
+        return () => {
+            userEventEmitter.off(EventKeysEnum.USER_UPDATE, onUserUpdate);
+        }
     }, [])
 
     return (

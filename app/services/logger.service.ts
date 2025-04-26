@@ -28,7 +28,7 @@ export namespace Logger {
      * Logs an info message if the logging level is set to INFO or lower.
      * @param message - The message to log.
      */
-    export const info = async (message: any) => {
+    export const info = async (message: any) => {   
         if (showInfo()) {
             console.info(`${DateTime.now().toISO()} [INFO] : ${message}`);
         }

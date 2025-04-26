@@ -6,9 +6,11 @@ import { Person, PersonAdd } from "@mui/icons-material";
 import './pwd-form.scss';
 import { UserTypeClient, UserTypeServer } from "@/app/types/user.type";
 import Checkbox from "../shared/checkbox.component";
-import { getUserFromLocalStorage, setUserInLocalStorage } from "@/app/utils/localstorage.utils";
+import { getActiveUserId } from "@/app/utils/localstorage.utils";
 import { APIResponseStatuses } from "@/app/enums/api-response-statuses.enum";
 import Loader from "../shared/loader/loader.component";
+import { getActiveSession } from "@/app/utils/indexed-db.utils";
+import { Logger } from "@/app/services/logger.service";
 
 export default function PWDForm() {
 
@@ -127,23 +129,19 @@ export default function PWDForm() {
     }
 
     useEffect(() => {
-        const userInLocalStorage = getUserFromLocalStorage();
-
-        if(userInLocalStorage) {
-            setUser(userInLocalStorage)
-        }
-
         clientLoginService.autoAuth().then((autoAuthResult) => {
-            if(autoAuthResult.user) {
-                setUserInLocalStorage(autoAuthResult.user);
-            }
-
+            console.log(autoAuthResult)
             if(autoAuthResult.result === true ) {
-                window.location.replace('/dashboard')
+                window.location.replace('/dashboard');
+            } else {
+                getActiveSession().then(activeSession => {
+                    console.log(activeSession)
+                    if(activeSession) {
+                        setUser(activeSession);
+                    }
+                });
             }
-
-            setUser(autoAuthResult.user);
-        }).catch();
+        })
     }, [clientLoginService])
 
     useEffect(() => {

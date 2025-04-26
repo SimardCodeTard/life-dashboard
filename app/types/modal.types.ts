@@ -1,5 +1,6 @@
 export type ModalComponentPropsType = {
     children: JSX.Element, 
     modalOpened: boolean, 
-    setModalOpened: (modalOpened: boolean) => void
+    setModalOpened: (modalOpened: boolean) => void,
+    className?: string;
 }

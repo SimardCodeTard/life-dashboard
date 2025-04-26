@@ -1,5 +1,5 @@
 'use client';
-import PWDForm from "../components/pwd-form/pwd-form.component";
+import PWDForm from "../../components/pwd-form/pwd-form.component";
 
 import './page.scss';
 

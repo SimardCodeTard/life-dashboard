@@ -1,11 +1,11 @@
 'use client';;
 import { Logger } from "../logger.service";
-import Cookies from 'js-cookie';
 import { UserTypeClient } from "@/app/types/user.type";
-import { AuthLoginRequestBodyType, AuthLoginResponseType, AuthRegisterRequestBodyType, AuthRegisterResponseType, AuthValidateResponseType } from "@/app/types/api.type";
-import { removeUserFromLocalStorage, setUserInLocalStorage } from "@/app/utils/localstorage.utils";
-import { CookieNamesEnum } from "@/app/enums/cookies.enum";
+import { AuthLogoutResponseType, AuthLoginRequestBodyType, AuthLoginResponseType, AuthRegisterRequestBodyType, AuthRegisterResponseType, AuthValidateResponseType, AuthLogoutAllResponseType } from "@/app/types/api.type";
 import { axiosClientService } from "./axios.client.service";
+import { deleteActiveSession, deleteAllSessions, deleteSession, saveSession } from "@/app/utils/indexed-db.utils";
+import { removeActiveUserId, setActiveUserId } from "@/app/utils/localstorage.utils";
+import { ObjectId } from "mongodb";
 
 export namespace clientLoginService {
 
@@ -41,17 +41,17 @@ export namespace clientLoginService {
      */
     export const login = async (body: AuthLoginRequestBodyType): Promise<UserTypeClient> => {
         // Post to /auth/login
-        const res = await axiosClientService.POST<AuthLoginResponseType, AuthLoginRequestBodyType>(apiUrl + '/login', body, { headers: { 'Content-Type': 'application/json' } });
-        setUserInLocalStorage(res.data.user);
-
+        const res = await axiosClientService.POST<AuthLoginResponseType, AuthLoginRequestBodyType>(apiUrl + '/login', body);
+        saveSession(res.data.user._id?.toString() as string, res.data.user);
+        setActiveUserId(res.data.user._id as ObjectId);
         return res.data.user;
     };
 
     export const register = async (body: AuthRegisterRequestBodyType): Promise<UserTypeClient> => {
         // Post to /auth/regiser
         const res = await axiosClientService.POST<AuthRegisterResponseType, AuthRegisterRequestBodyType>(apiUrl + '/register', body);
-        setUserInLocalStorage(res.data.user);
-
+        saveSession(res.data.user._id?.toString() as string, res.data.user);
+        setActiveUserId(res.data.user._id as ObjectId);
         return res.data.user;
     }
 
@@ -62,10 +62,12 @@ export namespace clientLoginService {
     export const autoAuth = async (): Promise<{result: boolean, user?: UserTypeClient}> => {
         try {
             // Attempt to login using the retrieved tokens
-            return await validateTokens();
+            const res = await validateTokens();
+            saveSession(res.user._id?.toString() as string, res.user);
+            setActiveUserId(res.user._id as ObjectId);
+            return res;
         } catch (e) {
             Logger.debug('Automatic login failed, an error occurred');
-            Logger.error(e as Error);
             return {result: false};
         }
     };
@@ -74,40 +76,21 @@ export namespace clientLoginService {
      * Logs out the user.
      * Deletes the tokens cookies and removes the user from local storage.
      */
-    export const logout = (): void => {
-        // Delete the token cookie
-        deleteTokenCookie();
-        // Delete the refresh token cookie
-        deleteRefreshTokenCookie();
-        // Remove the user from session storage
-        removeUserFromLocalStorage();
-    }
-
-    /**
-     * Saves the token in cookies.
-     * @param token - The token to save.
-     * @param expires - The expiration time in days.
-     */
-    const saveToken = (token: string, expires: number = 1): void => {
-        Cookies.set(CookieNamesEnum.AUTH_TOKEN, token, { expires, secure: true, sameSite: 'strict'});
+    export const logout = async (): Promise<AuthLogoutResponseType> => {
+        const res = await axiosClientService.GET<AuthLogoutResponseType>(apiUrl + '/logout').then(res => res.data);
+        deleteActiveSession()
+        removeActiveUserId();
+        return res
     };
 
     /**
-     * Saves the refresh token in cookies.
-     * @param refreshToken - The refresh token to save.
-     * @param expires - The expiration time in days.
+     * Logs out all users
+     * Deletes all the tokens
      */
-    const saveRefreshToken = (refreshToken: string, expires: number = 90): void => {
-        Cookies.set(CookieNamesEnum.REFRESH_TOKEN, refreshToken, { expires, secure: true, sameSite: 'strict'});
+    export const logoutAll = async (): Promise<AuthLogoutAllResponseType> => {
+        const res = await axiosClientService.GET<AuthLogoutAllResponseType>(apiUrl + '/logout/all').then(res => res.data)
+        deleteAllSessions();
+        removeActiveUserId();
+        return res;
     };
-
-    /**
-     * Deletes the token cookie.
-     */
-    const deleteTokenCookie = (): void => Cookies.remove(CookieNamesEnum.AUTH_TOKEN, {secure: true, sameSite: 'strict'});
-
-    /**
-     * Deletes the refresh token cookie.
-     */
-    const deleteRefreshTokenCookie = (): void => Cookies.remove(CookieNamesEnum.REFRESH_TOKEN, {secure: true, sameSite: 'strict'});
 }

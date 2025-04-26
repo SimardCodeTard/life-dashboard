@@ -3,7 +3,7 @@ import { FavoriteItemPropsType, FavoriteItemType } from '@/app/types/favorites.t
 import { MouseEvent, useEffect, useState } from 'react';
 import EditFavorite from './edit-favorite';
 import { UserTypeClient } from '@/app/types/user.type';
-import { getUserFromLocalStorage } from '@/app/utils/localstorage.utils';
+import { getActiveSession } from '@/app/utils/indexed-db.utils';
 
 export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemDelete, setIsLoading }: Readonly<FavoriteItemPropsType>) {
 
@@ -11,7 +11,9 @@ export default function FavoriteItem({ item, onFavoriteItemEdit, onFavoriteItemD
     const [user, setUser] = useState<UserTypeClient>();
 
     useEffect(() => {
-        setUser(getUserFromLocalStorage())
+        (async () => {
+            setUser(await getActiveSession())
+        })();
     }, []);    
 
     const onItemClick = (e: MouseEvent<HTMLButtonElement>) => {

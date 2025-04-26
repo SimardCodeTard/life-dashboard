@@ -17,7 +17,7 @@ export type UserTypeClient = {
 }
 
 export type UserTypeServer = {
-    _id?: ObjectId;
+    _id: ObjectId;
     firstName: string;
     lastName: string;
     mail: string;

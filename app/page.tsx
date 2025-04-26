@@ -1,15 +1,17 @@
 'use client';
 import { redirect } from "next/navigation"
-import { getUserFromLocalStorage } from "./utils/localstorage.utils"
 import { useEffect } from "react"
+import { getActiveSession } from "./utils/indexed-db.utils";
 
 export default function Home() {
 
   useEffect(() => {
-    if(getUserFromLocalStorage()) {
-      redirect('/dashboard');
-    } else {
-      redirect('/login');
-    }
+    (async ()=> {
+      if(await getActiveSession()) {
+        redirect('/dashboard');
+      } else {
+        redirect('/login');
+      }
+    })(); 
   }, [])
 }

@@ -4,9 +4,10 @@ import Loader from "../../shared/loader/loader.component";
 
 import './greeting.scss'
 import { UserTypeClient } from "@/app/types/user.type";
-import { getUserFromLocalStorage, userEventEmitter } from "@/app/utils/localstorage.utils";
+import { userEventEmitter } from "@/app/utils/localstorage.utils";
 import { EventKeysEnum } from "@/app/enums/events.enum";
 import { DateTime } from "luxon";
+import { getActiveSession } from "@/app/utils/indexed-db.utils";
 
 export default function Greeting() {
   const [greeting, setGreeting] = useState("");
@@ -16,10 +17,14 @@ export default function Greeting() {
   const [displayName, setDisplayName] = useState('User');
 
   useEffect(() => {
-    setUser(getUserFromLocalStorage());
+    getActiveSession().then(activeSession => {
+      setUser(activeSession);
+    })
 
     const onUserUpdate = (user: UserTypeClient) => {
-      setUser(user);
+      if(user) {
+        setUser(user);
+      }
     }
 
     userEventEmitter.on(EventKeysEnum.USER_UPDATE, onUserUpdate);
