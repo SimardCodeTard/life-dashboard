@@ -1,5 +1,6 @@
 import { CookieNamesEnum } from "@/app/enums/cookies.enum";
 import { APIBadRequestError, APIUnauthorizedError } from "@/app/errors/api.error";
+import { Logger } from "@/app/services/logger.service";
 import { serverLoginService } from "@/app/services/server/login.server.service";
 import { AuthSwitchAccountResponseType } from "@/app/types/api.type";
 import { handleAPIError } from "@/app/utils/api.utils";
@@ -11,7 +12,7 @@ const getHandler = async (request: NextRequest): Promise<AuthSwitchAccountRespon
     const previousUserId = request.nextUrl.searchParams.get('previousUserId');
     const clientIp = request.headers.get('x-forwarded-for') as string;
 
-    if(!newUserId || ! previousUserId) {
+    if(!newUserId || !previousUserId) {
         throw new APIBadRequestError('Missing or invalid required search params')
     }
 
@@ -26,21 +27,23 @@ const getHandler = async (request: NextRequest): Promise<AuthSwitchAccountRespon
     }
 
     if(newUserAuthToken) {
-        await serverLoginService.validateToken(newUserAuthToken);
-        setAuthTokenCookie(newUserAuthToken);
+        setAuthTokenCookie(newUserAuthToken);    
+    } else if (!newUserAuthRefreshToken) {
+        throw new APIBadRequestError('Missing auth and refresh tokens for new user');
     }
 
     if(newUserAuthRefreshToken) {
-        await serverLoginService.validateRefreshToken(newUserAuthRefreshToken, clientIp)
         setAuthRefreshTokenCookie(newUserAuthRefreshToken);    
     }
+
+    const {token: newInactiveUserToken, refreshToken: newInactiveUserRefreshToken} = await serverLoginService.validateTokenOrRefreshToken(newUserAuthToken as string, clientIp, newUserAuthRefreshToken)
     
     if(previousUserAuthToken) {
-        setAuthTokenCookie(previousUserAuthToken, getInactiveUserAuthTokenName(previousUserId));
+        setAuthTokenCookie(newInactiveUserToken ?? previousUserAuthToken, getInactiveUserAuthTokenName(previousUserId));
     }
 
     if(previousUserAuthRefreshToken) {
-        setAuthTokenCookie(previousUserAuthRefreshToken, getInactiveUserAuthRefreshTokenName(previousUserId));
+        setAuthTokenCookie(newInactiveUserRefreshToken ?? previousUserAuthRefreshToken, getInactiveUserAuthRefreshTokenName(previousUserId));
     }
 
     return {success: true};
@@ -50,6 +53,6 @@ export const GET = async (request: NextRequest) => {
     try {
         return Response.json(await getHandler(request));
     } catch (err) {
-        handleAPIError(err);
+        return handleAPIError(err);
     }
 }

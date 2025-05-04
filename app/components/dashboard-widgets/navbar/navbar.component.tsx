@@ -1,28 +1,36 @@
-"use client";;
+"use client";
 import Link from 'next/link';
 import { useEffect, useState, MouseEvent } from 'react';
 import FitbitSharpIcon from '@mui/icons-material/FitbitSharp';
-import { Add, KeyboardArrowDown, Logout, Settings } from '@mui/icons-material';
+import { Add, KeyboardArrowDown, Logout, Settings, SyncAlt } from '@mui/icons-material';
 import ModalComponent from '../../shared/modal.component';
 import { UserTypeClient } from '@/app/types/user.type';
 import { userEventEmitter } from '@/app/utils/localstorage.utils';
 import { EventKeysEnum } from '@/app/enums/events.enum';
 import ThemeSelector from '../../shared/theme-selector/theme-selector';
 import { clientLoginService } from '@/app/services/client/login.client.service';
+import { getActiveSession, getAllSessions } from '@/app/utils/indexed-db.utils';
+import { redirect } from "next/navigation";
+import PWDForm from '../../shared/pwd-form/pwd-form.component';
+import SessionSelector from '../../shared/session-selector/session-selector';
 
 import './navbar.scss'
-import { getActiveSession } from '@/app/utils/indexed-db.utils';
-
 
 export default function NavBar() {
   const [tabs] = useState([{ href: '/dashboard', label: 'Dashboard' }]);
   const [currentPageHref, setCurrentPageHref] = useState('/');
-  const [modalOpened, setModalOpened] = useState(false);
+  const [userModalOpened, setUserModalOpened] = useState(false);
+  const [addUserModalOpened, setAddUserModalOpened] = useState(false);
   const [user, setUser] = useState<UserTypeClient>();
+  const [showSwitchAccount, setShowSwitchAccount] = useState(false);  
 
   useEffect(() => {
     getActiveSession().then(activeSession=> {
       setUser(activeSession);
+    })
+
+    getAllSessions().then((sessions) => {
+      setShowSwitchAccount(sessions.length > 1);
     })
 
     const onUserUpdate = (user: UserTypeClient) => {
@@ -44,21 +52,30 @@ export default function NavBar() {
   }
 
   const onUserIconClicked = () => {
-    setModalOpened(!modalOpened);
+    setUserModalOpened(!userModalOpened);
   }
 
   const onSettingsClicked = (_: MouseEvent<HTMLDivElement>) => {
-
+    setUserModalOpened(false);
+    redirect('/settings');
   }
 
   const onAddAccountClicked = (_: MouseEvent<HTMLDivElement>) => {
-
+    setAddUserModalOpened(true);
   }
 
   const onLogoutClicked = (_: MouseEvent<HTMLDivElement>) => {
     clientLoginService.logout().then(_ => {
       window.location.replace('/login');
     } );
+  }
+
+  const onNewUserAdded = () => {
+    // window.location.reload();
+  }
+
+  const onShowRegisterFormButtonClicked = () => {
+    setShowSwitchAccount(false);
   }
 
   return (
@@ -81,11 +98,11 @@ export default function NavBar() {
         ))}
       </span>
 
-      <button className={`user-icon ${modalOpened && 'deployed'}`} onClick={() => onUserIconClicked()}>
+      <button className={`user-icon ${userModalOpened && 'deployed'}`} onClick={() => onUserIconClicked()}>
         <span className='user-badge'>{user?.firstName.substring(0, 1)}</span> {user?.firstName} <KeyboardArrowDown></KeyboardArrowDown> 
       </button>
 
-      <ModalComponent className='user-modal' modalOpened={modalOpened} setModalOpened={setModalOpened}>
+      <ModalComponent className='user-modal' modalOpened={userModalOpened} setModalOpened={setUserModalOpened}>
         <div className='modal-content'>
           <div className="user-infos">
             <span className="user-badge">
@@ -104,10 +121,11 @@ export default function NavBar() {
             <p>Settings</p>
           </div>
           <div className="add-account">
-            <div onClick={onAddAccountClicked} tabIndex={-1} className="add-account-wrapper actions-wrapper">
-              <Add></Add> 
-              <p>Add an account</p>
-            </div>
+            <div onClick={onAddAccountClicked} tabIndex={-1} className="add-account-wrapper actions-wrapper">{
+              showSwitchAccount 
+              ? <> <SyncAlt></SyncAlt> <p>Switch account</p> </> 
+              : <> <Add></Add> <p>Add an account</p> </>
+            }</div>
           </div>
           <div tabIndex={0} onClick={onLogoutClicked} className="logout actions-wrapper">
             <Logout></Logout>
@@ -115,6 +133,14 @@ export default function NavBar() {
           </div>
         </div>
       </ModalComponent>
+
+      <ModalComponent className='add-user-modal' modalOpened={addUserModalOpened} setModalOpened={setAddUserModalOpened}>{
+        showSwitchAccount ? <SessionSelector onShowRegisterFormButtonClicked={onShowRegisterFormButtonClicked} onSessionSelected={() => {
+          setAddUserModalOpened(false);
+          setUserModalOpened(false);
+        }}></SessionSelector> : <PWDForm isAddingUser={true} onNewUserAdded={onNewUserAdded}></PWDForm>
+      }
+      </ModalComponent> 
     </div>
   );
 }

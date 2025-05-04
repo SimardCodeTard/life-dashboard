@@ -1,0 +1,80 @@
+@import '/app/shared/variables.scss';
+
+.session-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .session-selector-content {
+        height: fit-content;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem;
+        background-color: $background-lighter;
+
+        .session-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: .5rem;
+            border: $border;
+            border-radius: .25rem;
+            background-color: $background;
+            width: 100%;
+            position: relative;
+
+            .user-infos {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+
+                div {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-evenly;
+
+                    p {
+                        margin: 0;
+                    }
+                }
+
+                .user-badge {
+                    border-radius: 50%;
+                    background-color: $accent;
+                    aspect-ratio: 1/1;
+                    width: auto;
+                    height: 1.75rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border: $border;
+                }
+            }
+
+            button {
+                margin-left: auto;
+            }
+        }
+    }
+}
+
+.show-register-form-button {
+    display: flex;
+    align-items: center;
+}
+
+.show-register-form-button, .session-select-button, .session-select-button:disabled {
+    font-size: 1rem;
+    background-color: transparent;
+    border: none;
+    width: fit-content;
+    padding: 0;
+    margin: 0;
+    color: $foreground;
+    text-decoration: underline;
+}
+.actions-wrapper {
+    color: $foreground;
+}

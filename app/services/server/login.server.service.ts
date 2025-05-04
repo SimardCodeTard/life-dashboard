@@ -41,6 +41,7 @@ export namespace serverLoginService {
     };
 
     const isRefreshTokenValid = async (token: string): Promise<TokenType | null> => {
+        console.log('Checking refreshToken:', token)
         return await tokenDataService.findRefreshToken(token);
     };
 
@@ -74,13 +75,13 @@ export namespace serverLoginService {
         return found;
     }
 
-    export const validateRefreshToken = async (refreshToken: string, clientIp: string) => {
+    export const validateRefreshToken = async (refreshToken: string, clientIp: string): Promise<string> => {
         Logger.debug('Invalid JWT token');
             
         const refreshTokenFound = await isRefreshTokenValid(refreshToken);
 
         if(!refreshTokenFound) {
-            throw new APIUnauthorizedError('Invalid refresh token');
+            throw new APIUnauthorizedError('Refresh token not found');
         } else if (refreshTokenFound.userIp !== clientIp) {
             throw new APIUnauthorizedError('Invalid refresh token: client IP did not match');
         }
@@ -98,6 +99,7 @@ export namespace serverLoginService {
         try {
             user = await validateToken(token);
         } catch (e) {
+            Logger.error(e as Error);
             Logger.debug('Invalid JWT token');
 
             if (!refreshToken) {
@@ -110,7 +112,7 @@ export namespace serverLoginService {
 
             const user = await serverUserDataService.findUserById(new ObjectId(userId));
 
-            if(user === null) {
+            if(user === null) { 
                 throw new APINotFoundError('User not found')
             }
 

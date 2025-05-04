@@ -1,9 +1,9 @@
 'use client';;
 import { Logger } from "../logger.service";
 import { UserTypeClient } from "@/app/types/user.type";
-import { AuthLogoutResponseType, AuthLoginRequestBodyType, AuthLoginResponseType, AuthRegisterRequestBodyType, AuthRegisterResponseType, AuthValidateResponseType, AuthLogoutAllResponseType } from "@/app/types/api.type";
+import { AuthLogoutResponseType, AuthLoginRequestBodyType, AuthLoginResponseType, AuthRegisterRequestBodyType, AuthRegisterResponseType, AuthValidateResponseType, AuthLogoutAllResponseType, AuthAddAccountRequestBodyType, AuthAddAccountResponseType, AuthSwitchAccountResponseType } from "@/app/types/api.type";
 import { axiosClientService } from "./axios.client.service";
-import { deleteActiveSession, deleteAllSessions, deleteSession, saveSession } from "@/app/utils/indexed-db.utils";
+import { deleteActiveSession, deleteAllSessions, saveSession } from "@/app/utils/indexed-db.utils";
 import { removeActiveUserId, setActiveUserId } from "@/app/utils/localstorage.utils";
 import { ObjectId } from "mongodb";
 
@@ -26,10 +26,14 @@ export namespace clientLoginService {
      * @param refreshToken - The refresh token to validate.
      * @returns {Promise<boolean>} - True if tokens are valid, otherwise false.
      */
-    const validateTokens = async (): Promise<{result: boolean, user: UserTypeClient}> => {
-        // Call to auth/validate
-        const {user} = (await axiosClientService.GET<AuthValidateResponseType>(apiUrl + '/validate')).data;
-        return {result: true, user: user};
+    export const validateTokens = async (userId?: string): Promise<{result: boolean, user: UserTypeClient}> => {
+        // Call to /auth/validate
+        let fetchUrl = apiUrl + '/validate';
+        if(userId) {
+            fetchUrl += '?userId='+userId
+        }
+        const {user} = (await axiosClientService.GET<AuthValidateResponseType>(fetchUrl)).data;
+        return {result: true, user: user};  
     };
 
     /**
@@ -55,6 +59,13 @@ export namespace clientLoginService {
         return res.data.user;
     }
 
+    export const addAccount = async (body: AuthAddAccountRequestBodyType, previousActiveUserid: string): Promise<UserTypeClient> => {
+        // Post to /auth/add-account
+        const res = await axiosClientService.POST<AuthAddAccountResponseType, AuthAddAccountRequestBodyType>(apiUrl + '/add-account?previousActiveUserid='+previousActiveUserid, body);
+        saveSession(res.data.user._id?.toString() as string, res.data.user);
+        setActiveUserId(res.data.user._id as ObjectId);
+        return res.data.user;
+    }
     /**
      * Automatically authenticate the user using stored tokens.
      * @returns {Promise<boolean>} - Returns true if authentication is successful, otherwise false.
@@ -68,6 +79,7 @@ export namespace clientLoginService {
             return res;
         } catch (e) {
             Logger.debug('Automatic login failed, an error occurred');
+            Logger.error(e as Error);
             return {result: false};
         }
     };
@@ -93,4 +105,10 @@ export namespace clientLoginService {
         removeActiveUserId();
         return res;
     };
+
+    export const switchAccount = async (newUserId: ObjectId | string, previousUserId: ObjectId | string): Promise<AuthSwitchAccountResponseType> => {
+        const res = await axiosClientService.GET<AuthSwitchAccountResponseType>(apiUrl + `/switch-account?userId=${newUserId.toString()}&previousUserId=${previousUserId.toString()}`).then(res => res.data);
+        setActiveUserId(newUserId);
+        return res;
+    }
 }

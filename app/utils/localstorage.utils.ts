@@ -40,7 +40,7 @@ export const removeLocalStorageItem = (key: LocalStorageKeysEnum) => {
     
 export const getActiveUserId = (): string | undefined => getLocalStorageItem<string>(LocalStorageKeysEnum.ACTIVE_USER_ID, false);
 
-export const setActiveUserId = (userId: ObjectId) => {
+export const setActiveUserId = (userId: ObjectId | string) => {
     setLocalStorageItem(LocalStorageKeysEnum.ACTIVE_USER_ID, userId.toString())
     getActiveSession().then((activeSession) => {
         userEventEmitter.emit(EventKeysEnum.USER_UPDATE, activeSession);

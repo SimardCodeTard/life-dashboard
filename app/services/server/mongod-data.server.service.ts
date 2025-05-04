@@ -43,7 +43,7 @@ export namespace serverMongoDataService {
         return getCollection(collectionName)
         .then(async collection => {
             const res = await operation(collection);
-            Logger.debug('operation result : ' + JSON.stringify(res));
+            Logger.debug('operation in collection ' + collectionName + ' result : ' + JSON.stringify(res));
             return res;
         })
         .catch((err) => {

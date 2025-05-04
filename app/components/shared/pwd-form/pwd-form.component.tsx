@@ -5,16 +5,24 @@ import { Person, PersonAdd } from "@mui/icons-material";
 
 import './pwd-form.scss';
 import { UserTypeClient, UserTypeServer } from "@/app/types/user.type";
-import Checkbox from "../shared/checkbox.component";
-import { getActiveUserId } from "@/app/utils/localstorage.utils";
+import Checkbox from "../checkbox.component";
 import { APIResponseStatuses } from "@/app/enums/api-response-statuses.enum";
-import Loader from "../shared/loader/loader.component";
-import { getActiveSession } from "@/app/utils/indexed-db.utils";
-import { Logger } from "@/app/services/logger.service";
+import Loader from "../loader/loader.component";
+import { getActiveUserId } from "@/app/utils/localstorage.utils";
 
-export default function PWDForm() {
+export default function PWDForm({ 
+    user, 
+    isAddingUser = false, 
+    onNewUserAdded, 
+}: Readonly<{ 
+    isAddingUser?: 
+    boolean, 
+    user?: UserTypeClient, 
+    onNewUserAdded?: () => any, 
+}>) {
 
     const getDefaultFormState = (): UserTypeServer => ({
+        _id: undefined  as any,
         firstName: '',
         lastName: '',
         mail: '',
@@ -30,14 +38,13 @@ export default function PWDForm() {
     const [mailInvalid, setMailInvalid] = useState(false);
     const [missingFields, setMissingFields] = useState<string[]>([]);
 
-    const [modeIsLogin, setModeIsLogin] = useState(false);
+    const [modeIsLogin, setModeIsLogin] = useState(isAddingUser);
 
     const [formState, setFormState] = useState<UserTypeServer>(getDefaultFormState());
     const [passwordConfirmFormField, setPasswordConfirmFormField] = useState('');
     const [keepLoggedIn, setKeepLoggedIn] = useState(false);
 
 
-    const [user, setUser] = useState<UserTypeClient | undefined>(undefined);
     const [firstNameLabel, setFirstNameLabel] = useState<ReactNode>();
 
     const [isLoading, setIsLoading] = useState(true);
@@ -75,8 +82,20 @@ export default function PWDForm() {
         return mailRegex.test(mail);
     }
 
-    const submitAction = () => {
-        if(modeIsLogin) {
+    const submitAction = async () => {
+        if(isAddingUser) {
+            let addAccountResult;
+            const previousActiveUserId = getActiveUserId() as string;
+
+            if(modeIsLogin) {
+                addAccountResult = clientLoginService.addAccount({isNewAccount: false, content: {mail: formState.mail, password: formState.password, keepLoggedIn: keepLoggedIn}}, previousActiveUserId);
+            } else {
+                addAccountResult = clientLoginService.addAccount({isNewAccount: true, content: { user: formState, keepLoggedIn }}, previousActiveUserId);
+            }
+
+            onNewUserAdded?.();
+            return addAccountResult;
+        } else if(modeIsLogin) {
             return clientLoginService.login({mail: formState.mail, password: formState.password, keepLoggedIn});
         } else {
             return clientLoginService.register({user: formState, keepLoggedIn});
@@ -129,22 +148,6 @@ export default function PWDForm() {
     }
 
     useEffect(() => {
-        clientLoginService.autoAuth().then((autoAuthResult) => {
-            console.log(autoAuthResult)
-            if(autoAuthResult.result === true ) {
-                window.location.replace('/dashboard');
-            } else {
-                getActiveSession().then(activeSession => {
-                    console.log(activeSession)
-                    if(activeSession) {
-                        setUser(activeSession);
-                    }
-                });
-            }
-        })
-    }, [clientLoginService])
-
-    useEffect(() => {
         if(!user) {
             setIsLoading(false)
             return;
@@ -156,11 +159,10 @@ export default function PWDForm() {
     }, [user]);
 
     useEffect(() => {
-        if(!user) {
-            return;
+        if(user) {
+            setModeIsLogin(true)
         }
         
-        setModeIsLogin(true)
     }, [firstNameLabel]);
 
     useEffect(() => {

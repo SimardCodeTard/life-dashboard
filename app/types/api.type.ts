@@ -30,7 +30,13 @@ import { CurrentWeatherApiResponse, ForecastWeatherApiResponse, LocationApiRespo
     // ------------- /add-account -------------
         export type AuthAddAccountResponseType = AuthRegisterResponseType;
 
-        export type AuthAddAccountRequestBodyType = AuthRegisterRequestBodyType;
+        export type AuthAddAccountRequestBodyType = {
+            isNewAccount: true,
+            content: AuthRegisterRequestBodyType,
+        } | {
+            isNewAccount: false,
+            content: AuthLoginRequestBodyType
+        };
 
     // ------------- /validate -------------
         export type AuthValidateResponseType = { user: UserTypeClient };
