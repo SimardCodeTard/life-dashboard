@@ -58,7 +58,7 @@ export default function SessionSelector({
             <button type="button" className="show-register-form-button" onClick={() => onShowRegisterFormButtonClicked()}
                 ><Add></Add> Add an account
             </button>
-            {unknwonError && <p className="error-text">Sorry, you can't do that right now...</p>}
+            {unknwonError && <p className="error-text">Sorry, you can&apos;t do that right now...</p>}
         </div>
     </div>
 }
