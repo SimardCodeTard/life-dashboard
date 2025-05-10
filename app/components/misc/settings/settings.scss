@@ -1,0 +1,43 @@
+@import '/app/shared/variables.scss';
+
+.settings {
+    display: flex;
+    align-items: flex-start;
+
+    & > div {
+        padding: .5rem;
+    }
+
+    .settings-sidebar {
+        border-right: $border;
+        .tab {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border-radius: .25rem;
+            padding: .5rem;
+            &:hover {
+                background-color: $accent;
+            }
+            p {
+                margin: 0;
+            }
+        }
+    }
+
+    .settings-content {
+        & > * {
+            h2 {
+                margin: .5rem;
+            }
+        }
+
+        .general-settings {
+            position: relative;
+        }
+    
+        .user-settings {
+            position: relative;
+        }
+    }
+}

@@ -21,11 +21,11 @@ export default function SessionSelector({
     onSessionSelected: () => void
 }>) {
 
-    const [sessions, setSesssions] = useState<UserTypeClient[]>([])
-    const [unknwonError, setUnknownError] = useState(false);
+    const [sessions, setSessions] = useState<UserTypeClient[]>([])
+    const [unknownError, setUnknownError] = useState(false);
 
     useEffect(() => {
-        getAllSessions().then(setSesssions);    
+        getAllSessions().then(setSessions);    
     }, []);
 
     const onSessionSelected = async (session: UserTypeClient) => {
@@ -58,7 +58,7 @@ export default function SessionSelector({
             <button type="button" className="show-register-form-button" onClick={() => onShowRegisterFormButtonClicked()}
                 ><Add></Add> Add an account
             </button>
-            {unknwonError && <p className="error-text">Sorry, you can&apos;t do that right now...</p>}
+            {unknownError && <p className="error-text">Sorry, you can&apos;t do that right now...</p>}
         </div>
     </div>
 }

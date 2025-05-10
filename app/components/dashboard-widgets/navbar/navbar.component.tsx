@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useEffect, useState, MouseEvent } from 'react';
 import FitbitSharpIcon from '@mui/icons-material/FitbitSharp';
-import { Add, KeyboardArrowDown, Logout, Settings, SyncAlt } from '@mui/icons-material';
+import { Add, KeyboardArrowDown, Logout, SyncAlt, Settings as SettingsIcon } from '@mui/icons-material';
 import ModalComponent from '../../shared/modal.component';
 import { UserTypeClient } from '@/app/types/user.type';
 import { userEventEmitter } from '@/app/utils/localstorage.utils';
@@ -10,17 +10,20 @@ import { EventKeysEnum } from '@/app/enums/events.enum';
 import ThemeSelector from '../../shared/theme-selector/theme-selector';
 import { clientLoginService } from '@/app/services/client/login.client.service';
 import { getActiveSession, getAllSessions } from '@/app/utils/indexed-db.utils';
-import { redirect } from "next/navigation";
 import PWDForm from '../../shared/pwd-form/pwd-form.component';
 import SessionSelector from '../../shared/session-selector/session-selector';
 
 import './navbar.scss'
+import Settings from '../../misc/settings/settings';
 
 export default function NavBar() {
   const [tabs] = useState([{ href: '/dashboard', label: 'Dashboard' }]);
   const [currentPageHref, setCurrentPageHref] = useState('/');
+  
   const [userModalOpened, setUserModalOpened] = useState(false);
   const [addUserModalOpened, setAddUserModalOpened] = useState(false);
+  const [settingsModalOpened, setSettingsModalOpened] = useState(false);
+
   const [user, setUser] = useState<UserTypeClient>();
   const [showSwitchAccount, setShowSwitchAccount] = useState(false);  
 
@@ -56,8 +59,7 @@ export default function NavBar() {
   }
 
   const onSettingsClicked = (_: MouseEvent<HTMLDivElement>) => {
-    setUserModalOpened(false);
-    redirect('/settings');
+    setSettingsModalOpened(true);
   }
 
   const onAddAccountClicked = (_: MouseEvent<HTMLDivElement>) => {
@@ -117,7 +119,7 @@ export default function NavBar() {
           </div>
           <ThemeSelector/>
           <div tabIndex={-2} onClick={onSettingsClicked} className="settings-link actions-wrapper">
-            <Settings></Settings>
+            <SettingsIcon></SettingsIcon>
             <p>Settings</p>
           </div>
           <div className="add-account">
@@ -141,6 +143,10 @@ export default function NavBar() {
         }}></SessionSelector> : <PWDForm isAddingUser={true} onNewUserAdded={onNewUserAdded}></PWDForm>
       }
       </ModalComponent> 
+
+      <ModalComponent className='settings-modal' modalOpened={settingsModalOpened} setModalOpened={setSettingsModalOpened}>
+        <Settings></Settings>
+      </ModalComponent>
     </div>
   );
 }
