@@ -7,3 +7,7 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
     showCalendarWidget: true,
     showFavoritesWidget: true,
 }
+
+export const DEFAULT_SETTINGS = {
+    general: DEFAULT_GENERAL_SETTINGS,
+}
